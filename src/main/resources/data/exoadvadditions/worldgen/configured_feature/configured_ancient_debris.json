@@ -6,7 +6,7 @@
       "targets": [
         {
           "state": {
-            "Name": "minecraft:ancient_debris"
+            "Name": "exoadvadditions:natural_ancient_debris"
           },
           "target": {
             "predicate_type": "minecraft:tag_match",
@@ -15,7 +15,7 @@
         },
         {
           "state": {
-            "Name": "minecraft:ancient_debris"
+            "Name": "exoadvadditions:natural_ancient_debris"
           },
           "target": {
             "predicate_type": "minecraft:tag_match",

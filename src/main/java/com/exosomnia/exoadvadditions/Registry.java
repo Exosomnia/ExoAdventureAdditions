@@ -10,17 +10,24 @@ import com.exosomnia.exoadvadditions.items.*;
 import com.exosomnia.exoadvadditions.loot.DepthsMacGuffinLootModifier;
 import com.exosomnia.exoadvadditions.recipes.AdventureMapRecipe;
 import com.mojang.serialization.Codec;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.objects.ObjectObjectImmutablePair;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -30,6 +37,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
 @Mod.EventBusSubscriber(modid = ExoAdventureAdditions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -53,6 +61,23 @@ public class Registry {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ExoAdventureAdditions.MODID);
     public static final RegistryObject<Block> BLOCK_TELEPORTER_PLATE = BLOCKS.register("teleporter_plate", TeleporterPlateBlock::new);
 
+    public static final RegistryObject<Block> BLOCK_NATURAL_COAL_ORE = BLOCKS.register("natural_coal_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F), UniformInt.of(0, 2)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_COAL_ORE = BLOCKS.register("natural_deepslate_coal_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_COAL_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE), UniformInt.of(0, 2)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_IRON_ORE = BLOCKS.register("natural_iron_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_IRON_ORE = BLOCKS.register("natural_deepslate_iron_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_IRON_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_COPPER_ORE = BLOCKS.register("natural_copper_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_IRON_ORE.get())));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_COPPER_ORE = BLOCKS.register("natural_deepslate_copper_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_COPPER_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_GOLD_ORE = BLOCKS.register("natural_gold_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_GOLD_ORE = BLOCKS.register("natural_deepslate_gold_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_GOLD_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_LAPIS_ORE = BLOCKS.register("natural_lapis_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F), UniformInt.of(2, 5)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_LAPIS_ORE = BLOCKS.register("natural_deepslate_lapis_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_LAPIS_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE), UniformInt.of(2, 5)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_REDSTONE_ORE = BLOCKS.register("natural_redstone_ore", () -> new RedStoneOreBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().randomTicks().lightLevel((state) -> state.getValue(BlockStateProperties.LIT) ? 9 : 0).strength(3.0F, 3.0F)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_REDSTONE_ORE = BLOCKS.register("natural_deepslate_redstone_ore", () -> new RedStoneOreBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_REDSTONE_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DIAMOND_ORE = BLOCKS.register("natural_diamond_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F), UniformInt.of(3, 7)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_DIAMOND_ORE = BLOCKS.register("natural_deepslate_diamond_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_DIAMOND_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE), UniformInt.of(3, 7)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_EMERALD_ORE = BLOCKS.register("natural_emerald_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F), UniformInt.of(3, 7)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_DEEPSLATE_EMERALD_ORE = BLOCKS.register("natural_deepslate_emerald_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.copy(BLOCK_NATURAL_EMERALD_ORE.get()).mapColor(MapColor.DEEPSLATE).strength(4.5F, 3.0F).sound(SoundType.DEEPSLATE), UniformInt.of(3, 7)));
+    public static final RegistryObject<Block> BLOCK_NATURAL_ANCIENT_DEBRIS = BLOCKS.register("natural_ancient_debris", () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK).requiresCorrectToolForDrops().strength(30.0F, 1200.0F).sound(SoundType.ANCIENT_DEBRIS)));
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ExoAdventureAdditions.MODID);
     public static final RegistryObject<Item> ITEM_UNLOCATED_MAP = ITEMS.register("unlocated_map", UnlocatedMapItem::new);
@@ -112,6 +137,8 @@ public class Registry {
             new ResourceLocation(ExoAdventureAdditions.MODID, "music.the_depths")));
 
 
+    public static Pair<ResourceKey<Block>, ResourceKey<Block>>[] NATURAL_ORE_PAIRS;
+
     public static void registerCommon() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
 
@@ -122,6 +149,32 @@ public class Registry {
         CREATIVE_TABS.register(modBus);
         MOB_EFFECTS.register(modBus);
         SOUND_EVENTS.register(modBus);
+    }
+
+    public static void setupOres() {
+        IForgeRegistry<Block> forgeRegistry = ForgeRegistries.BLOCKS;
+        NATURAL_ORE_PAIRS = new Pair[] {
+                orePair(forgeRegistry, Blocks.COAL_ORE, BLOCK_NATURAL_COAL_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_COAL_ORE, BLOCK_NATURAL_DEEPSLATE_COAL_ORE.get()),
+                orePair(forgeRegistry, Blocks.IRON_ORE, BLOCK_NATURAL_IRON_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_IRON_ORE, BLOCK_NATURAL_DEEPSLATE_IRON_ORE.get()),
+                orePair(forgeRegistry, Blocks.COPPER_ORE, BLOCK_NATURAL_COPPER_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_COPPER_ORE, BLOCK_NATURAL_DEEPSLATE_COPPER_ORE.get()),
+                orePair(forgeRegistry, Blocks.GOLD_ORE, BLOCK_NATURAL_GOLD_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_GOLD_ORE, BLOCK_NATURAL_DEEPSLATE_GOLD_ORE.get()),
+                orePair(forgeRegistry, Blocks.LAPIS_ORE, BLOCK_NATURAL_LAPIS_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_LAPIS_ORE, BLOCK_NATURAL_DEEPSLATE_LAPIS_ORE.get()),
+                orePair(forgeRegistry, Blocks.REDSTONE_ORE, BLOCK_NATURAL_REDSTONE_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_REDSTONE_ORE, BLOCK_NATURAL_DEEPSLATE_REDSTONE_ORE.get()),
+                orePair(forgeRegistry, Blocks.DIAMOND_ORE, BLOCK_NATURAL_DIAMOND_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_DIAMOND_ORE, BLOCK_NATURAL_DEEPSLATE_DIAMOND_ORE.get()),
+                orePair(forgeRegistry, Blocks.EMERALD_ORE, BLOCK_NATURAL_EMERALD_ORE.get()),
+                orePair(forgeRegistry, Blocks.DEEPSLATE_EMERALD_ORE, BLOCK_NATURAL_DEEPSLATE_EMERALD_ORE.get()),
+        };
+    }
+
+    private static ObjectObjectImmutablePair<ResourceKey<Block>, ResourceKey<Block>> orePair(IForgeRegistry<Block> registry, Block left, Block right) {
+        return new ObjectObjectImmutablePair(registry.getResourceKey(left).get(), registry.getResourceKey(right).get());
     }
 
     @SubscribeEvent

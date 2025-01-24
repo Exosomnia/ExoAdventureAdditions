@@ -10,6 +10,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 @Mod(ExoAdventureAdditions.MODID)
@@ -21,10 +22,16 @@ public class ExoAdventureAdditions
     public ExoAdventureAdditions() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
+
         Registry.registerCommon();
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(this::clientTick) );
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient) );
+    }
+
+    public void setupCommon(FMLCommonSetupEvent event) {
+        Registry.setupOres();
     }
 
     @OnlyIn(Dist.CLIENT)

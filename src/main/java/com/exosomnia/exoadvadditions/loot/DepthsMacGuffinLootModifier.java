@@ -32,8 +32,6 @@ public class DepthsMacGuffinLootModifier extends LootModifier {
             .apply(codec, DepthsMacGuffinLootModifier::new)
     ));
 
-    //private final
-
     protected DepthsMacGuffinLootModifier(LootItemCondition[] conditionsIn, ResourceKey<Level> dimension, TagKey<Block> blockTag) {
         super(conditionsIn);
         this.dimension = dimension;

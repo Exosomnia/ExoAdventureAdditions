@@ -2,18 +2,28 @@ package com.exosomnia.exoadvadditions.events;
 
 import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.AnvilUpdateEvent;
+import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.living.LivingUseTotemEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 
@@ -76,5 +86,17 @@ public class VanillaEventTweaks {
     @SubscribeEvent
     public static void totemPopEvent(LivingUseTotemEvent event) {
         if (event.getEntity().hasEffect(Registry.EFFECT_CHEATED_DEATH.get())) { event.setCanceled(true); }
+    }
+
+    @SubscribeEvent
+    public static void tagUpdateEvent(TagsUpdatedEvent event) {
+        TagKey<Block> naturalOresTag = TagKey.create(Registries.BLOCK, new ResourceLocation(ExoAdventureAdditions.MODID, "natural_ores"));
+        net.minecraft.core.Registry<Block> reg = event.getRegistryAccess().registryOrThrow(ForgeRegistries.Keys.BLOCKS);
+        // Loop through ore pairs and resolve tags
+        for (Pair<ResourceKey<Block>, ResourceKey<Block>> orePair : Registry.NATURAL_ORE_PAIRS) {
+            List<TagKey<Block>> originalTags = reg.getHolder(orePair.left()).get().tags().toList();
+            originalTags.add(naturalOresTag);
+            reg.getHolder(orePair.right()).get().bindTags(originalTags);
+        }
     }
 }
