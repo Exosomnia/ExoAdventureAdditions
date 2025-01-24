@@ -1,0 +1,28 @@
+{
+  "feature": "exoadvadditions:configured_ancient_debris",
+  "placement": [
+    {
+      "type": "minecraft:count",
+      "count": 2
+    },
+    {
+      "type": "minecraft:in_square"
+    },
+    {
+      "type": "minecraft:height_range",
+      "height": {
+        "type": "minecraft:biased_to_bottom",
+        "max_inclusive": {
+          "absolute": -48
+        },
+        "min_inclusive": {
+          "absolute": -59
+        },
+        "inner": 1
+      }
+    },
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

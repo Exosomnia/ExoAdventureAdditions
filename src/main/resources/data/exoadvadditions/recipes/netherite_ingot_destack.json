@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "exoadvadditions:netherite_ingot_stack"
+    }
+  ],
+  "result": {
+    "count": 3,
+    "item": "minecraft:netherite_ingot"
+  }
+}

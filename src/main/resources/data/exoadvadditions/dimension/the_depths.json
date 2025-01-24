@@ -1,0 +1,11 @@
+{
+  "type": "exoadvadditions:type_the_depths",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "exoadvadditions:biome_depths"
+    },
+    "settings": "exoadvadditions:noise_depths"
+  }
+}

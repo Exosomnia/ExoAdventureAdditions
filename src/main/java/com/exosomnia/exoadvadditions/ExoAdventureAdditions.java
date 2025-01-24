@@ -1,0 +1,39 @@
+package com.exosomnia.exoadvadditions;
+
+import com.exosomnia.exoadvadditions.managers.DepthsMusicManager;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+@Mod(ExoAdventureAdditions.MODID)
+public class ExoAdventureAdditions
+{
+    public static final String MODID = "exoadvadditions";
+    private static DepthsMusicManager depthsMusicManager;
+
+    public ExoAdventureAdditions() {
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+
+        Registry.registerCommon();
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> MinecraftForge.EVENT_BUS.addListener(this::clientTick) );
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient) );
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void setupClient(FMLClientSetupEvent event) {
+        depthsMusicManager = new DepthsMusicManager();
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public void clientTick(TickEvent.ClientTickEvent event) {
+        if(event.phase.equals(TickEvent.Phase.END)) { depthsMusicManager.tick(); }
+    }
+}

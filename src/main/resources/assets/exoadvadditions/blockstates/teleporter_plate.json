@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "enabled=false": {
+      "model": "exoadvadditions:block/teleporter_plate"
+    },
+    "enabled=true": {
+      "model": "exoadvadditions:block/teleporter_plate_down"
+    }
+  }
+}

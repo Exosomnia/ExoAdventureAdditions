@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "K": {
+      "item": "minecraft:book"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "B": {
+      "tag": "forge:storage_blocks/emerald"
+    }
+  },
+  "pattern": [
+    "BEB",
+    "EKE",
+    "BEB"
+  ],
+  "result": {
+    "item": "exoadvadditions:tome_of_amnesia"
+  }
+}

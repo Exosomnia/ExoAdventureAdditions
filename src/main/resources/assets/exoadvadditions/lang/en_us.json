@@ -1,0 +1,91 @@
+{
+    "command.exoadvadditions.lowerdifficulty.error": "Difficulty cannot be lowered anymore!",
+    "command.exoadvadditions.lowerdifficulty.success": "Difficulty has been lowered from %1$s to %2$s.",
+
+    "block.exoadvadditions.teleporter_plate": "Teleporter Plate",
+    "block.exoadvadditions.teleporter_plate.too_high": "The plate does not respond. You are too high of an elevation to teleport to the destination.",
+    "block.exoadvadditions.teleporter_plate.too_low": "The plate does not respond. You are too low of an elevation to teleport to the destination.",
+
+    "tab.exoadvadditions.items": "Exo Adventure Items",
+
+    "effect.exoadvadditions.cheated_death": "Cheated Death",
+    "effect.exoadvadditions.cheated_death.description": "You have recently cheated death, trying to do so again so soon may not end so well for you...",
+
+    "item.exoadvadditions.eterna_crystalis": "Eterna Crystalis",
+    "item.exoadvadditions.netherite_ingot_stack": "Stack of Netherite",
+    "item.exoadvadditions.crushed_ancient_debris": "Crushed Ancient Debris",
+
+    "item.exoadvadditions.fiery_ingot": "Fiery Ingot",
+    "item.exoadvadditions.fiery_ingot.info": "A very hot ingot. Watch out, it burns!",
+
+    "item.exoadvadditions.magical_runes": "Magical Runes",
+    "item.exoadvadditions.magical_runes.info": "Unstable runes. Be careful of unwanted effects.",
+
+    "item.exoadvadditions.unlocated_map": "Unlocated Map",
+
+    "item.exoadvadditions.unlocated_map.help.1": "Use this map to search for an undiscovered",
+    "item.exoadvadditions.unlocated_map.help.2": "structure. Hold 0{Shift} when using to ignore",
+    "item.exoadvadditions.unlocated_map.help.3": "the undiscovered requirement.",
+
+    "item.exoadvadditions.unlocated_map.prefix": "Unlocated Map of ",
+    "item.exoadvadditions.map.prefix": "Map to ",
+
+    "item.exoadvadditions.unlocated_map.not_found": "The structure is too far to be found, or not in this dimension.",
+
+
+    "item.exoadvadditions.tome_of_sunrise": "Tome of Sunrise",
+    "item.exoadvadditions.enhanced_tome_of_sunrise": "Enhanced Tome of Sunrise",
+    "item.exoadvadditions.ascended_tome_of_sunrise": "Ascended Tome of Sunrise",
+
+    "item.exoadvadditions.tome_of_sunrise.info": "Reduces night's duration by 0{%s%%}.",
+    "item.exoadvadditions.tome_of_sunrise.info.extra": "0{Ascended Bonus}1{:} Not consumed upon use.",
+
+    "item.exoadvadditions.tome_of_sunrise.not_night": "You must use this item at night.",
+    "item.exoadvadditions.tome_of_sunrise.not_valid_dimension": "The tome refuses to activate in this dimension.",
+    "item.exoadvadditions.tome_of_sunrise.already_active": "This tome's effect is already active.",
+    "item.exoadvadditions.tome_of_sunrise.activated": "You feel the passage of time quicken...",
+    "item.exoadvadditions.tome_of_sunrise.finished": "As the sun peeks over the horizon, time returns to normal...",
+
+
+    "item.exoadvadditions.tome_of_wakefulness": "Tome of Wakefulness",
+    "item.exoadvadditions.enhanced_tome_of_wakefulness": "Enhanced Tome of Wakefulness",
+    "item.exoadvadditions.ascended_tome_of_wakefulness": "Ascended Tome of Wakefulness",
+
+    "item.exoadvadditions.tome_of_wakefulness.info.1": "Grants you 0{Wakefulness} for 1{%d} minute(s).",
+    "item.exoadvadditions.tome_of_wakefulness.info.2": "0{Wakefulness} prevents phantoms from spawning",
+    "item.exoadvadditions.tome_of_wakefulness.info.3": "for you, and very slightly increases speed.",
+    "item.exoadvadditions.tome_of_wakefulness.info.4": "Nearby players without 0{Wakefulness} can still",
+    "item.exoadvadditions.tome_of_wakefulness.info.5": "cause phantoms to spawn.",
+    "item.exoadvadditions.tome_of_wakefulness.info.extra": "0{Ascended Bonus}1{:} Not consumed upon use.",
+
+    "item.exoadvadditions.tome_of_wakefulness.activated": "You feel refreshed and alert...",
+
+    "effect.exoadvadditions.wakefulness": "Wakefulness",
+    "effect.exoadvadditions.wakefulness.description": "Prevents phantoms from spawning for you.",
+
+
+    "item.exoadvadditions.tome_of_amnesia": "Tome of Amnesia",
+    "item.exoadvadditions.ascended_tome_of_amnesia": "Ascended Tome of Amnesia",
+
+    "item.exoadvadditions.tome_of_amnesia.info.1": "Resets your allocated points in all of your",
+    "item.exoadvadditions.tome_of_amnesia.info.2": "skill trees. Requires you to have at least",
+    "item.exoadvadditions.tome_of_amnesia.info.3": "0{10 XP levels}, and consumes 0{150 XP} on use.",
+    "item.exoadvadditions.tome_of_amnesia.info.extra.1": "0{Ascended Bonus}1{:} XP requirements and costs",
+    "item.exoadvadditions.tome_of_amnesia.info.extra.2": "negated, and the tome is not consumed on use.",
+
+    "item.exoadvadditions.tome_of_amnesia.activated": "You feel as if you've lost something...",
+    "item.exoadvadditions.tome_of_amnesia.invalid_xp": "You don't have enough XP to use this tome.",
+
+    "item.exoadvadditions.macguffin_1": "MacGuffin #1",
+    "item.exoadvadditions.macguffin_2": "MacGuffin #2",
+    "item.exoadvadditions.macguffin_3": "MacGuffin #3",
+    "item.exoadvadditions.macguffin_4": "MacGuffin #4",
+    "item.exoadvadditions.macguffin_5": "MacGuffin #5",
+    "item.exoadvadditions.macguffin_6": "MacGuffin #6",
+    "item.exoadvadditions.macguffin_7": "MacGuffin #7",
+    "item.exoadvadditions.macguffin_8": "MacGuffin #8",
+    "item.exoadvadditions.macguffin_9": "MacGuffin #9",
+    "item.exoadvadditions.macguffin_10": "MacGuffin #10",
+    "item.exoadvadditions.macguffin_11": "MacGuffin #11",
+    "item.exoadvadditions.macguffin_12": "MacGuffin #12"
+}

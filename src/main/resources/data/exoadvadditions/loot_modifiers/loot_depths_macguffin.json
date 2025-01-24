@@ -1,0 +1,11 @@
+{
+  "type": "exoadvadditions:loot_depths_macguffin",
+  "conditions": [
+    {
+      "condition": "minecraft:random_chance",
+      "chance": 0.1
+    }
+  ],
+  "blockTag": "forge:ores",
+  "dimension": "exoadvadditions:the_depths"
+}

@@ -1,0 +1,32 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:book"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "E": {
+      "item": "minecraft:ender_eye"
+    },
+    "P": {
+      "item": "minecraft:popped_chorus_fruit"
+    },
+    "G": {
+      "item": "minecraft:dragon_breath"
+    },
+    "D": {
+      "item": "minecraft:diamond"
+    }
+  },
+  "pattern": [
+    "PDP",
+    "CEC",
+    "GBG"
+  ],
+  "result": {
+    "item": "exoadvadditions:enhanced_tome_of_wakefulness"
+  }
+}

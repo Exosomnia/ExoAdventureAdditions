@@ -1,0 +1,22 @@
+{
+  "music.the_depths": {
+    "sounds": [
+      {
+        "name": "exoadvadditions:music/concern_makoto_hiramatsu",
+        "stream": true
+      },
+      {
+        "name": "exoadvadditions:music/echo_makoto_hiramatsu",
+        "stream": true
+      },
+      {
+        "name": "exoadvadditions:music/lost_makoto_hiramatsu",
+        "stream": true
+      },
+      {
+        "name": "exoadvadditions:music/transfer_makoto_hiramatsu",
+        "stream": true
+      }
+    ]
+  }
+}

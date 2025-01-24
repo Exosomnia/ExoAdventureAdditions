@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.exosomnia.exoadvadditions.mixins",
+  "refmap": "mixins.exoadvadditions.refmap.json",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "VillagerTrades$EnchantBookForEmeraldsMixin",
+    "PotionItemMixin",
+    "CombatRulesMixin",
+    "AnvilMenuMixin",
+    "LivingEntityMixin"
+  ],
+  "client": [
+    "AnvilScreenMixin"
+  ],
+  "server": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

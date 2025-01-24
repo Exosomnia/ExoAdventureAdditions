@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "R": {
+      "item": "exoadvadditions:magical_runes"
+    },
+    "S": {
+      "item": "minecraft:smooth_stone"
+    }
+  },
+  "pattern": [
+    " R ",
+    "SSS"
+  ],
+  "result": {
+    "item": "exoadvadditions:teleporter_plate"
+  }
+}
