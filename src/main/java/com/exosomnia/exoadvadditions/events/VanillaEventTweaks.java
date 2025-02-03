@@ -4,33 +4,44 @@ import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.living.LivingUseTotemEvent;
+import net.minecraftforge.event.entity.player.TradeWithVillagerEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Mod.EventBusSubscriber(modid = ExoAdventureAdditions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class VanillaEventTweaks {
 
-    private static final VillagerTrades.ItemListing ENCHANTED_BOOKS_TRADE = VillagerTrades.TRADES.get(VillagerProfession.LIBRARIAN).get(1)[1];
+    private static final Map<Integer, VillagerTrades.ItemListing> ENCHANTED_BOOKS_TRADE = new HashMap<>();
+    static {
+        ENCHANTED_BOOKS_TRADE.put(1, VillagerTrades.TRADES.get(VillagerProfession.LIBRARIAN).get(1)[1]);
+        ENCHANTED_BOOKS_TRADE.put(5, VillagerTrades.TRADES.get(VillagerProfession.LIBRARIAN).get(2)[1]);
+        ENCHANTED_BOOKS_TRADE.put(10, VillagerTrades.TRADES.get(VillagerProfession.LIBRARIAN).get(3)[1]);
+        ENCHANTED_BOOKS_TRADE.put(15, VillagerTrades.TRADES.get(VillagerProfession.LIBRARIAN).get(4)[1]);
+    }
 
     /*
         Anvil repair tweaks, repairing at an anvil with the repair material now only
@@ -51,11 +62,10 @@ public class VanillaEventTweaks {
         }
     }
 
-
     /*
-        Villager trading balancing, makes enchanted books guaranteed at ranks 3, 4, and 5
-        but removes them from rank 1. Also changes it, so you can only trade for a book once
-        before it goes out of stock.
+        Villager trading balancing, 1 enchant book guaranteed at rank 4, chance for 2, adds
+        them to rank 5, and removes them from rank 1. Also, you can only trade for a book twice
+        before it goes out of stock. Once a book goes out of stock, it changes to a new book.
     */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void villagerTradesEvent(VillagerTradesEvent event) {
@@ -69,11 +79,29 @@ public class VanillaEventTweaks {
             trades.get(1).add(newRank1Trade);
             trades.get(2).set(2, newRank2Trade);
 
-            //Make the book trade at rank 3, and 4 guaranteed
-            VillagerTrades.ItemListing rank3Book = trades.get(3).remove(1);
-            trades.get(3).add(0, rank3Book);
-            VillagerTrades.ItemListing rank4Book = trades.get(4).remove(1);
-            trades.get(4).add(0, rank4Book);
+            /*
+                Make the book trade at rank 4 guaranteed by removing clock and compass trade.
+                4 & 5 emeralds for those items is insane. Also gives a chance for 2 enchanted
+                book trade offers at this level.
+             */
+            trades.get(4).remove(2);
+            trades.get(4).remove(2);
+            trades.get(4).add(ENCHANTED_BOOKS_TRADE.get(15));
+        }
+    }
+
+    @SubscribeEvent
+    public static void villagerTradeWithEvent(TradeWithVillagerEvent event) {
+        MerchantOffer offer = event.getMerchantOffer();
+        if (offer.getResult().is(Items.ENCHANTED_BOOK) && offer.isOutOfStock() && event.getAbstractVillager() instanceof Villager villager) {
+            MerchantOffers offers = villager.getOffers();
+            MerchantOffer newOffer = ENCHANTED_BOOKS_TRADE.get(offer.getXp()).getOffer(villager, villager.level().random);
+
+            newOffer.setToOutOfStock();
+            offers.set(offers.indexOf(offer), newOffer);
+
+            Player player = event.getEntity();
+            player.sendMerchantOffers(player.containerMenu.containerId, offers, villager.getVillagerData().getLevel(), villager.getVillagerXp(), villager.showProgressBar(), villager.canRestock());
         }
     }
 
@@ -94,7 +122,8 @@ public class VanillaEventTweaks {
         net.minecraft.core.Registry<Block> reg = event.getRegistryAccess().registryOrThrow(ForgeRegistries.Keys.BLOCKS);
         // Loop through ore pairs and resolve tags
         for (Pair<ResourceKey<Block>, ResourceKey<Block>> orePair : Registry.NATURAL_ORE_PAIRS) {
-            List<TagKey<Block>> originalTags = reg.getHolder(orePair.left()).get().tags().toList();
+            List<TagKey<Block>> originalTags = new ArrayList<>();
+            reg.getHolder(orePair.left()).get().tags().forEach(originalTags::add);
             originalTags.add(naturalOresTag);
             reg.getHolder(orePair.right()).get().bindTags(originalTags);
         }

@@ -18,5 +18,21 @@
         "stream": true
       }
     ]
+  },
+  "tome_craft_sound_b": {
+    "sounds": [
+      {
+        "name": "exoadvadditions:special/tome_craft_sound_b",
+        "stream": true
+      }
+    ]
+  },
+  "tome_craft_sound_p": {
+    "sounds": [
+      {
+        "name": "exoadvadditions:special/tome_craft_sound_p",
+        "stream": true
+      }
+    ]
   }
 }

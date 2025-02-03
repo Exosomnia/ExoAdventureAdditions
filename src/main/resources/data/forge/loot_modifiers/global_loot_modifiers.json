@@ -1,6 +1,8 @@
 {
   "replace": false,
   "entries": [
-    "exoadvadditions:loot_depths_macguffin"
+    "exoadvadditions:loot_mod_macguffin",
+    "exoadvadditions:loot_mod_depths",
+    "exoadvadditions:loot_mod_chests"
   ]
 }

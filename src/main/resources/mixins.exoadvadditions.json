@@ -9,7 +9,9 @@
     "PotionItemMixin",
     "CombatRulesMixin",
     "AnvilMenuMixin",
-    "LivingEntityMixin"
+    "LivingEntityMixin",
+    "PlayerMixin",
+    "EndCityPieces$EndCityPieceMixin"
   ],
   "client": [
     "AnvilScreenMixin"

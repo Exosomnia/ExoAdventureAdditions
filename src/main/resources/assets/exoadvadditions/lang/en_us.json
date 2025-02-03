@@ -25,28 +25,58 @@
     "block.exoadvadditions.natural_ancient_debris": "Ancient Debris",
 
     "tab.exoadvadditions.items": "Exo Adventure Items",
+    "tab.exoadvadditions.maps": "Exo Adventure Maps",
 
     "effect.exoadvadditions.cheated_death": "Cheated Death",
     "effect.exoadvadditions.cheated_death.description": "You have recently cheated death, trying to do so again so soon may not end so well for you...",
+    "effect.exoadvadditions.grounded": "Grounded",
+    "effect.exoadvadditions.grounded.description": "Prevents, and stops, the use of elytras.",
 
     "item.exoadvadditions.eterna_crystalis": "Eterna Crystalis",
     "item.exoadvadditions.netherite_ingot_stack": "Stack of Netherite",
     "item.exoadvadditions.crushed_ancient_debris": "Crushed Ancient Debris",
+    "item.exoadvadditions.mysterious_tome_dormant": "Mysterious Tome",
+    "item.exoadvadditions.unfinished_elytra": "Unfinished Elytra",
+    "item.exoadvadditions.mysterious_blueprint_shapes": "Mysterious Blueprint (Shapes)",
+    "item.exoadvadditions.mysterious_blueprint_diagrams": "Mysterious Blueprint (Diagrams)",
+
+    "item.exoadvadditions.elder_guardian_eye": "Elder Guardian Eye",
+    "item.exoadvadditions.infernal_manuscript": "Infernal Manuscript",
+    "item.exoadvadditions.ender_manuscript": "Ender Manuscript",
+    "item.exoadvadditions.ancient_manuscript": "Ancient Manuscript",
+    "item.exoadvadditions.gilded_fish": "Gilded Fish",
+
+    "item.exoadvadditions.curious_card": "Curious Card",
+    "item.exoadvadditions.curious_card.info": "This could solve a lot of problems!",
+    "item.exoadvadditions.curious_card.number": "Card number: 0{%1$d-%2$d-%3$d-%4$d}",
+
+    "item.exoadvadditions.suspicious_matter": "Suspicious Matter",
+    "item.exoadvadditions.suspicious_matter.info": "Seems suspicious... and dangerous.",
+
+    "item.exoadvadditions.mysterious_package": "Mysterious Package",
+    "item.exoadvadditions.mysterious_package.info": "What could be inside...?",
+
+    "item.exoadvadditions.circuit_board": "Circuit Board",
+    "item.exoadvadditions.charged_circuit_board": "Charged Circuit Board",
+    "exoadvadditions.jei.hint.charged_circuit_board": "Created while having regular Circuit Boards in your inventory when struck by lightning.",
+
+    "item.exoadvadditions.mysterious_tome_active": "Activated Mysterious Tome",
+    "item.exoadvadditions.mysterious_tome_active.not_valid": "You attempt to use the tome, but it appears whatever you're using it on is invalid.",
 
     "item.exoadvadditions.fiery_ingot": "Fiery Ingot",
     "item.exoadvadditions.fiery_ingot.info": "A very hot ingot. Watch out, it burns!",
 
     "item.exoadvadditions.magical_runes": "Magical Runes",
+    "item.exoadvadditions.magical_dark_runes": "Magical Dark Runes",
     "item.exoadvadditions.magical_runes.info": "Unstable runes. Be careful of unwanted effects.",
 
     "item.exoadvadditions.unlocated_map": "Unlocated Map",
+    "item.exoadvadditions.unlocated_map.prefix": "Unlocated Map of ",
+    "item.exoadvadditions.map.prefix": "Map to ",
 
     "item.exoadvadditions.unlocated_map.help.1": "Use this map to search for an undiscovered",
     "item.exoadvadditions.unlocated_map.help.2": "structure. Hold 0{Shift} when using to ignore",
     "item.exoadvadditions.unlocated_map.help.3": "the undiscovered requirement.",
-
-    "item.exoadvadditions.unlocated_map.prefix": "Unlocated Map of ",
-    "item.exoadvadditions.map.prefix": "Map to ",
 
     "item.exoadvadditions.unlocated_map.not_found": "The structure is too far to be found, or not in this dimension.",
 
@@ -105,5 +135,9 @@
     "item.exoadvadditions.macguffin_9": "MacGuffin #9",
     "item.exoadvadditions.macguffin_10": "MacGuffin #10",
     "item.exoadvadditions.macguffin_11": "MacGuffin #11",
-    "item.exoadvadditions.macguffin_12": "MacGuffin #12"
+    "item.exoadvadditions.macguffin_12": "MacGuffin #12",
+    "item.exoadvadditions.macguffin_13": "MacGuffin #13",
+    "item.exoadvadditions.macguffin_14": "MacGuffin #14",
+    "item.exoadvadditions.macguffin_15": "MacGuffin #15",
+    "item.exoadvadditions.macguffin_16": "MacGuffin #16"
 }

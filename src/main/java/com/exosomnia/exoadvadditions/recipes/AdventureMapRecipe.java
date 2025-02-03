@@ -29,8 +29,7 @@ public class AdventureMapRecipe extends ShapedRecipe {
         this.structure = structure;
         this.name = name;
 
-        ItemStack result = new ItemStack(Registry.ITEM_UNLOCATED_MAP.get())
-                .setHoverName(Component.translatable("item.exoadvadditions.unlocated_map.prefix").append(Component.translatable(name)));
+        ItemStack result = new ItemStack(Registry.ITEM_UNLOCATED_MAP.get());
         CompoundTag tag = result.getOrCreateTag();
         tag.putString("structure", structure);
         tag.putString("name", name);

@@ -44,6 +44,21 @@
         }
       ],
       "rolls": 1.0
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "exoadvadditions:macguffin_14"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.001
+        }
+      ]
     }
   ],
   "random_sequence": "minecraft:blocks/deepslate_iron_ore"

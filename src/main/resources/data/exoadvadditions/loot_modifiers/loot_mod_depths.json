@@ -1,0 +1,6 @@
+{
+  "type": "exoadvadditions:loot_mod_depths",
+  "conditions": [
+  ],
+  "blockTag": "exoadvadditions:natural_ores"
+}

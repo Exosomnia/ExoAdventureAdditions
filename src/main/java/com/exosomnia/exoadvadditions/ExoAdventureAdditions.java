@@ -1,6 +1,12 @@
 package com.exosomnia.exoadvadditions;
 
+import com.exosomnia.exoadvadditions.events.ModdedEventTweaks;
 import com.exosomnia.exoadvadditions.managers.DepthsMusicManager;
+import com.google.common.collect.ImmutableSet;
+import net.minecraft.ChatFormatting;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -23,6 +29,7 @@ public class ExoAdventureAdditions
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(Registry::buildCreative);
 
         Registry.registerCommon();
 
@@ -32,6 +39,10 @@ public class ExoAdventureAdditions
 
     public void setupCommon(FMLCommonSetupEvent event) {
         Registry.setupOres();
+        Registry.MYSTERIOUS_RARITY = Rarity.create("mysterious", (style) -> style.withObfuscated(true).withColor(ChatFormatting.RED));
+        Registry.registerTomeRecipes();
+
+        ModdedEventTweaks.initalizeTweaks();
     }
 
     @OnlyIn(Dist.CLIENT)

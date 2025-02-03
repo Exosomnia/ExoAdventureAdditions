@@ -7,12 +7,10 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import org.checkerframework.common.returnsreceiver.qual.This;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(LivingEntity.class)
 public class LivingEntityMixin {
@@ -34,5 +32,11 @@ public class LivingEntityMixin {
         };
         entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 9));
         entity.addEffect(new MobEffectInstance(Registry.EFFECT_CHEATED_DEATH.get(), duration, 0, true, false, true));
+    }
+
+    @ModifyArg(method = "updateFallFlying()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;setSharedFlag(IZ)V"))
+    private boolean groundedCheckElytra(boolean flag) {
+        if (flag) { return !((LivingEntity) (Object) this).hasEffect(Registry.EFFECT_GROUNDED.get()); }
+        return false;
     }
 }

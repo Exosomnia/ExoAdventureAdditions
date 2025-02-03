@@ -51,6 +51,7 @@ public class UnlocatedMapItem extends Item {
 
         String mapStruct = mapTag.getString("structure");
         String mapName = mapTag.getString("name");
+        byte scale = mapTag.contains("scale") ? mapTag.getByte("scale") : 2;
         if(mapStruct.isEmpty()) { return InteractionResultHolder.fail(itemStack); }
         ServerLevel mapLevel = (ServerLevel)level;
 
@@ -72,7 +73,7 @@ public class UnlocatedMapItem extends Item {
             if (!player.getAbilities().instabuild) { itemStack.shrink(1); }
             player.awardStat(Stats.ITEM_USED.get(this));
 
-            ItemStack newMap = MapItem.create(mapLevel, blockpos.getX(), blockpos.getZ(), (byte) 2, true, true);
+            ItemStack newMap = MapItem.create(mapLevel, blockpos.getX(), blockpos.getZ(), scale, true, true);
             MapItem.renderBiomePreviewMap(mapLevel, newMap);
             MapItemSavedData.addTargetDecoration(newMap, blockpos, "+", MapDecoration.Type.TARGET_X);
             newMap.setHoverName(Component.translatable("item.exoadvadditions.map.prefix").append(Component.translatable(mapName)));
@@ -94,5 +95,12 @@ public class UnlocatedMapItem extends Item {
         components.add(ComponentUtils.formatLine(I18n.get("item.exoadvadditions.unlocated_map.help.2"),
                 Styles.DEFAULT_DESC.getStyle(), Styles.HIGHLIGHT_DESC.getStyle()));
         components.add(Component.translatable("item.exoadvadditions.unlocated_map.help.3").withStyle(Styles.DEFAULT_DESC.getStyle()));
+    }
+
+    @Override
+    public Component getName(ItemStack itemStack) {
+        CompoundTag mapTag = itemStack.getTag();
+        if (mapTag == null || !mapTag.contains("name")) { return Component.translatable(this.getDescriptionId(itemStack)); }
+        return Component.translatable("item.exoadvadditions.unlocated_map.prefix").append(Component.translatable(mapTag.getString("name")));
     }
 }
