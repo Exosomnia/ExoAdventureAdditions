@@ -5,61 +5,55 @@ import com.google.common.collect.ImmutableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.BiConsumer;
 
-public class ShapedTomeRecipe {
+public class ShapedTomeRecipe extends TomeRecipe {
 
-    private BlockState[][] topLayer;
-    private BlockState[][] midLayer;
-    private BlockState[][] lowerLayer;
+    private BlockMapping[][] topLayer;
+    private BlockMapping[][] midLayer;
+    private BlockMapping[][] lowerLayer;
 
-    private ImmutableList<ItemLike> itemMappings;
+    private ImmutableList<ItemMapping> itemMappings;
     private boolean hasItems = false;
-    private ItemStack result;
+    public record CraftResult(ItemStack itemStack, Integer score){}
+    private CraftResult result;
 
     private BiConsumer<ServerPlayer, BlockPos> execute;
-    private boolean hasExecution = false;
 
-    public ShapedTomeRecipe(@NotNull ImmutableMap<Character, BlockState> blockMappings, @Nullable ImmutableList<ItemLike> itemMappings, String[] topLayer, String[] midLayer, String[] lowerLayer, @Nullable ItemStack result, BiConsumer<ServerPlayer, @Nullable BlockPos> execute) {
+    public ShapedTomeRecipe(@NotNull ImmutableMap<Character, BlockMapping> blockMappings, @Nullable ImmutableList<ItemMapping> itemMappings, String[] topLayer, String[] midLayer, String[] lowerLayer, @Nullable CraftResult result, BiConsumer<ServerPlayer, @Nullable BlockPos> execute) {
         int i, ii; //Used for loops
 
-        this.lowerLayer = new BlockState[3][3]; //LOWER LAYER IS MINIMUM, THERE CANNOT BE ANY FEWER LAYERS
+        this.lowerLayer = new BlockMapping[3][3]; //LOWER LAYER IS MINIMUM, THERE CANNOT BE ANY FEWER LAYERS
         for (i = 0; i < 3; i++) {
             String row = lowerLayer[i]; //"XXX", "XXX", "XXX" (As an example)
             for (ii = 0; ii < 3; ii++) {
-                Character chara = row.charAt(ii);
-                BlockState state = blockMappings.get(chara);
-                this.lowerLayer[i][ii] = state == null ? Blocks.AIR.defaultBlockState() : state;
+                BlockMapping mapping = blockMappings.get(row.charAt(ii));
+                this.lowerLayer[i][ii] = mapping == null ? BlockMapping.of(Blocks.AIR) : mapping;
             }
         }
 
-        if(midLayer != null) {
-            this.midLayer = new BlockState[3][3];
-            for (i = 0; i < 3; i++) {
-                String row = midLayer[i]; //"XXX", "X X", "XXX" (As an example)
-                for (ii = 0; ii < 3; ii++) {
-                    Character chara = row.charAt(ii);
-                    BlockState state = blockMappings.get(chara);
-                    this.midLayer[i][ii] = state == null ? Blocks.AIR.defaultBlockState() : state;
-                }
+        this.midLayer = new BlockMapping[3][3];
+        for (i = 0; i < 3; i++) {
+            String row = midLayer[i]; //"XXX", "X X", "XXX" (As an example)
+            for (ii = 0; ii < 3; ii++) {
+                BlockMapping mapping = blockMappings.get(row.charAt(ii));
+                this.midLayer[i][ii] = mapping == null ? BlockMapping.of(Blocks.AIR) : mapping;
             }
         }
 
-        if(topLayer != null) {
-            this.topLayer = new BlockState[3][3];
-            for (i = 0; i < 3; i++) {
-                String row = topLayer[i]; //"XXX", "XXX", "XXX" (As an example)
-                for (ii = 0; ii < 3; ii++) {
-                    Character chara = row.charAt(ii);
-                    BlockState state = blockMappings.get(chara);
-                    this.topLayer[i][ii] = state == null ? Blocks.AIR.defaultBlockState() : state;
-                }
+        this.topLayer = new BlockMapping[3][3];
+        for (i = 0; i < 3; i++) {
+            String row = topLayer[i]; //"XXX", "XXX", "XXX" (As an example)
+            for (ii = 0; ii < 3; ii++) {
+                BlockMapping mapping = blockMappings.get(row.charAt(ii));
+                this.topLayer[i][ii] = mapping == null ? BlockMapping.of(Blocks.AIR) : mapping;
             }
         }
 
@@ -69,36 +63,67 @@ public class ShapedTomeRecipe {
         }
         if (execute != null) {
             this.execute = execute;
-            this.hasExecution = true;
         }
 
         this.result = result;
     }
 
-    public boolean isRecipe(@Nullable ImmutableList<ItemLike> itemMappings, BlockState[][] topLayer, BlockState[][] midLayer, BlockState[][] lowerLayer) {
-        if ((hasItems && !this.itemMappings.equals(itemMappings)) || (!hasItems && itemMappings != null)) { return false; }
+    public boolean isRecipe(@Nullable ArrayList<ItemStack> itemMappings, BlockState[][] topLayer, BlockState[][] midLayer, BlockState[][] lowerLayer) {
+        if ((hasItems && !itemsMatch(itemMappings)) || (!hasItems && itemMappings != null)) { return false; }
 
         //Start verification
         int i, ii;
         for (i = 0; i < 3; i++) {
             for (ii = 0; ii < 3; ii++) {
-                if (!this.lowerLayer[i][ii].equals(lowerLayer[i][ii])) { return false; }
-                if (!this.midLayer[i][ii].equals(midLayer[i][ii])) { return false; }
-                if (!this.topLayer[i][ii].equals(topLayer[i][ii])) { return false; }
+                if (!this.lowerLayer[i][ii].matches(lowerLayer[i][ii])) { return false; }
+                if (!this.midLayer[i][ii].matches(midLayer[i][ii])) { return false; }
+                if (!this.topLayer[i][ii].matches(topLayer[i][ii])) { return false; }
             }
         }
 
         return true;
     }
+    private boolean itemsMatch(ArrayList<ItemStack> itemMappings) {
+        if (itemMappings == null) return false;
+
+        int mappingSize = this.itemMappings.size();
+        if (mappingSize != itemMappings.size()) { return false; }
+        for (var i = 0; i < mappingSize; i++) {
+            ItemMapping check = this.itemMappings.get(i);
+            boolean isValid = false;
+            for (var ii = 0; ii < mappingSize; ii++) {
+                if (check.matches(itemMappings.get(ii))) {
+                    itemMappings.remove(ii);
+                    isValid = true;
+                    break;
+                }
+            }
+            if (!isValid) { return false; }
+        }
+        return true;
+    }
 
     public ItemStack getResult() {
-        return result == null ? null : result.copy();
+        return result == null ? null : result.itemStack.copy();
+    }
+
+    public Integer getScore() {
+        return result == null ? null : result.score;
     }
 
     public BiConsumer<ServerPlayer, BlockPos> getExecute() {
         return execute;
     }
 
+    @Override
+    public List<BlockMapping[][]> getRecipeShape() {
+        return List.of(lowerLayer, midLayer, topLayer);
+    }
+
+    @Override
+    public ImmutableList<ItemMapping> getRecipeItems() {
+        return itemMappings;
+    }
 
     public static class Builder {
 
@@ -106,10 +131,10 @@ public class ShapedTomeRecipe {
         private String[] midLayer;
         private String[] lowerLayer;
 
-        private ImmutableMap<Character, BlockState> blockMappings;
-        private ImmutableList<ItemLike> itemMappings;
+        private ImmutableMap<Character, BlockMapping> blockMappings;
+        private ImmutableList<ItemMapping> itemMappings;
 
-        private ItemStack result;
+        private CraftResult result;
         private BiConsumer<ServerPlayer, BlockPos> execute;
 
         public Builder topLayer(String[] topLayer) {
@@ -127,18 +152,22 @@ public class ShapedTomeRecipe {
             return this;
         }
 
-        public Builder blockMappings(ImmutableMap<Character, BlockState> blockMappings) {
+        public Builder blockMappings(ImmutableMap<Character, BlockMapping> blockMappings) {
             this.blockMappings = blockMappings;
             return this;
         }
 
-        public Builder itemMappings(ImmutableList<ItemLike> itemMappings) {
+        public Builder itemMappings(ImmutableList<ItemMapping> itemMappings) {
             this.itemMappings = itemMappings;
             return this;
         }
 
         public Builder result(ItemStack result) {
-            this.result = result;
+            return result(result, 0);
+        }
+
+        public Builder result(ItemStack result, Integer score) {
+            this.result = new CraftResult(result, score);
             return this;
         }
 

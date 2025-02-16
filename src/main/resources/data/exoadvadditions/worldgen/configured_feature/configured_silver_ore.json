@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "thermal:silver_ore"
+          "Name": "exoadvadditions:natural_silver_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "thermal:deepslate_silver_ore"
+          "Name": "exoadvadditions:natural_deepslate_silver_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",

@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "exoadvadditions:item/mysterious_tome_active"
+    "layer0": "exoadvadditions:item/mysterious_tome"
   }
 }

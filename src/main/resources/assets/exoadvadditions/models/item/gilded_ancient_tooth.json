@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "exoadvadditions:item/magical_dark_runes"
+    "layer0": "exoadvadditions:item/gilded_ancient_tooth"
   }
 }

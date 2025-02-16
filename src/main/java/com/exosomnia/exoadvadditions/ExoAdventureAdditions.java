@@ -2,11 +2,8 @@ package com.exosomnia.exoadvadditions;
 
 import com.exosomnia.exoadvadditions.events.ModdedEventTweaks;
 import com.exosomnia.exoadvadditions.managers.DepthsMusicManager;
-import com.google.common.collect.ImmutableSet;
 import net.minecraft.ChatFormatting;
 import net.minecraft.world.item.Rarity;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;

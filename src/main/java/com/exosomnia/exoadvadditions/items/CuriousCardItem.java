@@ -1,6 +1,8 @@
 package com.exosomnia.exoadvadditions.items;
 
+import com.exosomnia.exoadvadditions.mixins.VillagerAccessor;
 import com.exosomnia.exolib.utils.ComponentUtils;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -9,10 +11,14 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.npc.Villager;
+import net.minecraft.world.entity.npc.VillagerData;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
@@ -59,9 +65,21 @@ public class CuriousCardItem extends Item {
 
     @Override
     public InteractionResult interactLivingEntity(ItemStack itemStack, Player player, LivingEntity livingEntity, InteractionHand hand) {
-        if (!(livingEntity instanceof Villager villager)) { return InteractionResult.PASS; }
-        villager.setVillagerXp(Integer.MAX_VALUE);
+        if (player.level().isClientSide || !(livingEntity instanceof Villager villager)) { return InteractionResult.PASS; }
+
+        VillagerData data = villager.getVillagerData();
+        if (data.getProfession().equals(VillagerProfession.NONE) && data.getLevel() < 4) { return InteractionResult.PASS; }
+
+        VillagerAccessor access = ((VillagerAccessor)villager);
+        int currentLvl = Math.max(data.getLevel(), 1);
+        for (var i = currentLvl; i < 5; i++) {
+            access.callIncreaseMerchantCareer();
+        }
+        access.setIncreaseProfessionLevelOnUpdate(false);
+        villager.heal(villager.getMaxHealth());
+        if (villager.isTrading()) { villager.getTradingPlayer().sendMerchantOffers(villager.getTradingPlayer().containerMenu.containerId, villager.getOffers(), 5, villager.getVillagerXp(), villager.showProgressBar(), villager.canRestock()); }
+
         itemStack.shrink(1);
-        return InteractionResult.PASS;
+        return InteractionResult.SUCCESS;
     }
 }

@@ -1,21 +1,31 @@
 package com.exosomnia.exoadvadditions.recipes.tome;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class TomeRecipeManager {
 
-    ArrayList<ShapedTomeRecipe> recipes = new ArrayList<>();
+    public ArrayList<ShapedTomeRecipe> recipes = new ArrayList<>();
+    public ArrayList<AdvancedShapedTomeRecipe> advancedRecipes = new ArrayList<>();
 
-    public ShapedTomeRecipe getRecipe(@Nullable ImmutableList<ItemLike> itemMappings, @Nullable BlockState[][] topLayer, @Nullable BlockState[][] midLayer, BlockState[][] lowerLayer) {
-        for (ShapedTomeRecipe recipe : recipes) {
-            if (recipe.isRecipe(itemMappings, topLayer, midLayer, lowerLayer)) {
-                return recipe;
+    public TomeRecipe getRecipe(@Nullable ArrayList<ItemStack> itemMappings, List<BlockState[][]> layers) {
+        if (layers.size() == 3) {
+            for (ShapedTomeRecipe recipe : recipes) {
+                if (recipe.isRecipe(itemMappings, layers.get(2), layers.get(1), layers.get(0))) {
+                    return recipe;
+                }
+            }
+        }
+        else {
+            for (AdvancedShapedTomeRecipe recipe : advancedRecipes) {
+                if (recipe.isRecipe(itemMappings, layers)) {
+                    return recipe;
+                }
             }
         }
         return null;
@@ -23,5 +33,9 @@ public class TomeRecipeManager {
 
     public void registerRecipe(ShapedTomeRecipe recipe) {
         recipes.add(recipe);
+    }
+
+    public void registerAdvancedRecipe(AdvancedShapedTomeRecipe recipe) {
+        advancedRecipes.add(recipe);
     }
 }

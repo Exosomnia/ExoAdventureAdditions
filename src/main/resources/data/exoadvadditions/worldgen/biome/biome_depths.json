@@ -58,7 +58,9 @@
       "exoadvadditions:placed_copper_ore",
       "exoadvadditions:placed_tin_ore",
       "exoadvadditions:placed_silver_ore",
-      "exoadvadditions:placed_nickel_ore"
+      "exoadvadditions:placed_nickel_ore",
+      "exoadvadditions:placed_niter_ore",
+      "exoadvadditions:placed_zinc_ore"
     ],
     [],
     [],

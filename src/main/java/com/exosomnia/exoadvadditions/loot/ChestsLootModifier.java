@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ChestsLootModifier extends LootModifier {
 
-    //private static final Item ITEM_COLD_EYE = ForgeRegistries.ITEMS.getValue(new ResourceLocation("endrem", "cold_eye"));
+    //private static final Item ITEM_CORRUPTED_EYE = ForgeRegistries.ITEMS.getValue(new ResourceLocation("endrem", "corrupted_eye"));
 
     public static final Supplier<Codec<ChestsLootModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(codec -> codecStart(codec).apply(codec, ChestsLootModifier::new)));
 
@@ -48,7 +48,6 @@ public class ChestsLootModifier extends LootModifier {
         if (!context.hasParam(LootContextParams.THIS_ENTITY)) { return generatedLoot; }
         Entity entity = context.getParam(LootContextParams.THIS_ENTITY);
 
-        //level.structureManager().getStructureAt(defender.blockPosition(), MAGICAL_EYE_STRUCT).getStructure() != null (OLD CONDITION FOR BEING IN STRUCTURE)
         ServerLevel level = (ServerLevel)entity.level();
         Structure endCity = level.registryAccess().registryOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.END_CITY);
         if (!(entity instanceof ServerPlayer player) ||

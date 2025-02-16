@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:jigsaw",
+  "biomes": [
+    "exoadvadditions:biome_depths"
+  ],
+  "step": "surface_structures",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {},
+  "start_pool": "exoadvadditions:the_depths_shrine_pool",
+  "size": 1,
+  "start_height": {
+    "type": "minecraft:uniform",
+    "min_inclusive": {
+      "above_bottom": 0
+    },
+    "max_inclusive": {
+      "absolute": -11
+    }
+  },
+  "max_distance_from_center": 1,
+  "use_expansion_hack": false
+}

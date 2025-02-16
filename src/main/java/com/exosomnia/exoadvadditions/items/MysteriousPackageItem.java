@@ -3,6 +3,8 @@ package com.exosomnia.exoadvadditions.items;
 import com.exosomnia.exolib.utils.ComponentUtils;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -33,22 +35,32 @@ public class MysteriousPackageItem extends Item {
         CompoundTag packageTag = stack.getTag();
         if (packageTag == null) { return InteractionResultHolder.fail(stack); }
 
-        String contains = packageTag.getString("contains");
-        if (contains.isBlank()) { return InteractionResultHolder.fail(stack); }
+        Tag contentsTag = packageTag.get("contents");
+        if (!(contentsTag instanceof ListTag listContentsTag) || listContentsTag.isEmpty()) { return InteractionResultHolder.fail(stack); }
 
         ServerLevel serverLevel = (ServerLevel)level;
-        Item newItem = serverLevel.registryAccess().registryOrThrow(Registries.ITEM).get(ResourceLocation.of(contains, ':'));
-        if (newItem == null) { return InteractionResultHolder.fail(stack); }
+        int amount = listContentsTag.size();
+        ItemStack[] allContents = new ItemStack[amount];
+        for(var i = 0; i < amount; i++){
+            Tag itemTag = listContentsTag.get(i);
+            if (!(itemTag instanceof CompoundTag compoundItemTag)) { return InteractionResultHolder.fail(stack); }
 
-        int count = Math.max(packageTag.getInt("amount"), 1);
-        ItemStack newStack = new ItemStack(newItem, count);
-        stack.shrink(1);
+            Item newItem = serverLevel.registryAccess().registryOrThrow(Registries.ITEM).get(ResourceLocation.of(compoundItemTag.getString("id"), ':'));
+            if (newItem == null) { return InteractionResultHolder.fail(stack); }
 
-        if (stack.isEmpty()) { return InteractionResultHolder.consume(newStack); }
-        if (!player.getInventory().add(newStack.copy())) {
-            player.drop(newStack, false);
+            int count = Math.max(compoundItemTag.getInt("count"), 1);
+            allContents[i] = new ItemStack(newItem, count);
         }
-        return InteractionResultHolder.consume(stack);
+
+        stack.shrink(1);
+        for (var i = 0; i < amount; i++) {
+            ItemStack newStack = allContents[i];
+            if (!player.getInventory().add(newStack.copy())) {
+                player.drop(newStack, false);
+            }
+        }
+
+        return InteractionResultHolder.consume(stack.isEmpty() ? player.getItemInHand(hand) : stack);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class AdventureMapRecipe extends ShapedRecipe {
     }
 
     @Override
-    public ItemStack getResultItem(RegistryAccess access) { return this.result; }
+    public ItemStack getResultItem(RegistryAccess access) { return this.result.copy(); }
 
     public static class Serializer implements RecipeSerializer<AdventureMapRecipe> {
         public AdventureMapRecipe fromJson(ResourceLocation resourceLocation, JsonObject jsonObject) {

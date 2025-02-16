@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exoadvadditions:item/ancient_manuscript",
+    "layer1": "exoadvadditions:item/growth_icon"
+  }
+}

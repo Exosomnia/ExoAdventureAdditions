@@ -6,7 +6,7 @@
     "targets": [
       {
         "state": {
-          "Name": "thermal:tin_ore"
+          "Name": "exoadvadditions:natural_tin_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",
@@ -15,7 +15,7 @@
       },
       {
         "state": {
-          "Name": "thermal:deepslate_tin_ore"
+          "Name": "exoadvadditions:natural_deepslate_tin_ore"
         },
         "target": {
           "predicate_type": "minecraft:tag_match",

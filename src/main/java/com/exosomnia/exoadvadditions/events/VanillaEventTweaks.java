@@ -2,12 +2,26 @@ package com.exosomnia.exoadvadditions.events;
 
 import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
+import com.exosomnia.exoadvadditions.items.GrowthScrollItem;
+import com.exosomnia.exoadvadditions.mixins.PlayerAccessor;
+import com.exosomnia.exolib.capabilities.persistentplayerdata.PersistentPlayerDataProvider;
+import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
@@ -16,10 +30,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.entity.EntityMountEvent;
+import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingUseTotemEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.TradeWithVillagerEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -69,9 +90,9 @@ public class VanillaEventTweaks {
     */
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void villagerTradesEvent(VillagerTradesEvent event) {
+        Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
         if (event.getType() == VillagerProfession.LIBRARIAN) {
             //Move the possible book trade from rank 1 to 5, move the lantern trade from rank 2 to rank 1, and add a new rank 2 trade possibility to make up for it
-            Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
             VillagerTrades.ItemListing rank1Book = trades.get(1).remove(1);
             trades.get(5).add(0, rank1Book);
             VillagerTrades.ItemListing newRank1Trade = (entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD), new ItemStack(Items.LANTERN, 3), 12, 1, 0.05F);
@@ -87,6 +108,23 @@ public class VanillaEventTweaks {
             trades.get(4).remove(2);
             trades.get(4).remove(2);
             trades.get(4).add(ENCHANTED_BOOKS_TRADE.get(15));
+        }
+        else if (event.getType() == VillagerProfession.LEATHERWORKER) {
+            VillagerTrades.ItemListing rank1Leather = trades.get(1).set(0, (entity, random) -> new MerchantOffer(new ItemStack(Items.LEATHER, 5), new ItemStack(Items.EMERALD), 16, 2, 0.05F));
+            VillagerTrades.ItemListing rank2Boots = trades.get(2).remove(1);
+
+            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 2), new ItemStack(Items.LEATHER, 3), 6, 5, 0.20F));
+            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.STRING, 24), new ItemStack(Items.EMERALD), 12, 5, 0.05F));
+
+            trades.get(3).remove(1);
+            trades.get(3).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 5), new ItemStack(Items.SADDLE), 12, 10, 0.05F));
+
+            trades.get(4).remove(0);
+            trades.get(4).add(0, (entity, random) -> new MerchantOffer(new ItemStack(Items.SCUTE, 2), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+
+            trades.get(5).remove(1);
+            trades.get(5).add(rank2Boots);
+            trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD), new ItemStack(Items.GLOW_ITEM_FRAME, 2), 12, 30, 0.05F));
         }
     }
 
@@ -127,5 +165,58 @@ public class VanillaEventTweaks {
             originalTags.add(naturalOresTag);
             reg.getHolder(orePair.right()).get().bindTags(originalTags);
         }
+    }
+
+    @SubscribeEvent
+    public static void playerRespawnEvent(PlayerEvent.PlayerRespawnEvent event) {
+        Player player = event.getEntity();
+        player.getCapability(PersistentPlayerDataProvider.PLAYER_DATA).ifPresent(playerData -> {
+            CompoundTag tag = playerData.get();
+            if (tag.contains("exoadventure")) {
+                CompoundTag modTag = tag.getCompound("exoadventure");
+                AttributeInstance expAttribute = player.getAttribute(Registry.ATTRIBUTE_SKILL_EXP_BONUS.get());
+                for (var i = 0; i < modTag.getInt("growthScrolls"); i++) {
+                    GrowthScrollItem.applyAttributes(expAttribute, i);
+                }
+            }
+        });
+    }
+
+    @SubscribeEvent
+    public static void playerMountEvent(EntityMountEvent event) {
+        Entity mounter = event.getEntityMounting();
+        Entity mounted = event.getEntityBeingMounted();
+        if (!(mounter instanceof Player) || !(mounted instanceof LivingEntity entity) || !Registry.FLYING_MOUNT_CLASS.isInstance(event.getEntityBeingMounted())) { return; }
+
+        boolean canFly = entity.hasEffect(Registry.EFFECT_FLIGHT_READY.get());
+        try { Registry.FLYING_ALLOWED_FIELD.set(Registry.FLYING_MOUNT_CLASS.cast(mounted), canFly); }
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SubscribeEvent
+    public static void playerRerollXPSeed(PlayerInteractEvent.RightClickBlock event) {
+        Player player = event.getEntity();
+        ItemStack itemStack = player.getItemInHand(event.getHand());
+        Level level = player.level();
+        BlockPos pos = event.getHitVec().getBlockPos();
+        if (level.isClientSide || !itemStack.is(Items.AMETHYST_SHARD) || !level.getBlockState(pos).is(Blocks.ENCHANTING_TABLE)) { return; }
+
+        event.setCanceled(true);
+        ServerPlayer serverPlayer = (ServerPlayer)player;
+        PlayerAccessor playerAccessor = (PlayerAccessor)player;
+        ServerLevel serverLevel = (ServerLevel)level;
+        Vec3 particlePos = pos.getCenter().add(0, 0.75, 0);
+        if (level.random.nextInt(3) == 0) {
+            serverPlayer.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 0.5F);
+            serverLevel.sendParticles(serverPlayer, ParticleTypes.WITCH, false, particlePos.x, particlePos.y, particlePos.z, 15, 0, 0, 0, 2.0);
+            playerAccessor.setEnchantmentSeed(level.random.nextInt());
+        }
+        else {
+            serverPlayer.playNotifySound(SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1.0F, 1.0F);
+            serverLevel.sendParticles(serverPlayer, ParticleTypes.SMOKE, false, particlePos.x, particlePos.y, particlePos.z, 15, 0, 0, 0, 0.025);
+        }
+        itemStack.shrink(1);
     }
 }

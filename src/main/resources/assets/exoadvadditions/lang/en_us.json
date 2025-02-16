@@ -1,4 +1,11 @@
 {
+    "recipe_category.exoadvadditions.tome_crafting": "Tome Crafting",
+    "recipe_category.exoadvadditions.tome_crafting.help.1": "Build the 3x3x3 structure displayed",
+    "recipe_category.exoadvadditions.tome_crafting.help.2": "and drop the listed items on the left",
+    "recipe_category.exoadvadditions.tome_crafting.help.3": "inside of the structure. Right-click",
+    "recipe_category.exoadvadditions.tome_crafting.help.4": "on the center block of one of the",
+    "recipe_category.exoadvadditions.tome_crafting.help.5": "faces to complete the craft.",
+
     "command.exoadvadditions.lowerdifficulty.error": "Difficulty cannot be lowered anymore!",
     "command.exoadvadditions.lowerdifficulty.success": "Difficulty has been lowered from %1$s to %2$s.",
 
@@ -24,27 +31,59 @@
     "block.exoadvadditions.natural_deepslate_emerald_ore": "Deepslate Emerald Ore",
     "block.exoadvadditions.natural_ancient_debris": "Ancient Debris",
 
+    "block.exoadvadditions.natural_tin_ore": "Tin Ore",
+    "block.exoadvadditions.natural_deepslate_tin_ore": "Deepslate Tin Ore",
+    "block.exoadvadditions.natural_silver_ore": "Silver Ore",
+    "block.exoadvadditions.natural_deepslate_silver_ore": "Deepslate Silver Ore",
+    "block.exoadvadditions.natural_nickel_ore": "Nickel Ore",
+    "block.exoadvadditions.natural_deepslate_nickel_ore": "Deepslate Nickel Ore",
+    "block.exoadvadditions.natural_niter_ore": "Niter Ore",
+    "block.exoadvadditions.natural_deepslate_niter_ore": "Deepslate Niter Ore",
+    "block.exoadvadditions.natural_zinc_ore": "Zinc Ore",
+    "block.exoadvadditions.natural_deepslate_zinc_ore": "Deepslate Zinc Ore",
+
     "tab.exoadvadditions.items": "Exo Adventure Items",
     "tab.exoadvadditions.maps": "Exo Adventure Maps",
 
     "effect.exoadvadditions.cheated_death": "Cheated Death",
     "effect.exoadvadditions.cheated_death.description": "You have recently cheated death, trying to do so again so soon may not end so well for you...",
     "effect.exoadvadditions.grounded": "Grounded",
-    "effect.exoadvadditions.grounded.description": "Prevents, and stops, the use of elytras.",
+    "effect.exoadvadditions.grounded.description": "Prevents, and stops, the use of elytras for players. Also prevents flying mounts from becoming Flight Ready.",
+    "effect.exoadvadditions.flight_ready": "Flight Ready",
+    "effect.exoadvadditions.flight_ready.description": "Allows for flight on flying mounts. This effect is removed if the mount takes damage from another entity.",
 
     "item.exoadvadditions.eterna_crystalis": "Eterna Crystalis",
     "item.exoadvadditions.netherite_ingot_stack": "Stack of Netherite",
     "item.exoadvadditions.crushed_ancient_debris": "Crushed Ancient Debris",
-    "item.exoadvadditions.mysterious_tome_dormant": "Mysterious Tome",
     "item.exoadvadditions.unfinished_elytra": "Unfinished Elytra",
     "item.exoadvadditions.mysterious_blueprint_shapes": "Mysterious Blueprint (Shapes)",
     "item.exoadvadditions.mysterious_blueprint_diagrams": "Mysterious Blueprint (Diagrams)",
 
     "item.exoadvadditions.elder_guardian_eye": "Elder Guardian Eye",
+    "item.exoadvadditions.old_manuscript": "Old Manuscript",
     "item.exoadvadditions.infernal_manuscript": "Infernal Manuscript",
     "item.exoadvadditions.ender_manuscript": "Ender Manuscript",
     "item.exoadvadditions.ancient_manuscript": "Ancient Manuscript",
     "item.exoadvadditions.gilded_fish": "Gilded Fish",
+    "item.exoadvadditions.gilded_ancient_tooth": "Gilded Ancient Tooth",
+    "item.exoadvadditions.ominous_bar": "Ominous Bar",
+    "item.exoadvadditions.void_orb": "Void Orb",
+    "item.exoadvadditions.dead_kings_gem": "Dead King's Gem",
+    "item.exoadvadditions.burning_scroll": "Burning Scroll",
+
+    "item.exoadvadditions.magicked_feather": "Magicked Feather",
+    "item.exoadvadditions.infernal_feather": "Infernal Feather",
+    "item.exoadvadditions.ender_feather": "Ender Feather",
+    "item.exoadvadditions.ancient_feather": "Ancient Feather",
+
+    "item.exoadvadditions.scroll_of_growth": "Scroll of Growth",
+    "item.exoadvadditions.infernal_scroll_of_growth": "Infernal Scroll of Growth",
+    "item.exoadvadditions.ender_scroll_of_growth": "Ender Scroll of Growth",
+    "item.exoadvadditions.ancient_scroll_of_growth": "Ancient Scroll of Growth",
+
+    "item.exoadvadditions.scroll_of_growth.tier": "Tier: 0{%d} (Skill XP Rate: 0{%.1f})",
+    "item.exoadvadditions.scroll_of_growth.skipped_tier": "You must use the previous tier scroll before using this one.",
+    "item.exoadvadditions.scroll_of_growth.already_used": "You have already used this tier of scroll, or higher.",
 
     "item.exoadvadditions.curious_card": "Curious Card",
     "item.exoadvadditions.curious_card.info": "This could solve a lot of problems!",
@@ -58,16 +97,22 @@
 
     "item.exoadvadditions.circuit_board": "Circuit Board",
     "item.exoadvadditions.charged_circuit_board": "Charged Circuit Board",
-    "exoadvadditions.jei.hint.charged_circuit_board": "Created while having regular Circuit Boards in your inventory when struck by lightning.",
+    "item.exoadvadditions.charged_circuit_board.jei.info": "Created while having regular Circuit Boards in your inventory when struck by lightning.",
 
-    "item.exoadvadditions.mysterious_tome_active": "Activated Mysterious Tome",
+    "item.exoadvadditions.mysterious_tome_dormant": "Dormant Mysterious Tome",
+    "item.exoadvadditions.mysterious_tome_dormant.info.1": "It feels like there's magic in",
+    "item.exoadvadditions.mysterious_tome_dormant.info.2": "here waiting to be unleashed.",
+    "item.exoadvadditions.mysterious_tome_active": "Mysterious Tome",
+    "item.exoadvadditions.mysterious_tome_active.jei.info": "A tome awakened with power, maybe it can go further?",
+    "item.exoadvadditions.mysterious_tome_unleashed": "Unleashed Mysterious Tome",
+    "item.exoadvadditions.mysterious_tome_unleashed.jei.info": "Allows access to 5x5x5 tome crafting. Hold [Shift] when using to perform a 3x3x3 craft.",
     "item.exoadvadditions.mysterious_tome_active.not_valid": "You attempt to use the tome, but it appears whatever you're using it on is invalid.",
 
     "item.exoadvadditions.fiery_ingot": "Fiery Ingot",
     "item.exoadvadditions.fiery_ingot.info": "A very hot ingot. Watch out, it burns!",
 
     "item.exoadvadditions.magical_runes": "Magical Runes",
-    "item.exoadvadditions.magical_dark_runes": "Magical Dark Runes",
+    "item.exoadvadditions.magical_void_runes": "Magical Void Runes",
     "item.exoadvadditions.magical_runes.info": "Unstable runes. Be careful of unwanted effects.",
 
     "item.exoadvadditions.unlocated_map": "Unlocated Map",
@@ -119,10 +164,24 @@
     "item.exoadvadditions.tome_of_amnesia.info.2": "skill trees. Requires you to have at least",
     "item.exoadvadditions.tome_of_amnesia.info.3": "0{10 XP levels}, and consumes 0{150 XP} on use.",
     "item.exoadvadditions.tome_of_amnesia.info.extra.1": "0{Ascended Bonus}1{:} XP requirements and costs",
-    "item.exoadvadditions.tome_of_amnesia.info.extra.2": "negated, and the tome is not consumed on use.",
+    "item.exoadvadditions.tome_of_amnesia.info.extra.2": "negated, and is not consumed on use.",
 
     "item.exoadvadditions.tome_of_amnesia.activated": "You feel as if you've lost something...",
     "item.exoadvadditions.tome_of_amnesia.invalid_xp": "You don't have enough XP to use this tome.",
+
+
+    "item.exoadvadditions.tome_of_flight": "Tome of Flight",
+    "item.exoadvadditions.ascended_tome_of_flight": "Ascended Tome of Flight",
+
+    "item.exoadvadditions.tome_of_flight.info.1": "Grants a Non-Grounded and Flyable",
+    "item.exoadvadditions.tome_of_flight.info.2": "mount 0{Flight Ready}, which allows it to",
+    "item.exoadvadditions.tome_of_flight.info.3": "take to the skies while mounted.",
+    "item.exoadvadditions.tome_of_flight.info.extra.1": "0{Ascended Bonus}1{:} Flight Ready duration",
+    "item.exoadvadditions.tome_of_flight.info.extra.2": "increased, and is not consumed on use.",
+
+    "item.exoadvadditions.tome_of_flight.activated": "Your mount looks energized and ready to fly!",
+    "item.exoadvadditions.tome_of_flight.not_valid": "This entity is not a mount capable of flying.",
+    "item.exoadvadditions.tome_of_flight.is_grounded": "It doesn't look like this mount is ready to take back to the skies yet.",
 
     "item.exoadvadditions.macguffin_1": "MacGuffin #1",
     "item.exoadvadditions.macguffin_2": "MacGuffin #2",
@@ -139,5 +198,7 @@
     "item.exoadvadditions.macguffin_13": "MacGuffin #13",
     "item.exoadvadditions.macguffin_14": "MacGuffin #14",
     "item.exoadvadditions.macguffin_15": "MacGuffin #15",
-    "item.exoadvadditions.macguffin_16": "MacGuffin #16"
+    "item.exoadvadditions.macguffin_16": "MacGuffin #16",
+
+    "attribute.exoadvadditions.skills_xp_bonus": "Skills XP Bonus"
 }

@@ -1,0 +1,17 @@
+{
+  "structures": [
+    {
+      "structure": "exoadvadditions:the_depths_shrine",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 200,
+    "separation": 100,
+    "spread_type": "linear",
+    "salt": 647757381,
+    "frequency_reduction_method": "default",
+    "frequency": 1
+  }
+}
