@@ -3,9 +3,7 @@ package com.exosomnia.exoadvadditions.events;
 import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
 import com.exosomnia.exoadvadditions.items.GrowthScrollItem;
-import com.exosomnia.exoadvadditions.mixins.PlayerAccessor;
 import com.exosomnia.exolib.capabilities.persistentplayerdata.PersistentPlayerDataProvider;
-import com.mojang.logging.LogUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
@@ -15,7 +13,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
@@ -30,18 +27,17 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
 import net.minecraftforge.event.entity.living.LivingUseTotemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.TradeWithVillagerEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -126,6 +122,16 @@ public class VanillaEventTweaks {
             trades.get(5).add(rank2Boots);
             trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD), new ItemStack(Items.GLOW_ITEM_FRAME, 2), 12, 30, 0.05F));
         }
+        else if (event.getType() == VillagerProfession.CARTOGRAPHER) {
+            ItemStack unlocatedMapTrade = new ItemStack(Registry.ITEM_UNLOCATED_MAP.get());
+            CompoundTag compoundTag = new CompoundTag();
+            compoundTag.putString("structure", "#exoadventure:rank_i_illager");
+            compoundTag.putString("name", "map.exoadventure.rank_i_illager");
+            unlocatedMapTrade.setTag(compoundTag);
+            trades.get(1).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 4), unlocatedMapTrade.copy(), 12, 1, 0.05F));
+
+            trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_UNLOCATED_MAP.get()), new ItemStack(Items.EMERALD), 12, 5, 0.05F));
+        }
     }
 
     @SubscribeEvent
@@ -156,7 +162,7 @@ public class VanillaEventTweaks {
 
     @SubscribeEvent
     public static void tagUpdateEvent(TagsUpdatedEvent event) {
-        TagKey<Block> naturalOresTag = TagKey.create(Registries.BLOCK, new ResourceLocation(ExoAdventureAdditions.MODID, "natural_ores"));
+        TagKey<Block> naturalOresTag = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "natural_ores"));
         net.minecraft.core.Registry<Block> reg = event.getRegistryAccess().registryOrThrow(ForgeRegistries.Keys.BLOCKS);
         // Loop through ore pairs and resolve tags
         for (Pair<ResourceKey<Block>, ResourceKey<Block>> orePair : Registry.NATURAL_ORE_PAIRS) {
@@ -196,27 +202,19 @@ public class VanillaEventTweaks {
     }
 
     @SubscribeEvent
-    public static void playerRerollXPSeed(PlayerInteractEvent.RightClickBlock event) {
-        Player player = event.getEntity();
-        ItemStack itemStack = player.getItemInHand(event.getHand());
-        Level level = player.level();
-        BlockPos pos = event.getHitVec().getBlockPos();
-        if (level.isClientSide || !itemStack.is(Items.AMETHYST_SHARD) || !level.getBlockState(pos).is(Blocks.ENCHANTING_TABLE)) { return; }
+    public static void spawnerBreakDampen(PlayerEvent.BreakSpeed event) {
+        if (!event.getState().is(Blocks.SPAWNER)) { return; }
+        event.setNewSpeed((float)(6.0 * event.getOriginalSpeed() / (event.getOriginalSpeed() + 6.0)));
+    }
 
-        event.setCanceled(true);
-        ServerPlayer serverPlayer = (ServerPlayer)player;
-        PlayerAccessor playerAccessor = (PlayerAccessor)player;
-        ServerLevel serverLevel = (ServerLevel)level;
-        Vec3 particlePos = pos.getCenter().add(0, 0.75, 0);
-        if (level.random.nextInt(3) == 0) {
-            serverPlayer.playNotifySound(SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 1.0F, 0.5F);
-            serverLevel.sendParticles(serverPlayer, ParticleTypes.WITCH, false, particlePos.x, particlePos.y, particlePos.z, 15, 0, 0, 0, 2.0);
-            playerAccessor.setEnchantmentSeed(level.random.nextInt());
-        }
-        else {
-            serverPlayer.playNotifySound(SoundEvents.FIRE_EXTINGUISH, SoundSource.PLAYERS, 1.0F, 1.0F);
-            serverLevel.sendParticles(serverPlayer, ParticleTypes.SMOKE, false, particlePos.x, particlePos.y, particlePos.z, 15, 0, 0, 0, 0.025);
-        }
-        itemStack.shrink(1);
+    @SubscribeEvent
+    public static void torchDepthsRemoval(BlockEvent.EntityPlaceEvent event) {
+        LevelAccessor levelAccessor = event.getLevel();
+        if (!(event.getState().is(Blocks.TORCH) || event.getState().is(Blocks.WALL_TORCH)) || !(levelAccessor instanceof ServerLevel level) || !level.dimension().equals(Registry.DEPTHS_DIMENSION)) { return; }
+        BlockPos blockOrigin = event.getPos();
+        Vec3 origin = blockOrigin.getCenter();
+        level.destroyBlock(blockOrigin, false);
+        level.playSound(null, blockOrigin, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 0.75F);
+        level.sendParticles(ParticleTypes.SMOKE, origin.x, origin.y, origin.z, 15, 0, 0, 0, 0.025);
     }
 }

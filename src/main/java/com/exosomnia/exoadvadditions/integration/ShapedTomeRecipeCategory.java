@@ -18,6 +18,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
@@ -37,16 +38,13 @@ import java.util.Set;
 
 public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecipe> {
 
-    public final static RecipeType<ShapedTomeRecipe> TOME_RECIPE = new RecipeType<>(new ResourceLocation(ExoAdventureAdditions.MODID, "tome_crafting"),
+    public final static RecipeType<ShapedTomeRecipe> TOME_RECIPE = new RecipeType<>(ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "tome_crafting"),
             ShapedTomeRecipe.class);
 
     private final static Component TITLE = Component.translatable("recipe_category.exoadvadditions.tome_crafting");
     private final IDrawable icon;
 
     private final static int INDEX_SIZE = 2;
-    private final static int HORIZONTAL_STEP = 8;
-    private final static int VERTICAL_STEP = 4;
-    //private final static
 
     public ShapedTomeRecipeCategory(IGuiHelper guiHelper) {
         icon = guiHelper.createDrawableItemLike(Registry.ITEM_MYSTERIOUS_TOME_ACTIVE.get());
@@ -84,25 +82,26 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
         }
         ImmutableList<TomeRecipe.ItemMapping> items = tomeRecipe.getRecipeItems();
         if (items != null && !items.isEmpty()) {
-            int itemCount = 0;
-            for (TomeRecipe.ItemMapping itemMapping : items) {
-                itemCount += itemMapping.count;
-            }
+            int itemCount = items.size();
+//            for (TomeRecipe.ItemMapping itemMapping : items) {
+//                itemCount += itemMapping.count;
+//            }
             int itemIndex = 0;
             int itemYOffset = 40 - ((itemCount - 1) * 9);
             for (TomeRecipe.ItemMapping itemMapping : items) {
                 builder.addSlot(RecipeIngredientRole.INPUT, 49, itemYOffset + (itemIndex++ * 18)).addIngredients(itemMapping.ingredient);
-                if (itemMapping.count > 1) {
-                    for (var ii = 1; ii < itemMapping.count; ii++) {
-                        builder.addSlot(RecipeIngredientRole.INPUT, 49, itemYOffset + (itemIndex++ * 18)).addIngredients(itemMapping.ingredient);
-                    }
-                }
+//                if (itemMapping.count > 1) {
+//                    for (var ii = 1; ii < itemMapping.count; ii++) {
+//                        builder.addSlot(RecipeIngredientRole.INPUT, 49, itemYOffset + (itemIndex++ * 18)).addIngredients(itemMapping.ingredient);
+//                    }
+//                }
             }
         }
         ItemStack result = tomeRecipe.getResult();
         if (result != null) { builder.addSlot(RecipeIngredientRole.OUTPUT, 85, 40).addItemStack(result); }
 
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemLike(Registry.ITEM_MYSTERIOUS_TOME_ACTIVE.get());
+        builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemLike(Registry.ITEM_MYSTERIOUS_TOME_UNLEASHED.get());
     }
 
     @Override
@@ -127,6 +126,24 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
                     }
                 }
             }
+        }
+
+        Font drawFont = Minecraft.getInstance().font;
+        ImmutableList<TomeRecipe.ItemMapping> items = tomeRecipe.getRecipeItems();
+        if (items != null && !items.isEmpty()) {
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(0, 0, 1600);
+            int itemCount = items.size();
+            int itemIndex = 0;
+            int itemYOffset = 49 - ((itemCount - 1) * 9);
+            for (TomeRecipe.ItemMapping itemMapping : items) {
+                if (itemMapping.count > 1) {
+                    String drawString = String.valueOf(itemMapping.count);
+                    guiGraphics.drawString(drawFont, drawString, 66 - drawFont.width(drawString), itemYOffset + (itemIndex++ * 18), 0xFFFFFF);
+                }
+                else { itemIndex++; }
+            }
+            guiGraphics.pose().popPose();
         }
 
         icon.draw(guiGraphics, 67, 40);

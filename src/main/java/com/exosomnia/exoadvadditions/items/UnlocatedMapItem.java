@@ -57,12 +57,12 @@ public class UnlocatedMapItem extends Item {
 
         BlockPos blockpos;
         if (mapStruct.startsWith("#")) {
-            TagKey<Structure> structure = TagKey.create(Registries.STRUCTURE, ResourceLocation.of(mapStruct.substring(1), ':'));
+            TagKey<Structure> structure = TagKey.create(Registries.STRUCTURE, ResourceLocation.bySeparator(mapStruct.substring(1), ':'));
             blockpos = mapLevel.findNearestMapStructure(structure, player.blockPosition(), 50, !player.isCrouching());
         }
         else {
             Registry<Structure> structureRegistry = mapLevel.registryAccess().registryOrThrow(Registries.STRUCTURE);
-            ResourceKey<Structure> structureKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.of(mapStruct, ':'));
+            ResourceKey<Structure> structureKey = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.bySeparator(mapStruct, ':'));
             Holder<Structure> structureHolder = structureRegistry.getHolderOrThrow(structureKey);
             HolderSet.Direct<Structure> structureSet = HolderSet.direct(structureHolder);
             Pair<BlockPos, Holder<Structure>> structure = mapLevel.getChunkSource().getGenerator().findNearestMapStructure(mapLevel, structureSet, player.blockPosition(), 50, !player.isCrouching());

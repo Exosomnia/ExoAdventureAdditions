@@ -12,7 +12,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -24,15 +26,27 @@ public class AdventureManager {
     public final static GameRules.Key<GameRules.BooleanValue> RULE_ADVENTURE_STARTED = GameRules.register("adventureStarted", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
 
     @SubscribeEvent
+    public static void serverStartEvent(ServerAboutToStartEvent event) {
+        ModdedEventTweaks.setupAboutToStartTweaks();
+    }
+
+    @SubscribeEvent
     public static void serverStartEvent(ServerStartedEvent event) {
         MinecraftServer server = event.getServer();
         ServerLevel level = server.getLevel(Level.OVERWORLD);
-        ModdedEventTweaks.setupTweaks(level);
+        ModdedEventTweaks.setupStartedTweaks(level);
 
         GameRules rules = level.getGameRules();
         if (level.getGameTime() == 0 && Config.newWorldsIntro) {
             CommandSourceStack stack = server.createCommandSourceStack().withPermission(4).withSource(server).withSuppressedOutput();
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.antidoteVessel.maxEffectDuration 20");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.feralClaws.attackSpeedBonus 10");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.powerGlove.attackDamageBonus 2");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.crystalHeart.healthBonus 5");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.runningShoes.speedBonus 20");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.maxHealingPerHit 2");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.absorptionRatio 10");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.absorptionChance 100");
             rules.getRule(RULE_CAN_BREAK).set(false, event.getServer());
             rules.getRule(RULE_CAN_HUNGER_DRAIN).set(false, event.getServer());
             rules.getRule(RULE_ADVENTURE_STARTED).set(false, event.getServer());

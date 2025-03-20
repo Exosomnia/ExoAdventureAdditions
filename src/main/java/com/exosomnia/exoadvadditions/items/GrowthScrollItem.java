@@ -71,10 +71,10 @@ public class GrowthScrollItem extends Item {
         }
         itemStack.shrink(1);
         player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.75F);
+        player.sendSystemMessage(Component.translatable("item.exoadvadditions.scroll_of_growth.used").withStyle(ChatFormatting.GOLD));
         applyAttributes(expAttribute, rank);
         player.getCapability(PersistentPlayerDataProvider.PLAYER_DATA).ifPresent(playerData -> {
             CompoundTag tag = playerData.get();
-            if (tag.contains("exoadventure")) { tag.put("exoadventure", new CompoundTag()); }
             CompoundTag modTag = tag.getCompound("exoadventure");
             modTag.putInt("growthScrolls", rank + 1);
             tag.put("exoadventure", modTag);

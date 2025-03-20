@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "exoadvadditions:macguffin_5_half_1"
+    },
+    {
+      "item": "exoadvadditions:macguffin_5_half_2"
+    }
+  ],
+  "result": {
+    "item": "exoadvadditions:macguffin_5"
+  }
+}

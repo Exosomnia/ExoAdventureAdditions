@@ -29,8 +29,8 @@ public class MacGuffinLootModifier extends LootModifier {
 //            .apply(codec, LootrMacGuffinLootModifier::new)
 //    ));
 
-    private LootPool inject = LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.001F)).setRolls(ConstantValue.exactly(1))
-            .add(LootItem.lootTableItem(Registry.ITEM_MACGUFFIN_16.get())).build();
+//    private LootPool inject = LootPool.lootPool().when(LootItemRandomChanceCondition.randomChance(0.001F)).setRolls(ConstantValue.exactly(1))
+//            .add(LootItem.lootTableItem(Registry.ITEM_MACGUFFIN_16.get())).build();
 
     public static final Supplier<Codec<MacGuffinLootModifier>> CODEC = Suppliers.memoize(() -> RecordCodecBuilder.create(codec -> codecStart(codec).apply(codec, MacGuffinLootModifier::new)));
 
@@ -40,15 +40,6 @@ public class MacGuffinLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        ResourceLocation name = context.getQueriedLootTableId();
-        String namespace = name.getNamespace();
-        String path = name.getPath();
-        if (path.startsWith("chests") || (namespace.equals("betterdungeons") && path.contains("chests")) || (namespace.equals("explorify") && path.startsWith("chest")) || name.toString().equals("terralith:underground/chest")) {
-            Set<ItemStack> generated = new HashSet<>();
-            inject.addRandomItems(generated::add, context);
-            generatedLoot.addAll(generated);
-            return generatedLoot;
-        }
         return generatedLoot;
     }
 

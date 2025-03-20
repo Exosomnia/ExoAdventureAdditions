@@ -1,6 +1,10 @@
 {
+    "item.exoadvadditions.star_sword.jei.info": "This item is disabled because it's effect is currently not working.",
+
     "recipe_category.exoadvadditions.tome_crafting": "Tome Crafting",
+    "recipe_category.exoadvadditions.tome_crafting.alt": "Advanced Tome Crafting",
     "recipe_category.exoadvadditions.tome_crafting.help.1": "Build the 3x3x3 structure displayed",
+    "recipe_category.exoadvadditions.tome_crafting.help.1.alt": "Build the 5x5x5 structure displayed",
     "recipe_category.exoadvadditions.tome_crafting.help.2": "and drop the listed items on the left",
     "recipe_category.exoadvadditions.tome_crafting.help.3": "inside of the structure. Right-click",
     "recipe_category.exoadvadditions.tome_crafting.help.4": "on the center block of one of the",
@@ -75,6 +79,16 @@
     "item.exoadvadditions.infernal_feather": "Infernal Feather",
     "item.exoadvadditions.ender_feather": "Ender Feather",
     "item.exoadvadditions.ancient_feather": "Ancient Feather",
+    "item.exoadvadditions.magicked_feather.info.1": "Attuned to find: 0{%s}",
+    "item.exoadvadditions.magicked_feather.info.fallback": "Any attunement",
+    "item.exoadvadditions.magicked_feather.jei.info": "Can be combined with an unattuned feather in a crafting grid to transfer attunement.",
+
+    "item.exoadvadditions.message_in_a_bottle": "Message in a Bottle",
+    "item.exoadvadditions.message_in_a_bottle.info.1": "A peculiar message resides within the bottle...",
+
+    "item.exoadvadditions.scroll_of_skill_xp": "Scroll of Knowledge",
+    "item.exoadvadditions.scroll_of_skill_xp.info.1": "Grants 0{%1$d} XP to your 0{%2$s} skill.",
+    "item.exoadvadditions.scroll_of_skill_xp.used": "You suddenly feel more proficient in %s.",
 
     "item.exoadvadditions.scroll_of_growth": "Scroll of Growth",
     "item.exoadvadditions.infernal_scroll_of_growth": "Infernal Scroll of Growth",
@@ -82,6 +96,7 @@
     "item.exoadvadditions.ancient_scroll_of_growth": "Ancient Scroll of Growth",
 
     "item.exoadvadditions.scroll_of_growth.tier": "Tier: 0{%d} (Skill XP Rate: 0{%.1f})",
+    "item.exoadvadditions.scroll_of_growth.used": "You feel more capable in training your skills.",
     "item.exoadvadditions.scroll_of_growth.skipped_tier": "You must use the previous tier scroll before using this one.",
     "item.exoadvadditions.scroll_of_growth.already_used": "You have already used this tier of scroll, or higher.",
 
@@ -199,6 +214,23 @@
     "item.exoadvadditions.macguffin_14": "MacGuffin #14",
     "item.exoadvadditions.macguffin_15": "MacGuffin #15",
     "item.exoadvadditions.macguffin_16": "MacGuffin #16",
+
+    "item.exoadvadditions.macguffin_1_half_1": "MacGuffin #1 (Left Half)",
+    "item.exoadvadditions.macguffin_1_half_2": "MacGuffin #1 (Right Half)",
+    "item.exoadvadditions.macguffin_2_half_1": "MacGuffin #2 (Left Half)",
+    "item.exoadvadditions.macguffin_2_half_2": "MacGuffin #2 (Right Half)",
+    "item.exoadvadditions.macguffin_3_half_1": "MacGuffin #3 (Left Half)",
+    "item.exoadvadditions.macguffin_3_half_2": "MacGuffin #3 (Right Half)",
+    "item.exoadvadditions.macguffin_4_half_1": "MacGuffin #4 (Left Half)",
+    "item.exoadvadditions.macguffin_4_half_2": "MacGuffin #4 (Right Half)",
+    "item.exoadvadditions.macguffin_5_half_1": "MacGuffin #5 (Left Half)",
+    "item.exoadvadditions.macguffin_5_half_2": "MacGuffin #5 (Right Half)",
+    "item.exoadvadditions.macguffin_6_half_1": "MacGuffin #6 (Left Half)",
+    "item.exoadvadditions.macguffin_6_half_2": "MacGuffin #6 (Right Half)",
+    "item.exoadvadditions.macguffin_7_half_1": "MacGuffin #7 (Left Half)",
+    "item.exoadvadditions.macguffin_7_half_2": "MacGuffin #7 (Right Half)",
+    "item.exoadvadditions.macguffin_8_half_1": "MacGuffin #8 (Left Half)",
+    "item.exoadvadditions.macguffin_8_half_2": "MacGuffin #8 (Right Half)",
 
     "attribute.exoadvadditions.skills_xp_bonus": "Skills XP Bonus"
 }

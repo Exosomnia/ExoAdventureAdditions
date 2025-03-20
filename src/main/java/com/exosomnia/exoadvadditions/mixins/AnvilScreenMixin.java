@@ -9,5 +9,5 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class AnvilScreenMixin {
 
     @ModifyConstant(method = "renderLabels", constant = @Constant(intValue = 40))
-    private int updateMaxOnScreen(int max) { return 100; }
+    private int updateMaxOnScreen(int max) { return 200; }
 }

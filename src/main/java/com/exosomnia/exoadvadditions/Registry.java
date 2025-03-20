@@ -15,13 +15,16 @@ import com.exosomnia.exoadvadditions.loot.MacGuffinLootModifier;
 import com.exosomnia.exoadvadditions.networking.PacketHandler;
 import com.exosomnia.exoadvadditions.networking.packets.SimpleMusicPacket;
 import com.exosomnia.exoadvadditions.recipes.AdventureMapRecipe;
+import com.exosomnia.exoadvadditions.recipes.AttuneFeatherRecipe;
 import com.exosomnia.exoadvadditions.recipes.MysteriousPackageRecipe;
+import com.exosomnia.exoadvadditions.recipes.ShapedNBTOptionalRecipe;
 import com.exosomnia.exoadvadditions.recipes.tome.AdvancedShapedTomeRecipe;
 import com.exosomnia.exoadvadditions.recipes.tome.ShapedTomeRecipe;
 import com.exosomnia.exoadvadditions.recipes.tome.TomeRecipe.*;
 import com.exosomnia.exoadvadditions.recipes.tome.TomeRecipeManager;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
@@ -58,6 +61,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -82,6 +86,8 @@ public class Registry {
     public static Class<?> FLYING_MOUNT_CLASS;
     public static Field FLYING_ALLOWED_FIELD;
 
+    public final static ImmutableList<String> VALID_PANDORA;
+
     static {
         try {
             FLYING_MOUNT_CLASS = Class.forName("com.yahoo.chirpycricket.mythicmounts.entity.FlyingMountEntity");
@@ -91,13 +97,15 @@ public class Registry {
             FLYING_ALLOWED_FIELD = null;
             LogUtils.getLogger().info("Uhhh guys?!");
         }
+
+        VALID_PANDORA = ImmutableList.<String>builder().add("mobs", "mob_towers", "megaton", "block_grave", "block_shower", "transform", "replace", "dryness", "tnt_splosion", "dirty_trick", "water_pool", "lava_pool", "height_noise", "mad_geometry", "madder_geometry", "lava_cage", "water_cage", "classic", "lightning", "sand_for_dessert", "in_the_end", "hell_on_earth_nether_wastes", "hell_on_earth_soul_sand_valley", "hell_on_earth_basalt_deltas", "hell_on_earth_warped_forest", "hell_on_earth_crimson_forest", "lifeless", "trapped_tribe", "buffed_down", "frozen_in_place", "flying_forest", "crush", "bomberman", "pitch_black", "void", "are_these_mine", "time_lord", "explo_creatures", "explo_mobs", "aquarium", "aquaridoom", "world_snake", "double_snake", "tunnel_bore", "creeper_soul", "bomb_pack", "make_thin", "cover", "target", "armored_army", "army", "boss", "ice_age", "tele_random", "crazy_port", "thing_go_boom", "danger_call", "animals", "animal_towers", "tamer", "items", "epic_armor", "epic_tool", "epic_thing", "enchanted_book", "resources", "equipment_set", "item_rain", "dead_creatures", "dead_mobs", "experience", "sudden_forest", "sudden_jungle", "odd_jungle", "buffed_up", "snow_age", "normal_land", "happy_fun_times", "shroomify", "rainbows", "all_rainbow", "farm", "heavenly", "halloween", "christmas", "new_year", "block_tower", "terrarium", "animal_farm").build();
     }
 
     public final static TomeRecipeManager TOME_RECIPE_MANAGER = new TomeRecipeManager();
 
-    public final static ResourceKey<Level> DEPTHS_DIMENSION = ResourceKey.create(Registries.DIMENSION, new ResourceLocation("exoadvadditions:the_depths"));
-    public final static ResourceKey<Structure> MYSTERIOUS_TOME_STRUCTURE = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation("exoadvadditions:the_depths_shrine"));
-    public final static ResourceKey<Structure> MYSTERIOUS_TOME_UNLEASH_STRUCTURE = ResourceKey.create(Registries.STRUCTURE, new ResourceLocation("mes:manuscript_shrine"));
+    public final static ResourceKey<Level> DEPTHS_DIMENSION = ResourceKey.create(Registries.DIMENSION, ResourceLocation.bySeparator("exoadvadditions:the_depths", ':'));
+    public final static ResourceKey<Structure> MYSTERIOUS_TOME_STRUCTURE = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.bySeparator("exoadvadditions:the_depths_shrine", ':'));
+    public final static ResourceKey<Structure> MYSTERIOUS_TOME_UNLEASH_STRUCTURE = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.bySeparator("mes:manuscript_shrine", ':'));
 
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, ExoAdventureAdditions.MODID);
 
@@ -113,6 +121,10 @@ public class Registry {
             AdventureMapRecipe.Serializer::new);
     public static final RegistryObject<RecipeSerializer<MysteriousPackageRecipe>> RECIPE_MYSTERIOUS_PACKAGE = RECIPE_SERIALIZERS.register("mysterious_package_crafting",
             MysteriousPackageRecipe.Serializer::new);
+    public static final RegistryObject<RecipeSerializer<AttuneFeatherRecipe>> RECIPE_ATTUNE_FEATHER = RECIPE_SERIALIZERS.register("attune_feather_crafting",
+            AttuneFeatherRecipe.Serializer::new);
+    public static final RegistryObject<RecipeSerializer<ShapedNBTOptionalRecipe>> RECIPE_SHAPED_NBT_OPTIONAL = RECIPE_SERIALIZERS.register("shaped_nbt_optional_crafting",
+            ShapedNBTOptionalRecipe.Serializer::new);
 
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ExoAdventureAdditions.MODID);
@@ -167,10 +179,10 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_INFERNAL_MANUSCRIPT = ITEMS.register("infernal_manuscript", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_ENDER_MANUSCRIPT = ITEMS.register("ender_manuscript", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_ANCIENT_MANUSCRIPT = ITEMS.register("ancient_manuscript", () -> new Item(new Item.Properties().stacksTo(64)));
-    public static final RegistryObject<Item> ITEM_MAGICKED_FEATHER = ITEMS.register("magicked_feather", () -> new Item(new Item.Properties().stacksTo(64)));
-    public static final RegistryObject<Item> ITEM_INFERNAL_FEATHER = ITEMS.register("infernal_feather", () -> new Item(new Item.Properties().stacksTo(64)));
-    public static final RegistryObject<Item> ITEM_ENDER_FEATHER = ITEMS.register("ender_feather", () -> new Item(new Item.Properties().stacksTo(64)));
-    public static final RegistryObject<Item> ITEM_ANCIENT_FEATHER = ITEMS.register("ancient_feather", () -> new Item(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> ITEM_MAGICKED_FEATHER = ITEMS.register("magicked_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> ITEM_INFERNAL_FEATHER = ITEMS.register("infernal_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> ITEM_ENDER_FEATHER = ITEMS.register("ender_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> ITEM_ANCIENT_FEATHER = ITEMS.register("ancient_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_CURIOUS_CARD = ITEMS.register("curious_card", () -> new CuriousCardItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> ITEM_GILDED_FISH = ITEMS.register("gilded_fish", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_FIERY_INGOT = ITEMS.register("fiery_ingot", () -> new FieryIngotItem(new Item.Properties().stacksTo(16)));
@@ -191,19 +203,42 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_VOID_ORB = ITEMS.register("void_orb", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_DEAD_KINGS_GEM = ITEMS.register("dead_kings_gem", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_BURNING_SCROLL = ITEMS.register("burning_scroll", () -> new Item(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> ITEM_MESSAGE_IN_BOTTLE = ITEMS.register("message_in_a_bottle", BottledMessageItem::new);
     public static final RegistryObject<Item> ITEM_SCROLL_OF_GROWTH = ITEMS.register("scroll_of_growth", () -> new GrowthScrollItem(0));
     public static final RegistryObject<Item> ITEM_INFERNAL_SCROLL_OF_GROWTH = ITEMS.register("infernal_scroll_of_growth", () -> new GrowthScrollItem(1));
     public static final RegistryObject<Item> ITEM_ENDER_SCROLL_OF_GROWTH = ITEMS.register("ender_scroll_of_growth", () -> new GrowthScrollItem(2));
     public static final RegistryObject<Item> ITEM_ANCIENT_SCROLL_OF_GROWTH = ITEMS.register("ancient_scroll_of_growth", () -> new GrowthScrollItem(3));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_COMBAT = ITEMS.register("scroll_of_skill_xp_combat", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.COMBAT));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_MINING = ITEMS.register("scroll_of_skill_xp_mining", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.MINING));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_FISHING = ITEMS.register("scroll_of_skill_xp_fishing", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.FISHING));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_HUSBANDRY = ITEMS.register("scroll_of_skill_xp_husbandry", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.HUSBANDRY));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_OCCULT = ITEMS.register("scroll_of_skill_xp_occult", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.OCCULT));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_EXPLORATION = ITEMS.register("scroll_of_skill_xp_exploration", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.EXPLORATION));
 
     public static final RegistryObject<Item> ITEM_MACGUFFIN_1 = ITEMS.register("macguffin_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_1_HALF_1 = ITEMS.register("macguffin_1_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_1_HALF_2 = ITEMS.register("macguffin_1_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_2 = ITEMS.register("macguffin_2", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_2_HALF_1 = ITEMS.register("macguffin_2_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_2_HALF_2 = ITEMS.register("macguffin_2_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_3 = ITEMS.register("macguffin_3", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_3_HALF_1 = ITEMS.register("macguffin_3_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_3_HALF_2 = ITEMS.register("macguffin_3_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_4 = ITEMS.register("macguffin_4", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_4_HALF_1 = ITEMS.register("macguffin_4_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_4_HALF_2 = ITEMS.register("macguffin_4_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_5 = ITEMS.register("macguffin_5", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_5_HALF_1 = ITEMS.register("macguffin_5_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_5_HALF_2 = ITEMS.register("macguffin_5_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_6 = ITEMS.register("macguffin_6", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_6_HALF_1 = ITEMS.register("macguffin_6_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_6_HALF_2 = ITEMS.register("macguffin_6_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_7 = ITEMS.register("macguffin_7", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_7_HALF_1 = ITEMS.register("macguffin_7_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_7_HALF_2 = ITEMS.register("macguffin_7_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_8 = ITEMS.register("macguffin_8", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_8_HALF_1 = ITEMS.register("macguffin_8_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_8_HALF_2 = ITEMS.register("macguffin_8_half_2", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_9 = ITEMS.register("macguffin_9", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_10 = ITEMS.register("macguffin_10", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_11 = ITEMS.register("macguffin_11", () -> new Item(new Item.Properties().stacksTo(16)));
@@ -247,11 +282,11 @@ public class Registry {
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS,
             ExoAdventureAdditions.MODID);
     public static final RegistryObject<SoundEvent> MUSIC_THE_DEPTHS = SOUND_EVENTS.register("music.the_depths", () -> SoundEvent.createVariableRangeEvent(
-            new ResourceLocation(ExoAdventureAdditions.MODID, "music.the_depths")));
+            ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "music.the_depths")));
     public static final RegistryObject<SoundEvent> SOUND_TOME_CRAFT_SOUND_P = SOUND_EVENTS.register("tome_craft_sound_p", () -> SoundEvent.createVariableRangeEvent(
-            new ResourceLocation(ExoAdventureAdditions.MODID, "tome_craft_sound_p")));
+            ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "tome_craft_sound_p")));
     public static final RegistryObject<SoundEvent> SOUND_TOME_CRAFT_SOUND_B = SOUND_EVENTS.register("tome_craft_sound_b", () -> SoundEvent.createVariableRangeEvent(
-            new ResourceLocation(ExoAdventureAdditions.MODID, "tome_craft_sound_b")));
+            ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "tome_craft_sound_b")));
 
 
     public static final DeferredRegister<Attribute> ATTRIBUTES = DeferredRegister.create(Registries.ATTRIBUTE, ExoAdventureAdditions.MODID);
@@ -261,6 +296,7 @@ public class Registry {
                     0.0,
                     127.0));
 
+    public static Item[] xpScrolls;
 
     public static Pair<ResourceKey<Block>, ResourceKey<Block>>[] NATURAL_ORE_PAIRS;
     public static Rarity MYSTERIOUS_RARITY;
@@ -273,6 +309,16 @@ public class Registry {
     public static EntityType<?> ENTITY_MOTH;
     public static EntityType<?> ENTITY_NETHER_BAT;
     public static EntityType<?> ENTITY_NUDIBRANCH;
+
+    public static Item ITEM_ETHERIUM_CHESTPLATE;
+    public static Item ITEM_ETHERIUM_LEGGINGS;
+
+    public static Item ITEM_SPELLBREAKER;
+    public static Item ITEM_AMETHYST_RAPIER;
+    public static Item ITEM_KEEPER_FLAMBERGE;
+
+    public static Item ITEM_THUNDERCALLER;
+    public static Item ITEM_STARCALLER;
 
     public static void registerCommon() {
         PacketHandler.register();
@@ -294,16 +340,16 @@ public class Registry {
     public static void setupOres() {
         IForgeRegistry<Block> forgeRegistry = ForgeRegistries.BLOCKS;
 
-        Block TIN_ORE = forgeRegistry.getValue(new ResourceLocation("thermal", "tin_ore"));
-        Block DEEPSLATE_TIN_ORE = forgeRegistry.getValue(new ResourceLocation("thermal", "deepslate_tin_ore"));
-        Block SILVER_ORE = forgeRegistry.getValue(new ResourceLocation("thermal", "silver_ore"));
-        Block DEEPSLATE_SILVER_ORE = forgeRegistry.getValue(new ResourceLocation("thermal", "deepslate_silver_ore"));
-        Block NICKEL_ORE =  forgeRegistry.getValue(new ResourceLocation("thermal", "nickel_ore"));
-        Block DEEPSLATE_NICKEL_ORE = forgeRegistry.getValue(new ResourceLocation("thermal", "deepslate_nickel_ore"));
-        Block NITER_ORE = forgeRegistry.getValue(new ResourceLocation("thermal", "niter_ore"));
-        Block DEEPSLATE_NITER_ORE = forgeRegistry.getValue(new ResourceLocation("thermal", "deepslate_niter_ore"));
-        Block ZINC_ORE = forgeRegistry.getValue(new ResourceLocation("create", "zinc_ore"));
-        Block DEEPSLATE_ZINC_ORE = forgeRegistry.getValue(new ResourceLocation("create", "deepslate_zinc_ore"));
+        Block TIN_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "tin_ore"));
+        Block DEEPSLATE_TIN_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "deepslate_tin_ore"));
+        Block SILVER_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "silver_ore"));
+        Block DEEPSLATE_SILVER_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "deepslate_silver_ore"));
+        Block NICKEL_ORE =  forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "nickel_ore"));
+        Block DEEPSLATE_NICKEL_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "deepslate_nickel_ore"));
+        Block NITER_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "niter_ore"));
+        Block DEEPSLATE_NITER_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("thermal", "deepslate_niter_ore"));
+        Block ZINC_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("create", "zinc_ore"));
+        Block DEEPSLATE_ZINC_ORE = forgeRegistry.getValue(ResourceLocation.fromNamespaceAndPath("create", "deepslate_zinc_ore"));
 
         NATURAL_ORE_PAIRS = new Pair[] {
                 orePair(forgeRegistry, Blocks.COAL_ORE, BLOCK_NATURAL_COAL_ORE.get()),
@@ -352,7 +398,7 @@ public class Registry {
 
     @SubscribeEvent
     public static void onAttachCapabilities(AttachCapabilitiesEvent<Level> event) {
-        event.addCapability(new ResourceLocation(ExoAdventureAdditions.MODID, "daytime_dilation"), new DaytimeDilationProvider());
+        event.addCapability(ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "daytime_dilation"), new DaytimeDilationProvider());
     }
 
     @SubscribeEvent
@@ -367,7 +413,7 @@ public class Registry {
         if (mc.getConnection() == null || mc.level == null) { return; }
 
         ResourceLocation tabLocation = event.getTabKey().location();
-        if (tabLocation.equals(new ResourceLocation("exoadvadditions", "adventure_maps"))) {
+        if (tabLocation.equals(ResourceLocation.fromNamespaceAndPath("exoadvadditions", "adventure_maps"))) {
             RegistryAccess registryAccess = mc.level.registryAccess();
             RecipeManager recipes = Minecraft.getInstance().getConnection().getRecipeManager();
             recipes.getRecipes().stream().filter(recipe -> recipe instanceof AdventureMapRecipe).forEach(recipe -> {
@@ -382,17 +428,30 @@ public class Registry {
     }
 
     public static void registerTomeRecipes() {
-        ENTITY_COLELYTRA = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("mythicmounts", "colelytra"));
-        ENTITY_DRAGON = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("mythicmounts", "dragon"));
-        ENTITY_FIREBIRD = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("mythicmounts", "firebird"));
-        ENTITY_GRIFFON = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("mythicmounts", "griffon"));
-        ENTITY_MOTH = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("mythicmounts", "moth"));
-        ENTITY_NETHER_BAT = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("mythicmounts", "netherbat"));
-        ENTITY_NUDIBRANCH = ForgeRegistries.ENTITY_TYPES.getValue(new ResourceLocation("mythicmounts", "nudibranch"));
+        ENTITY_COLELYTRA = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "colelytra"));
+        ENTITY_DRAGON = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "dragon"));
+        ENTITY_FIREBIRD = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "firebird"));
+        ENTITY_GRIFFON = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "griffon"));
+        ENTITY_MOTH = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "moth"));
+        ENTITY_NETHER_BAT = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "netherbat"));
+        ENTITY_NUDIBRANCH = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "nudibranch"));
 
-        final Item itemCrypticEye = ForgeRegistries.ITEMS.getValue(new ResourceLocation("endrem", "cryptic_eye"));
-        final Item itemExperienceBlock = ForgeRegistries.ITEMS.getValue(new ResourceLocation("create", "experience_block"));
-        final TagKey<Item> tagEndRemEyes = TagKey.create(Registries.ITEM, new ResourceLocation("exoadventure", "end_rem_eyes"));
+        ITEM_SPELLBREAKER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "spellbreaker"));
+        ITEM_AMETHYST_RAPIER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "amethyst_rapier"));
+        ITEM_KEEPER_FLAMBERGE = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "keeper_flamberge"));
+
+        ITEM_THUNDERCALLER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("botania", "thunder_sword"));
+        ITEM_STARCALLER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("botania", "star_sword"));
+
+        ITEM_ETHERIUM_CHESTPLATE = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_chestplate"));
+        ITEM_ETHERIUM_LEGGINGS = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_leggings"));
+
+        xpScrolls = new Item[]{ ITEM_SCROLL_OF_SKILL_XP_COMBAT.get(), ITEM_SCROLL_OF_SKILL_XP_MINING.get(), ITEM_SCROLL_OF_SKILL_XP_HUSBANDRY.get(),
+                ITEM_SCROLL_OF_SKILL_XP_FISHING.get(), ITEM_SCROLL_OF_SKILL_XP_OCCULT.get(), ITEM_SCROLL_OF_SKILL_XP_EXPLORATION.get() };
+
+        final Item itemCrypticEye = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("endrem", "cryptic_eye"));
+        final Item itemExperienceBlock = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("create", "experience_block"));
+        final TagKey<Item> tagEndRemEyes = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadventure", "end_rem_eyes"));
 
         TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
                 .topLayer(new String[]{"AAA", "AQA", "AAA"})
@@ -418,8 +477,8 @@ public class Registry {
                 .midLayer(new String[]{"BBB", "B B", "BBB"})
                 .lowLayer(new String[]{"AIA", "III", "AIA"})
                 .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK),
-                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "storage_blocks/iron"))),
-                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "bookshelves")))))
+                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron"))),
+                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
                 .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(ITEM_INFERNAL_MANUSCRIPT.get()), 1),
                         ItemMapping.of(Ingredient.of(ITEM_SCROLL_OF_GROWTH.get()), 1)))
                 .result(new ItemStack(ITEM_INFERNAL_SCROLL_OF_GROWTH.get()), 1)
@@ -432,9 +491,9 @@ public class Registry {
                 .withLayer(new String[]{"IBBBI", "B   B", "B   B", "B   B", "IBBBI"})
                 .withLayer(new String[]{"AIIIA", "IAAAI", "IAAAI", "IAAAI", "AIIIA"})
                 .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK),
-                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "storage_blocks/gold"))),
-                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "bookshelves")))))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(ITEM_ENDER_MANUSCRIPT.get()), 1),
+                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold"))),
+                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
+                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(ITEM_ENDER_MANUSCRIPT.get()), 2),
                         ItemMapping.of(Ingredient.of(ITEM_SCROLL_OF_GROWTH.get()), 1)))
                 .result(new ItemStack(ITEM_ENDER_SCROLL_OF_GROWTH.get()))
                 .build());
@@ -444,8 +503,8 @@ public class Registry {
                 .midLayer(new String[]{"BBB", "B B", "BBB"})
                 .lowLayer(new String[]{"AIA", "III", "AIA"})
                 .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK),
-                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "storage_blocks/diamond"))),
-                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, new ResourceLocation("forge", "bookshelves")))))
+                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/diamond"))),
+                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
                 .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(ITEM_ANCIENT_MANUSCRIPT.get()), 1),
                         ItemMapping.of(Ingredient.of(ITEM_SCROLL_OF_GROWTH.get()), 1)))
                 .result(new ItemStack(ITEM_ANCIENT_SCROLL_OF_GROWTH.get()))

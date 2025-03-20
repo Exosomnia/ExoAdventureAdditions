@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class AnvilMenuMixin {
 
     @ModifyConstant(method = "createResult", constant = @Constant(intValue = 40, ordinal = 2))
-    private int updateMaxOnMenu(int max) { return 100; }
+    private int updateMaxOnMenu(int max) { return 200; }
 
     @ModifyConstant(method = "createResult", constant = @Constant(intValue = 40, ordinal = 1))
     private int updateRenameOnlyMax(int max) { return 2; }

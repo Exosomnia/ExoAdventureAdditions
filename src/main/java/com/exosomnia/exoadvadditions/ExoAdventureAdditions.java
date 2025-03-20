@@ -3,6 +3,7 @@ package com.exosomnia.exoadvadditions;
 import com.exosomnia.exoadvadditions.events.ModdedEventTweaks;
 import com.exosomnia.exoadvadditions.managers.DepthsMusicManager;
 import net.minecraft.ChatFormatting;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

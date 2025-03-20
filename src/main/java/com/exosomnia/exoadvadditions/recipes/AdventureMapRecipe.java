@@ -8,7 +8,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
@@ -16,6 +15,7 @@ import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraftforge.common.crafting.PartialNBTIngredient;
 
 public class AdventureMapRecipe extends ShapedRecipe {
 
@@ -47,7 +47,8 @@ public class AdventureMapRecipe extends ShapedRecipe {
             for (int i = 0; i < 9; ++i) {
                 JsonElement element = array.get(i);
                 if (element.isJsonNull()) continue;
-                ingredients.set(i, Ingredient.fromJson(element));
+                if (element.isJsonObject() && element.getAsJsonObject().has("nbt")) { ingredients.set(i, PartialNBTIngredient.Serializer.INSTANCE.parse(element.getAsJsonObject())); }
+                else { ingredients.set(i, Ingredient.fromJson(element)); }
             }
 
             return new AdventureMapRecipe(resourceLocation, ingredients,

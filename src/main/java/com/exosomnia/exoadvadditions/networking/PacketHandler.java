@@ -12,7 +12,7 @@ public class PacketHandler {
 
     private static final String PROTOCOL_VERSION = "1";
     private static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(ExoAdventureAdditions.MODID, "main"),
+            ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "main"),
             () -> PROTOCOL_VERSION,
             PROTOCOL_VERSION::equals,
             PROTOCOL_VERSION::equals

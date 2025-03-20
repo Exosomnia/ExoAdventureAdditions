@@ -1,0 +1,6 @@
+{
+  "type": "exoadvadditions:attune_feather_crafting",
+  "feather": {
+    "item": "exoadvadditions:infernal_feather"
+  }
+}

@@ -147,7 +147,7 @@ public class MysteriousTomeItem extends Item {
             if (result != null) {
                 level.addFreshEntity(new ItemEntity(level, centerPos.x, centerPos.y, centerPos.z, result));
                 player.awardStat(Stats.ITEM_CRAFTED.get(result.getItem()), 1);
-                if (score != 0) { player.awardStat(ExoStats.TOME_CRAFTING_SCORE.get(), score); }
+                if (score != 0) { player.awardStat(ExoStats.OCCULT_SCORE.get(), score); }
             }
             player.getCooldowns().addCooldown(this, 20);
 
@@ -197,7 +197,8 @@ public class MysteriousTomeItem extends Item {
             MinecraftServer server = level.getServer();
             CommandSourceStack stack = server.createCommandSourceStack().withPermission(4).withSource(server).withSuppressedOutput();
             for (var i = 0; i < 6; i++) {
-                server.getCommands().performPrefixedCommand(stack, String.format("pandora %s", player.getName().getString()));
+                server.getCommands().performPrefixedCommand(stack, String.format("pandora %1$s pandorasbox:%2$s", player.getName().getString(),
+                        Registry.VALID_PANDORA.get(level.random.nextInt(Registry.VALID_PANDORA.size()))));
             }
 
             GameStageHelper.increaseGlobalGameStage(GameStageHelper.getGameStages().get(4));

@@ -11,10 +11,12 @@
     "AnvilMenuMixin",
     "LivingEntityMixin",
     "PlayerMixin",
-    "PlayerAccessor",
     "EndCityPieces$EndCityPieceMixin",
     "VillagerAccessor",
-    "MobEffectsMixin"
+    "MerchantOfferMixin",
+    "MobEffectsMixin",
+    "FoodDataMixin",
+    "DimensionTypesMixin"
   ],
   "client": [
     "AnvilScreenMixin"

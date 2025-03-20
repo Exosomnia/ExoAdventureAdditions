@@ -1,6 +1,7 @@
 package com.exosomnia.exoadvadditions.items;
 
 import com.exosomnia.exolib.utils.ComponentUtils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -17,6 +18,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -40,21 +45,30 @@ public class MysteriousPackageItem extends Item {
 
         ServerLevel serverLevel = (ServerLevel)level;
         int amount = listContentsTag.size();
-        ItemStack[] allContents = new ItemStack[amount];
+        ObjectArrayList<ItemStack> allContents = new ObjectArrayList<>();
         for(var i = 0; i < amount; i++){
             Tag itemTag = listContentsTag.get(i);
             if (!(itemTag instanceof CompoundTag compoundItemTag)) { return InteractionResultHolder.fail(stack); }
 
-            Item newItem = serverLevel.registryAccess().registryOrThrow(Registries.ITEM).get(ResourceLocation.of(compoundItemTag.getString("id"), ':'));
-            if (newItem == null) { return InteractionResultHolder.fail(stack); }
+            if (compoundItemTag.contains("id")) {
+                Item newItem = serverLevel.registryAccess().registryOrThrow(Registries.ITEM).get(ResourceLocation.bySeparator(compoundItemTag.getString("id"), ':'));
+                if (newItem == null) {
+                    return InteractionResultHolder.fail(stack);
+                }
 
-            int count = Math.max(compoundItemTag.getInt("count"), 1);
-            allContents[i] = new ItemStack(newItem, count);
+                int count = Math.max(compoundItemTag.getInt("count"), 1);
+                allContents.add(new ItemStack(newItem, count));
+            }
+            else if (compoundItemTag.contains("table")) {
+                LootTable table = serverLevel.getServer().getLootData().getLootTable(ResourceLocation.bySeparator(compoundItemTag.getString("table"), ':'));
+                LootParams lootparams = (new LootParams.Builder(serverLevel)).withParameter(LootContextParams.ORIGIN, player.position()).withParameter(LootContextParams.THIS_ENTITY, player).withLuck(player.getLuck()).create(LootContextParamSets.CHEST);
+                table.getRandomItems(lootparams, allContents::add);
+            }
         }
 
         stack.shrink(1);
-        for (var i = 0; i < amount; i++) {
-            ItemStack newStack = allContents[i];
+        for (var i = 0; i < allContents.size(); i++) {
+            ItemStack newStack = allContents.get(i);
             if (!player.getInventory().add(newStack.copy())) {
                 player.drop(newStack, false);
             }
