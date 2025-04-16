@@ -6,6 +6,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -52,18 +53,23 @@ public class TomeOfAmnesia extends TomeItem {
     @Override
     public ItemStack finishUsingItem(ItemStack itemStack, Level level, LivingEntity entity) {
         if (!(entity instanceof Player player)) { return itemStack; }
-        if (player.experienceLevel >= 10 || eternal) {
+        if (player.experienceLevel >= 15 || eternal) {
             if (!level.isClientSide) {
                 player.getCooldowns().addCooldown(this, 20);
-                if (!eternal) { player.giveExperiencePoints(-150); }
+                if (!eternal) { player.giveExperiencePoints(-300); }
                 MinecraftServer server = ((ServerLevel) level).getServer();
                 CommandSourceStack sourceStack = player.createCommandSourceStack().withPermission(2).withSource(player).withSuppressedOutput();
-                server.getCommands().performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:combat");
-                server.getCommands().performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:exploration");
-                server.getCommands().performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:fishing");
-                server.getCommands().performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:husbandry");
-                server.getCommands().performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:mining");
-                server.getCommands().performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:occult");
+                Commands commands = server.getCommands();
+                commands.performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:combat");
+                commands.performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:exploration");
+                commands.performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:fishing");
+                commands.performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:husbandry");
+                commands.performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:mining");
+                commands.performPrefixedCommand(sourceStack, "puffish_skills skills reset @s exoadventure:occult");
+                commands.performPrefixedCommand(sourceStack, "exoskill @s reset");
+                commands.performPrefixedCommand(sourceStack, "syncedtag @s remove exoveinmine");
+                commands.performPrefixedCommand(sourceStack, "syncedtag @s remove exoveinmine-enhanced");
+                commands.performPrefixedCommand(sourceStack, "syncedtag @s remove WaystoneReduction");
             }
             else if (entity instanceof LocalPlayer localPlayer) {
                 localPlayer.displayClientMessage(Component.translatable("item.exoadvadditions.tome_of_amnesia.activated").withStyle(ChatFormatting.GOLD), false);

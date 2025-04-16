@@ -162,6 +162,7 @@ dependencies {
     // The group id is ignored when searching -- in this case, it is "blank"
     // implementation fg.deobf("blank:coolmod-${mc_version}:${coolmod_version}")
     compileOnly fg.deobf("com.majruszsdifficulty.majruszsdifficulty:majruszs-difficulty-forge-1.20.1-1.9.10:1.9.10")
+    compileOnly fg.deobf("net.puffish.attributesmod:puffish_attributes-0.7.3-1.20-forge:0.7.3")
 
     implementation fg.deobf("curse.maven:waystones-245755:6270584")
 

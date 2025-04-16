@@ -1,0 +1,17 @@
+{
+  "global_injects": {
+    "cause": "minecraft:fishing"
+  },
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "name": "exoadvadditions:gameplay/fishing_xp_bonus"
+        }
+      ],
+      "conditions": []
+    }
+  ]
+}

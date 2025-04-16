@@ -3,28 +3,37 @@ package com.exosomnia.exoadvadditions.events;
 import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
 import com.exosomnia.exoadvadditions.items.GrowthScrollItem;
+import com.exosomnia.exoadvadditions.items.TomeOfLuck;
+import com.exosomnia.exoarmory.ExoArmory;
 import com.exosomnia.exolib.capabilities.persistentplayerdata.PersistentPlayerDataProvider;
+import com.exosomnia.exolib.mixin.interfaces.ILivingEntityMixin;
+import com.exosomnia.exoskills.item.ArcaneSingularityItem;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.LevelAccessor;
@@ -33,6 +42,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.TagsUpdatedEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingUseTotemEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -43,6 +53,8 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.puffish.attributesmod.AttributesMod;
+import net.puffish.attributesmod.api.DynamicModification;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -107,9 +119,7 @@ public class VanillaEventTweaks {
         }
         else if (event.getType() == VillagerProfession.LEATHERWORKER) {
             VillagerTrades.ItemListing rank1Leather = trades.get(1).set(0, (entity, random) -> new MerchantOffer(new ItemStack(Items.LEATHER, 5), new ItemStack(Items.EMERALD), 16, 2, 0.05F));
-            VillagerTrades.ItemListing rank2Boots = trades.get(2).remove(1);
 
-            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 2), new ItemStack(Items.LEATHER, 3), 6, 5, 0.20F));
             trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.STRING, 24), new ItemStack(Items.EMERALD), 12, 5, 0.05F));
 
             trades.get(3).remove(1);
@@ -117,10 +127,21 @@ public class VanillaEventTweaks {
 
             trades.get(4).remove(0);
             trades.get(4).add(0, (entity, random) -> new MerchantOffer(new ItemStack(Items.SCUTE, 2), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+            trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 1), new ItemStack(Items.LEATHER, 2), 6, 15, 0.20F));
 
             trades.get(5).remove(1);
-            trades.get(5).add(rank2Boots);
             trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD), new ItemStack(Items.GLOW_ITEM_FRAME, 2), 12, 30, 0.05F));
+
+            ItemStack scholarSet = new ItemStack(Registry.ITEM_MYSTERIOUS_PACKAGE.get());
+            CompoundTag compoundTag = new CompoundTag();
+            ListTag listTag = new ListTag();
+            CompoundTag contentsTag = new CompoundTag();
+            contentsTag.putString("table", "exoadvadditions:gameplay/trade_scholar_set");
+            listTag.add(contentsTag);
+            compoundTag.put("contents", listTag);
+            scholarSet.setTag(compoundTag);
+            scholarSet.setHoverName(Component.translatable("trade.exoadvadditions.scholar_gear"));
+            trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 16), scholarSet.copy(), 6, 30, 0.20F));
         }
         else if (event.getType() == VillagerProfession.CARTOGRAPHER) {
             ItemStack unlocatedMapTrade = new ItemStack(Registry.ITEM_UNLOCATED_MAP.get());
@@ -184,6 +205,9 @@ public class VanillaEventTweaks {
                 for (var i = 0; i < modTag.getInt("growthScrolls"); i++) {
                     GrowthScrollItem.applyAttributes(expAttribute, i);
                 }
+                if (modTag.getBoolean("luckTome")) {
+                    TomeOfLuck.applyAttributes(player.getAttribute(Attributes.LUCK));
+                }
             }
         });
     }
@@ -216,5 +240,49 @@ public class VanillaEventTweaks {
         level.destroyBlock(blockOrigin, false);
         level.playSound(null, blockOrigin, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 1.0F, 0.75F);
         level.sendParticles(ParticleTypes.SMOKE, origin.x, origin.y, origin.z, 15, 0, 0, 0, 0.025);
+    }
+
+    /*
+     * Various fixes for the exo mods bow functionality for modpack
+     * No idea what mods are causing issues, but they are screwing with releaseUsing method for BowItem
+     */
+    @SubscribeEvent
+    public static void modpackBowItemFixes(EntityJoinLevelEvent event) {
+        Entity joined = event.getEntity();
+        if (event.getLevel().isClientSide || !(joined instanceof AbstractArrow arrow) || !(arrow.getOwner() instanceof LivingEntity owner)) return;
+
+        ItemStack usedItem = ((ILivingEntityMixin)owner).getLastUsedItemStack();
+        if (usedItem == null || !(usedItem.getItem() instanceof ProjectileWeaponItem)) return;
+
+        //Power nerf, reduce damage scaling to just 0.5 per level instead of 1.0 base + 0.5 after level 1
+        int power = usedItem.getEnchantmentLevel(Enchantments.POWER_ARROWS);
+        if (power > 0) arrow.setBaseDamage(arrow.getBaseDamage() - 0.5);
+
+        CompoundTag arrowTag = arrow.getPersistentData();
+
+        //Arcane Singularity fix
+        if (ArcaneSingularityItem.isSingularityActive(usedItem)) {
+            if (ArcaneSingularityItem.hasSingularityEffect(usedItem, ArcaneSingularityItem.SingularityEffect.SOUL_BURN)) {
+                arrowTag.putBoolean("SOUL_BURN", true);
+            }
+            else if (ArcaneSingularityItem.hasSingularityEffect(usedItem, ArcaneSingularityItem.SingularityEffect.CRIPPLING_STRIKE)) {
+                arrowTag.putBoolean("CRIPPLING_STRIKE", true);
+            }
+        }
+
+        //Arrow Recovery attribute fix & Puffish attributes
+        if (owner instanceof ServerPlayer player) {
+            double recoveryChance = (player.getAttributeValue(ExoArmory.REGISTRY.ATTRIBUTE_ARROW_RECOVERY.get()) - 1.0);
+            if (player.getRandom().nextDouble() < recoveryChance) arrowTag.putBoolean("Recovery", true);
+
+            Item usedItemObject = usedItem.getItem();
+            Vec3 movement = arrow.getDeltaMovement();
+            if (usedItemObject instanceof BowItem) {
+                arrow.setDeltaMovement(movement.scale(DynamicModification.create().withPositive(AttributesMod.BOW_PROJECTILE_SPEED, player).applyTo(1.0)));
+            }
+            else if (usedItemObject instanceof CrossbowItem) {
+                arrow.setDeltaMovement(movement.scale(DynamicModification.create().withPositive(AttributesMod.CROSSBOW_PROJECTILE_SPEED, player).applyTo(1.0)));
+            }
+        }
     }
 }

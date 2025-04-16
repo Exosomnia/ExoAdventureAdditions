@@ -1,0 +1,11 @@
+{
+  "type": "exoadvadditions:type_the_beginning",
+  "generator": {
+    "type": "minecraft:noise",
+    "biome_source": {
+      "type": "minecraft:fixed",
+      "biome": "exoadvadditions:biome_beginning"
+    },
+    "settings": "exoadvadditions:noise_beginning"
+  }
+}

@@ -11,10 +11,12 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -22,6 +24,7 @@ import net.minecraftforge.fml.common.Mod;
 public class AdventureManager {
 
     public final static GameRules.Key<GameRules.BooleanValue> RULE_CAN_BREAK = GameRules.register("canBreak", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
+    public final static GameRules.Key<GameRules.BooleanValue> RULE_CAN_HURT = GameRules.register("canHurt", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
     public final static GameRules.Key<GameRules.BooleanValue> RULE_CAN_HUNGER_DRAIN = GameRules.register("canHungerDrain", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
     public final static GameRules.Key<GameRules.BooleanValue> RULE_ADVENTURE_STARTED = GameRules.register("adventureStarted", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
 
@@ -39,15 +42,16 @@ public class AdventureManager {
         GameRules rules = level.getGameRules();
         if (level.getGameTime() == 0 && Config.newWorldsIntro) {
             CommandSourceStack stack = server.createCommandSourceStack().withPermission(4).withSource(server).withSuppressedOutput();
-            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.antidoteVessel.maxEffectDuration 20");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.antidoteVessel.maxEffectDuration 15");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.feralClaws.attackSpeedBonus 10");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.powerGlove.attackDamageBonus 2");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.crystalHeart.healthBonus 5");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.runningShoes.speedBonus 20");
-            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.maxHealingPerHit 2");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.maxHealingPerHit 1");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.absorptionRatio 10");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.absorptionChance 100");
             rules.getRule(RULE_CAN_BREAK).set(false, event.getServer());
+            rules.getRule(RULE_CAN_HURT).set(false, event.getServer());
             rules.getRule(RULE_CAN_HUNGER_DRAIN).set(false, event.getServer());
             rules.getRule(RULE_ADVENTURE_STARTED).set(false, event.getServer());
             rules.getRule(GameRules.RULE_DAYLIGHT).set(false, event.getServer());
@@ -65,6 +69,13 @@ public class AdventureManager {
     @SubscribeEvent
     public static void playerBreakEvent(BlockEvent.BreakEvent event) {
         if (event.getLevel() instanceof ServerLevel level && !level.getGameRules().getRule(RULE_CAN_BREAK).get()) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public static void livingHurtEvent(LivingHurtEvent event) {
+        if (event.getEntity().level() instanceof ServerLevel level && !level.getGameRules().getRule(RULE_CAN_HURT).get()) {
             event.setCanceled(true);
         }
     }

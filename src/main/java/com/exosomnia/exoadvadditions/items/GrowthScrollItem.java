@@ -41,7 +41,7 @@ public class GrowthScrollItem extends Item {
     public GrowthScrollItem(int rank) {
         super(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON));
         this.rank = rank;
-        xpRate = 1.0 + ((rank + 1.0) * .25);
+        xpRate = 1.0 + ((rank + 1.0) * .125);
     }
 
     @Override
@@ -85,6 +85,6 @@ public class GrowthScrollItem extends Item {
     }
 
     public static void applyAttributes(AttributeInstance expAttribute, int rank) {
-        expAttribute.addPermanentModifier(new AttributeModifier(EXP_MOD_UUIDS[rank], "Growth Scroll", 0.25, AttributeModifier.Operation.ADDITION));
+        expAttribute.addPermanentModifier(new AttributeModifier(EXP_MOD_UUIDS[rank], "Growth Scroll", 0.125, AttributeModifier.Operation.ADDITION));
     }
 }

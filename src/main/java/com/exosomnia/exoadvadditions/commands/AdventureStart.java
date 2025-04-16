@@ -32,6 +32,7 @@ public class AdventureStart {
             WorldBorder border = level.getWorldBorder();
 
             rules.getRule(AdventureManager.RULE_CAN_BREAK).set(true, server);
+            rules.getRule(AdventureManager.RULE_CAN_HURT).set(true, server);
             rules.getRule(AdventureManager.RULE_CAN_HUNGER_DRAIN).set(true, server);
             rules.getRule(AdventureManager.RULE_ADVENTURE_STARTED).set(true, server);
             rules.getRule(GameRules.RULE_DAYLIGHT).set(true, server);

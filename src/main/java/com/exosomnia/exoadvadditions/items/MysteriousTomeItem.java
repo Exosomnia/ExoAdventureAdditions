@@ -144,12 +144,17 @@ public class MysteriousTomeItem extends Item {
             Integer score = recipe.getScore();
             int centerOffset = craftSize/2;
             Vec3 centerPos = startPos.offset(centerOffset, centerOffset, centerOffset).getCenter();
-            if (result != null) {
+            if (recipe.shouldDropResult()) {
                 level.addFreshEntity(new ItemEntity(level, centerPos.x, centerPos.y, centerPos.z, result));
                 player.awardStat(Stats.ITEM_CRAFTED.get(result.getItem()), 1);
-                if (score != 0) { player.awardStat(ExoStats.OCCULT_SCORE.get(), score); }
             }
+            if (score != 0) { player.awardStat(ExoStats.OCCULT_SCORE.get(), score); }
+            player.awardStat(craftSize == 3 ? Registry.STAT_TOME_CRAFTS.get() : Registry.STAT_ADVANCED_TOME_CRAFTS.get(), 1);
             player.getCooldowns().addCooldown(this, 20);
+
+            BlockPos centerBlockPos = BlockPos.containing(centerPos.x, centerPos.y, centerPos.z);
+            BiConsumer<ServerPlayer, BlockPos> execute = recipe.getExecute();
+            if (execute != null) { execute.accept(player, centerBlockPos); }
 
             //Recipe resource cleanup
             for (BlockPos pos : positions) {
@@ -160,7 +165,6 @@ public class MysteriousTomeItem extends Item {
             }
 
             //Flashy effects
-            BlockPos centerBlockPos = BlockPos.containing(centerPos.x, centerPos.y, centerPos.z);
             level.playSound(null, centerBlockPos, SoundEvents.TRIDENT_THUNDER, SoundSource.PLAYERS, 1.0F, 0.75F);
             ParticleShapePacket particles = new ParticleShapePacket(new ParticleShapeLine(new RGBSParticleOptions(
                     ExoLib.REGISTRY.SWIRL_PARTICLE.get(), 0.0F, 0.5F, 0.25F, 0.1F),
@@ -168,9 +172,6 @@ public class MysteriousTomeItem extends Item {
             for(ServerPlayer connected : level.players()) {
                 PacketHandler.sendToPlayer(particles, connected);
             }
-
-            BiConsumer<ServerPlayer, BlockPos> execute = recipe.getExecute();
-            if (execute != null) { execute.accept(player, centerBlockPos); }
         }
 
         return InteractionResult.sidedSuccess(false);

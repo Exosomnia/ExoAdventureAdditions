@@ -21,13 +21,16 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
 
@@ -42,11 +45,13 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
 
     private final static Component TITLE = Component.translatable("recipe_category.exoadvadditions.tome_crafting.alt");
     private final IDrawable icon;
+    private final IDrawable iconHelp;
 
     private final static int INDEX_SIZE = 4;
 
     public AdvancedShapedTomeRecipeCategory(IGuiHelper guiHelper) {
         icon = guiHelper.createDrawableItemLike(Registry.ITEM_MYSTERIOUS_TOME_UNLEASHED.get());
+        iconHelp = guiHelper.drawableBuilder(JEIIntegration.INFO_ICON, 0, 0, 16, 16).setTextureSize(16,16).build();
     }
 
     public int getWidth() { return (int)(81 * getTargetScale()) + 53; }
@@ -106,7 +111,7 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
             }
         }
         ItemStack result = tomeRecipe.getResult();
-        if (result != null) { builder.addSlot(RecipeIngredientRole.OUTPUT, itemXOffset + 36, (getHeight()/2) - 9).addItemStack(result); }
+        builder.addSlot(RecipeIngredientRole.OUTPUT, itemXOffset + 36, (getHeight()/2) - 9).addItemStack(result == null ? ItemStack.EMPTY : result);
 
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemLike(Registry.ITEM_MYSTERIOUS_TOME_UNLEASHED.get());
     }
@@ -115,8 +120,6 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
     public void draw(AdvancedShapedTomeRecipe tomeRecipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         List<TomeRecipe.BlockMapping[][]> layers = tomeRecipe.getRecipeShape();
         int size = layers.size();
-        int totalIndex = 16;
-
         float targetScale = getTargetScale();
 
         PoseStack poseStack = guiGraphics.pose();
@@ -124,6 +127,7 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
         poseStack.last().pose().scale(targetScale);
 
         for (var lay = 0; lay < size; lay ++) {
+            int totalIndex = 16;
             TomeRecipe.BlockMapping[][] layer = layers.get(lay);
             int drawYOffset = 184 - (46 * lay);
             for (var i = 0; i < size; i++) {
@@ -135,6 +139,7 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
                         int validCount = validBlocks.size();
                         if (validCount == 1) { currentBlock = validBlocks.stream().findFirst().get(); }
                         else { currentBlock = validBlocks.toArray(new Block[0])[(int)(ExoArmory.RENDERING_MANAGER.getTotalTicks() * .05) % validCount]; }
+                        if (!Screen.hasShiftDown() /*&& ((i % (size - 1) == 0) || (ii % (size - 1) == 0))*/) currentBlock = currentBlock.equals(Blocks.AIR) ? Registry.BLOCK_BLANK_OUTLIINE.get() : currentBlock;
                         guiGraphics.renderItem(new ItemStack(currentBlock.asItem()), iStartPos.x + (8 * ii), iStartPos.y + drawYOffset + (4 * ii), 0, totalIndex += 16);
                     }
                 }
@@ -147,7 +152,7 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
         ImmutableList<TomeRecipe.ItemMapping> items = tomeRecipe.getRecipeItems();
         if (items != null && !items.isEmpty()) {
             guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(0, 0, 1600);
+            guiGraphics.pose().translate(0, 0, 320);
             int itemXOffset = (int)Math.ceil(81 * targetScale) + 17;
             int itemCount = items.size();
             int itemIndex = 0;
@@ -163,9 +168,24 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
         }
 
         icon.draw(guiGraphics, (int)Math.ceil(81 * targetScale) + 18, (getHeight()/2) - 9);
-        Rect2i hoverArea = new Rect2i((int)Math.ceil(81 * targetScale) + 18, (getHeight()/2) - 9, 17, 17);
+        Rect2i hoverAreaTome = new Rect2i((int)Math.ceil(81 * targetScale) + 18, (getHeight()/2) - 9, 16, 16);
 
-        if (hoverArea.contains((int)mouseX, (int)mouseY)) {
+        if (tomeRecipe.hasRecipeHelp()) {
+            iconHelp.draw(guiGraphics, (int)Math.ceil(81 * targetScale) + 18, (getHeight()/2) - 26);
+            Rect2i hoverAreaHelp = new Rect2i((int)Math.ceil(81 * targetScale) + 18, (getHeight()/2) - 27, 16, 16);
+
+            if (hoverAreaHelp.contains((int)mouseX, (int)mouseY)) {
+                ImmutableList.Builder<Component> tooltipLines = new ImmutableList.Builder<>();
+                tomeRecipe.getRecipeHelp().forEach(help -> tooltipLines.add(ComponentUtils.formatLine(I18n.get(help), ComponentUtils.Styles.DEFAULT_DESC.getStyle(),
+                        ComponentUtils.Styles.HIGHLIGHT_STAT.getStyle(), ComponentUtils.Styles.HIGHLIGHT_DESC.getStyle())));
+                guiGraphics.renderTooltip(Minecraft.getInstance().font,
+                        tooltipLines.build(),
+                        Optional.empty(), (int)mouseX, (int)mouseY);
+                return; //Return to prevent checking for tome hover
+            }
+        }
+
+        if (hoverAreaTome.contains((int)mouseX, (int)mouseY)) {
             guiGraphics.renderTooltip(Minecraft.getInstance().font,
                     List.of(ComponentUtils.formatLine(I18n.get("recipe_category.exoadvadditions.tome_crafting.help.1.alt"),
                                     ComponentUtils.Styles.DEFAULT_DESC.getStyle()),
@@ -176,7 +196,14 @@ public class AdvancedShapedTomeRecipeCategory implements IRecipeCategory<Advance
                             ComponentUtils.formatLine(I18n.get("recipe_category.exoadvadditions.tome_crafting.help.4"),
                                     ComponentUtils.Styles.DEFAULT_DESC.getStyle()),
                             ComponentUtils.formatLine(I18n.get("recipe_category.exoadvadditions.tome_crafting.help.5"),
-                                    ComponentUtils.Styles.DEFAULT_DESC.getStyle())),
+                                    ComponentUtils.Styles.DEFAULT_DESC.getStyle()),
+                            ComponentUtils.formatLine("", ComponentUtils.Styles.DEFAULT_DESC.getStyle()),
+                            ComponentUtils.formatLine(I18n.get("recipe_category.exoadvadditions.tome_crafting.help.6"),
+                                    ComponentUtils.Styles.DEFAULT_DESC.getStyle()),
+                            ComponentUtils.formatLine(I18n.get("recipe_category.exoadvadditions.tome_crafting.help.7"),
+                                    ComponentUtils.Styles.DEFAULT_DESC.getStyle()),
+                            ComponentUtils.formatLine(I18n.get("recipe_category.exoadvadditions.tome_crafting.help.8"),
+                                    ComponentUtils.Styles.DEFAULT_DESC.getStyle(), ComponentUtils.Styles.HIGHLIGHT_DESC.getStyle())),
                     Optional.empty(), (int)mouseX, (int)mouseY);
         }
     }

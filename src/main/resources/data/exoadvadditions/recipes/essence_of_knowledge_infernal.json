@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "E": {
+      "item": "exoadvadditions:essence_of_knowledge"
+    },
+    "M": {
+      "item": "exoadvadditions:infernal_manuscript"
+    }
+  },
+  "pattern": [
+    "EEE",
+    "EME",
+    "EEE"
+  ],
+  "result": {
+    "item": "exoadvadditions:scroll_of_skill_xp_occult",
+    "nbt": "{value:2400}"
+  }
+}

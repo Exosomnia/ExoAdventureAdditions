@@ -2,6 +2,7 @@ package com.exosomnia.exoadvadditions.items;
 
 import com.exosomnia.exoadvadditions.Registry;
 import com.exosomnia.exolib.utils.ComponentUtils;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -11,6 +12,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
@@ -38,10 +40,13 @@ public class BottledMessageItem extends Item {
                 break;
             case 3, 4:
                 message = new ItemStack(Registry.xpScrolls[random.nextInt(Registry.xpScrolls.length)]);
-                message.getOrCreateTag().putInt("value", 1200);
+                message.getOrCreateTag().putInt("value", message.is(Registry.ITEM_SCROLL_OF_SKILL_XP_FISHING.get()) ? 4800 : 2400);
                 break;
             default:
-                message = new ItemStack(Registry.ITEM_SCROLL_OF_GROWTH.get());
+                message = new ItemStack(Registry.ITEM_UNLOCATED_MAP.get());
+                CompoundTag tag = message.getOrCreateTag();
+                tag.putString("structure", "minecraft:buried_treasure");
+                tag.putString("name", "map.exoadvadditions.buried_treasure");
                 break;
         }
 

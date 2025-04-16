@@ -28,6 +28,7 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector2i;
@@ -43,11 +44,13 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
 
     private final static Component TITLE = Component.translatable("recipe_category.exoadvadditions.tome_crafting");
     private final IDrawable icon;
+    private final IDrawable iconHelp;
 
     private final static int INDEX_SIZE = 2;
 
     public ShapedTomeRecipeCategory(IGuiHelper guiHelper) {
         icon = guiHelper.createDrawableItemLike(Registry.ITEM_MYSTERIOUS_TOME_ACTIVE.get());
+        iconHelp = guiHelper.drawableBuilder(JEIIntegration.INFO_ICON, 0, 0, 16, 16).setTextureSize(16,16).build();
     }
 
     public int getWidth() { return 102; }
@@ -98,7 +101,7 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
             }
         }
         ItemStack result = tomeRecipe.getResult();
-        if (result != null) { builder.addSlot(RecipeIngredientRole.OUTPUT, 85, 40).addItemStack(result); }
+        builder.addSlot(RecipeIngredientRole.OUTPUT, 85, 40).addItemStack(result == null ? ItemStack.EMPTY : result);
 
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemLike(Registry.ITEM_MYSTERIOUS_TOME_ACTIVE.get());
         builder.addInvisibleIngredients(RecipeIngredientRole.CATALYST).addItemLike(Registry.ITEM_MYSTERIOUS_TOME_UNLEASHED.get());
@@ -108,9 +111,9 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
     public void draw(ShapedTomeRecipe tomeRecipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         List<TomeRecipe.BlockMapping[][]> layers = tomeRecipe.getRecipeShape();
         int size = layers.size();
-        int totalIndex = 16;
 
         for (var lay = 0; lay < size; lay ++) {
+            int totalIndex = 16;
             TomeRecipe.BlockMapping[][] layer = layers.get(lay);
             int drawYOffset = 64 - (32 * lay);
             for (var i = 0; i < size; i++) {
@@ -122,6 +125,7 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
                         int validCount = validBlocks.size();
                         if (validCount == 1) { currentBlock = validBlocks.stream().findFirst().get(); }
                         else { currentBlock = validBlocks.toArray(new Block[0])[(int)(ExoArmory.RENDERING_MANAGER.getTotalTicks() * .05) % validCount]; }
+                        //currentBlock = currentBlock.equals(Blocks.AIR) ? Registry.BLOCK_BLANK_OUTLIINE.get() : currentBlock;
                         guiGraphics.renderItem(new ItemStack(currentBlock.asItem()), iStartPos.x + (8 * ii), iStartPos.y + drawYOffset + (4 * ii), 0, totalIndex += 16);
                     }
                 }
@@ -132,7 +136,7 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
         ImmutableList<TomeRecipe.ItemMapping> items = tomeRecipe.getRecipeItems();
         if (items != null && !items.isEmpty()) {
             guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(0, 0, 1600);
+            guiGraphics.pose().translate(0, 0, 320);
             int itemCount = items.size();
             int itemIndex = 0;
             int itemYOffset = 49 - ((itemCount - 1) * 9);
@@ -147,9 +151,24 @@ public class ShapedTomeRecipeCategory implements IRecipeCategory<ShapedTomeRecip
         }
 
         icon.draw(guiGraphics, 67, 40);
-        Rect2i hoverArea = new Rect2i(67, 40, 17, 17);
+        Rect2i hoverAreaTome = new Rect2i(67, 40, 17, 17);
 
-        if (hoverArea.contains((int)mouseX, (int)mouseY)) {
+        if (tomeRecipe.hasRecipeHelp()) {
+            iconHelp.draw(guiGraphics, 67, 22);
+            Rect2i hoverAreaHelp = new Rect2i(67, 22, 17, 17);
+
+            if (hoverAreaHelp.contains((int)mouseX, (int)mouseY)) {
+                ImmutableList.Builder<Component> tooltipLines = new ImmutableList.Builder<>();
+                tomeRecipe.getRecipeHelp().forEach(help -> tooltipLines.add(ComponentUtils.formatLine(I18n.get(help), ComponentUtils.Styles.DEFAULT_DESC.getStyle(),
+                        ComponentUtils.Styles.HIGHLIGHT_STAT.getStyle(), ComponentUtils.Styles.HIGHLIGHT_DESC.getStyle())));
+                guiGraphics.renderTooltip(Minecraft.getInstance().font,
+                        tooltipLines.build(),
+                        Optional.empty(), (int)mouseX, (int)mouseY);
+                return; //Return to prevent checking for tome hover
+            }
+        }
+
+        if (hoverAreaTome.contains((int)mouseX, (int)mouseY)) {
             guiGraphics.renderTooltip(Minecraft.getInstance().font,
                     List.of(ComponentUtils.formatLine(I18n.get("recipe_category.exoadvadditions.tome_crafting.help.1"),
                                     ComponentUtils.Styles.DEFAULT_DESC.getStyle()),

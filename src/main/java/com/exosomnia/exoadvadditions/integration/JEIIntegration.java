@@ -3,6 +3,7 @@ package com.exosomnia.exoadvadditions.integration;
 
 import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
+import com.exosomnia.exoarmory.ExoArmory;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
@@ -21,6 +22,9 @@ import java.util.List;
 
 @JeiPlugin
 public class JEIIntegration implements IModPlugin {
+
+    protected static final ResourceLocation INFO_ICON = ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "textures/gui/icon/info.png");
+
     @Override
     public ResourceLocation getPluginUid() {
         return ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "jei_plugin");
@@ -43,31 +47,9 @@ public class JEIIntegration implements IModPlugin {
 
         registration.addRecipes(ShapedTomeRecipeCategory.TOME_RECIPE, Registry.TOME_RECIPE_MANAGER.recipes);
         registration.addRecipes(AdvancedShapedTomeRecipeCategory.TOME_RECIPE, Registry.TOME_RECIPE_MANAGER.advancedRecipes);
-        registration.addRecipes(RecipeTypes.BREWING, List.of(
-                new IJeiBrewingRecipe() {
-                    @Override
-                    public @Unmodifiable List<ItemStack> getPotionInputs() {
-                        return List.of();
-                    }
-
-                    @Override
-                    public @Unmodifiable List<ItemStack> getIngredients() {
-                        return List.of();
-                    }
-
-                    @Override
-                    public ItemStack getPotionOutput() {
-                        return null;
-                    }
-
-                    @Override
-                    public int getBrewingSteps() {
-                        return 0;
-                    }
-                }
-        ));
 
         registration.addIngredientInfo(Registry.ITEM_CHARGED_CIRCUIT_BOARD.get(), Component.translatable("item.exoadvadditions.charged_circuit_board.jei.info"));
+        registration.addIngredientInfo(Registry.ITEM_MYSTERIOUS_TOME.get(), Component.translatable("item.exoadvadditions.mysterious_tome_dormant.jei.info"));
         registration.addIngredientInfo(Registry.ITEM_MYSTERIOUS_TOME_ACTIVE.get(), Component.translatable("item.exoadvadditions.mysterious_tome_active.jei.info"));
         registration.addIngredientInfo(Registry.ITEM_MYSTERIOUS_TOME_UNLEASHED.get(), Component.translatable("item.exoadvadditions.mysterious_tome_unleashed.jei.info"));
 
@@ -75,6 +57,8 @@ public class JEIIntegration implements IModPlugin {
         registration.addIngredientInfo(Registry.ITEM_INFERNAL_FEATHER.get(), Component.translatable("item.exoadvadditions.magicked_feather.jei.info"));
         registration.addIngredientInfo(Registry.ITEM_ENDER_FEATHER.get(), Component.translatable("item.exoadvadditions.magicked_feather.jei.info"));
         registration.addIngredientInfo(Registry.ITEM_ANCIENT_FEATHER.get(), Component.translatable("item.exoadvadditions.magicked_feather.jei.info"));
+
+        registration.addIngredientInfo(Registry.ITEM_OLD_MANUSCRIPT.get(), Component.translatable("item.exoadvadditions.old_manuscript.jei.info"));
 
         registration.addIngredientInfo(Registry.ITEM_STARCALLER, Component.translatable("item.exoadvadditions.star_sword.jei.info"));
     }

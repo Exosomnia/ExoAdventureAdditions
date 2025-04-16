@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:fishing",
+  "pools": [
+    {
+      "conditions": [],
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 190,
+          "quality": -1
+        },
+        {
+          "type": "minecraft:loot_table",
+          "name": "exoadvadditions:gameplay/fishing_xp_scrolls",
+          "weight": 10,
+          "quality": 1
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "exoadvadditions:gameplay/fishing_xp_bonus"
+}

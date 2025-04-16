@@ -14,12 +14,18 @@ public class Config
             .comment("Enables the intro period when creating new worlds. Time is paused, blocks cannot be broken, and no random ticks happen.")
             .define("newWorldsIntro", true);
 
+    private static final ForgeConfigSpec.BooleanValue COWBOY_IDE_MODE = BUILDER
+            .comment("Disables many functions, so I can run this in my IDE, exists because this project is giga cowboy coded lol.")
+            .define("cowboyModeFixes", false);
+
     static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static boolean newWorldsIntro;
+    public static boolean cowboyModeFixes;
 
     @SubscribeEvent
     static void onLoad(final ModConfigEvent event) {
         newWorldsIntro = NEW_WORLDS_INTRO.get();
+        cowboyModeFixes = COWBOY_IDE_MODE.get();
     }
 }

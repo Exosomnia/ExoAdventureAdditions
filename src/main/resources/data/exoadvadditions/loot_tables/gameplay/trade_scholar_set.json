@@ -1,0 +1,52 @@
+{
+  "type": "minecraft:fishing",
+  "pools": [
+    {
+      "conditions": [],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:leather_helmet",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{display:{Name:'{\"text\":\"Scholar\\'s Cap\",\"color\":\"yellow\",\"italic\":false}',color:8239947},AttributeModifiers:[{AttributeName:\"generic.armor\",Name:\"generic.armor\",Amount:1,Operation:0,UUID:[I;491482737,-1222623070,-1911329499,-188144174],Slot:\"head\"},{AttributeName:\"exoadvadditions:skills_xp_bonus\",Name:\"xp_bonus\",Amount:0.01,Operation:1,UUID:[I;1192239602,-1364901070,-1210625155,-83641351],Slot:\"head\"}],Trim:{material:\"minecraft:gold\",pattern:\"minecraft:dune\"}}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:leather_chestplate",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{display:{Name:'{\"text\":\"Scholar\\'s Tunic\",\"color\":\"yellow\",\"italic\":false}',color:8239947},AttributeModifiers:[{AttributeName:\"generic.armor\",Name:\"generic.armor\",Amount:3,Operation:0,UUID:[I;216676065,547046382,-1899546105,-1504831145],Slot:\"chest\"},{AttributeName:\"exoadvadditions:skills_xp_bonus\",Name:\"xp_bonus\",Amount:0.01,Operation:1,UUID:[I;-1019043076,1512261704,-1656658173,-642495777],Slot:\"chest\"}],Trim:{material:\"minecraft:gold\",pattern:\"minecraft:vex\"}}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:leather_leggings",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{display:{Name:'{\"text\":\"Scholar\\'s Leggings\",\"color\":\"yellow\",\"italic\":false}',color:8239947},AttributeModifiers:[{AttributeName:\"generic.armor\",Name:\"generic.armor\",Amount:2,Operation:0,UUID:[I;2060662230,-469022514,-2061239506,402438546],Slot:\"legs\"},{AttributeName:\"exoadvadditions:skills_xp_bonus\",Name:\"xp_bonus\",Amount:0.01,Operation:1,UUID:[I;1391554072,1089487602,-2133333015,-1294550985],Slot:\"legs\"}],Trim:{material:\"minecraft:gold\",pattern:\"minecraft:tide\"}}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:leather_boots",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{display:{Name:'{\"text\":\"Scholar\\'s Shoes\",\"color\":\"yellow\",\"italic\":false}',color:8239947},AttributeModifiers:[{AttributeName:\"generic.armor\",Name:\"generic.armor\",Amount:1,Operation:0,UUID:[I;353947025,191057353,-1990812594,618061865],Slot:\"feet\"},{AttributeName:\"exoadvadditions:skills_xp_bonus\",Name:\"xp_bonus\",Amount:0.01,Operation:1,UUID:[I;2067180763,-1291959767,-1889243226,-1018502002],Slot:\"feet\"}],Trim:{material:\"minecraft:gold\",pattern:\"minecraft:ward\"}}"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "exoadvadditions:gameplay/trade_scholar_set"
+}

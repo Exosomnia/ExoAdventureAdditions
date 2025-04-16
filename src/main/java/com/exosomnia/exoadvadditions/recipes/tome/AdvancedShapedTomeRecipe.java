@@ -24,12 +24,17 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
 
     private ImmutableList<ItemMapping> itemMappings;
     private boolean hasItems = false;
-    public record CraftResult(ItemStack itemStack, Integer score){}
+    private boolean hasRecipeHelp = false;
     private CraftResult result;
 
     private BiConsumer<ServerPlayer, BlockPos> execute;
+    private List<String> recipeHelp;
 
     public AdvancedShapedTomeRecipe(@NotNull ImmutableMap<Character, BlockMapping> blockMappings, @Nullable ImmutableList<ItemMapping> itemMappings, List<String[]> layerStrings, @Nullable CraftResult result, BiConsumer<ServerPlayer, @Nullable BlockPos> execute) {
+        this(blockMappings, itemMappings, layerStrings, result, execute, null);
+    }
+
+    public AdvancedShapedTomeRecipe(@NotNull ImmutableMap<Character, BlockMapping> blockMappings, @Nullable ImmutableList<ItemMapping> itemMappings, List<String[]> layerStrings, @Nullable CraftResult result, BiConsumer<ServerPlayer, @Nullable BlockPos> execute, @Nullable List<String> recipeHelp) {
         int lay, i, ii; //Used for loops
 
         for (lay = 0; lay < 5; lay++) {
@@ -53,6 +58,8 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
         }
 
         this.result = result;
+        this.recipeHelp = recipeHelp;
+        if (recipeHelp != null) hasRecipeHelp = true;
     }
 
     public boolean isRecipe(@Nullable ArrayList<ItemStack> itemMappings, List<BlockState[][]> layers) {
@@ -80,7 +87,7 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
         for (var i = 0; i < mappingSize; i++) {
             ItemMapping check = this.itemMappings.get(i);
             boolean isValid = false;
-            for (var ii = 0; ii < mappingSize; ii++) {
+            for (var ii = 0; ii < itemMappings.size(); ii++) {
                 if (check.matches(itemMappings.get(ii))) {
                     itemMappings.remove(ii);
                     isValid = true;
@@ -92,12 +99,19 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
         return true;
     }
 
+    @Override
+    public boolean shouldDropResult() {
+        return (result != null) && result.shouldDrop();
+    }
+
     public ItemStack getResult() {
-        return result == null ? null : result.itemStack.copy();
+        if (result == null) return null;
+        if (result.itemStack() == null) return null;
+        return result.itemStack().copy();
     }
 
     public Integer getScore() {
-        return result == null ? null : result.score;
+        return result == null ? 0 : result.score();
     }
 
     public BiConsumer<ServerPlayer, BlockPos> getExecute() {
@@ -114,6 +128,16 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
         return itemMappings;
     }
 
+    @Override
+    public boolean hasRecipeHelp() {
+        return hasRecipeHelp;
+    }
+
+    @Override
+    public List<String> getRecipeHelp() {
+        return recipeHelp;
+    }
+
     public static class Builder {
 
         private List<String[]> layers = new ArrayList<>();
@@ -123,6 +147,9 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
 
         private CraftResult result;
         private BiConsumer<ServerPlayer, BlockPos> execute;
+
+        private boolean hasRecipeHelp = false;
+        private List<String> recipeHelp;
 
         public Builder withLayer(String[] layerString) {
             this.layers.add(layerString);
@@ -149,7 +176,12 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
         }
 
         public Builder result(ItemStack result, Integer score) {
-            this.result = new CraftResult(result, score);
+            this.result = new CraftResult(result, score, true);
+            return this;
+        }
+
+        public Builder result(ItemStack result, Integer score, boolean drops) {
+            this.result = new CraftResult(result, score, drops);
             return this;
         }
 
@@ -158,6 +190,17 @@ public class AdvancedShapedTomeRecipe extends TomeRecipe {
             return this;
         }
 
-        public AdvancedShapedTomeRecipe build() { return new AdvancedShapedTomeRecipe(blockMappings, itemMappings, layers, result, execute); }
+        public Builder withHelp(List<String> recipeHelp) {
+            this.recipeHelp = recipeHelp;
+            if (recipeHelp != null) hasRecipeHelp = true;
+            return this;
+        }
+
+        public AdvancedShapedTomeRecipe build() {
+            if (!hasRecipeHelp) {
+                return new AdvancedShapedTomeRecipe(blockMappings, itemMappings, layers, result, execute);
+            }
+            return new AdvancedShapedTomeRecipe(blockMappings, itemMappings, layers, result, execute, recipeHelp);
+        }
     }
 }

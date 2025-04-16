@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "exoadvadditions:teleporter_plate"
+    "exoadvadditions:teleporter_plate",
+    "exoadvadditions:enchanted_deepslate"
   ]
 }

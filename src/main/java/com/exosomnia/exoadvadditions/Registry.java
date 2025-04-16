@@ -11,21 +11,14 @@ import com.exosomnia.exoadvadditions.effects.WakefulnessEffect;
 import com.exosomnia.exoadvadditions.items.*;
 import com.exosomnia.exoadvadditions.loot.ChestsLootModifier;
 import com.exosomnia.exoadvadditions.loot.DepthsLootModifier;
-import com.exosomnia.exoadvadditions.loot.MacGuffinLootModifier;
+import com.exosomnia.exoadvadditions.loot.conditions.DifficultyStageCondition;
 import com.exosomnia.exoadvadditions.networking.PacketHandler;
-import com.exosomnia.exoadvadditions.networking.packets.SimpleMusicPacket;
 import com.exosomnia.exoadvadditions.recipes.AdventureMapRecipe;
 import com.exosomnia.exoadvadditions.recipes.AttuneFeatherRecipe;
 import com.exosomnia.exoadvadditions.recipes.MysteriousPackageRecipe;
 import com.exosomnia.exoadvadditions.recipes.ShapedNBTOptionalRecipe;
-import com.exosomnia.exoadvadditions.recipes.tome.AdvancedShapedTomeRecipe;
-import com.exosomnia.exoadvadditions.recipes.tome.ShapedTomeRecipe;
-import com.exosomnia.exoadvadditions.recipes.tome.TomeRecipe.*;
 import com.exosomnia.exoadvadditions.recipes.tome.TomeRecipeManager;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.Pair;
@@ -36,22 +29,14 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
-import net.minecraft.world.entity.animal.Rabbit;
-import net.minecraft.world.entity.animal.Wolf;
-import net.minecraft.world.entity.animal.horse.Horse;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
@@ -61,7 +46,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -78,7 +63,6 @@ import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 @Mod.EventBusSubscriber(modid = ExoAdventureAdditions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class Registry {
@@ -109,7 +93,6 @@ public class Registry {
 
     public static final DeferredRegister<Codec<? extends IGlobalLootModifier>> GLOBAL_LOOT_MODS = DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, ExoAdventureAdditions.MODID);
 
-    public static final RegistryObject<Codec<MacGuffinLootModifier>> LOOT_MOD_MACGUFFIN = GLOBAL_LOOT_MODS.register("loot_mod_macguffin", MacGuffinLootModifier.CODEC);
     public static final RegistryObject<Codec<DepthsLootModifier>> LOOT_DEPTHS = GLOBAL_LOOT_MODS.register("loot_mod_depths", DepthsLootModifier.CODEC);
     public static final RegistryObject<Codec<ChestsLootModifier>> LOOT_CHESTS = GLOBAL_LOOT_MODS.register("loot_mod_chests", ChestsLootModifier.CODEC);
 
@@ -127,7 +110,13 @@ public class Registry {
             ShapedNBTOptionalRecipe.Serializer::new);
 
 
+    public static final DeferredRegister<LootItemConditionType> LOOT_ITEM_CONDITIONS = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, ExoAdventureAdditions.MODID);
+    public static final RegistryObject<LootItemConditionType> DIFFICULTY_STAGE_CONDITION = LOOT_ITEM_CONDITIONS.register("difficulty_stage_condition", () -> new LootItemConditionType(new DifficultyStageCondition.Serializer()));
+
+
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ExoAdventureAdditions.MODID);
+    public static final RegistryObject<Block> BLOCK_ENCHANTED_DEEPSLATE = BLOCKS.register("enchanted_deepslate", () -> new Block(BlockBehaviour.Properties.copy(Blocks.COBBLED_DEEPSLATE)));
+    public static final RegistryObject<Block> BLOCK_BLANK_OUTLIINE = BLOCKS.register("blank_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS)));
     public static final RegistryObject<Block> BLOCK_TELEPORTER_PLATE = BLOCKS.register("teleporter_plate", TeleporterPlateBlock::new);
 
     public static final RegistryObject<Block> BLOCK_NATURAL_COAL_ORE = BLOCKS.register("natural_coal_ore", () -> new DropExperienceBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(3.0F, 3.0F), UniformInt.of(0, 2)));
@@ -170,7 +159,8 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_TOME_OF_AMNESIA = ITEMS.register("tome_of_amnesia", () -> new TomeOfAmnesia(new Item.Properties().stacksTo(16), 1, false));
     public static final RegistryObject<Item> ITEM_ASCENDED_TOME_OF_AMNESIA = ITEMS.register("ascended_tome_of_amnesia", () -> new TomeOfAmnesia(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 2, true));
     public static final RegistryObject<Item> ITEM_TOME_OF_FLIGHT = ITEMS.register("tome_of_flight", () -> new TomeOfFlight(new Item.Properties().stacksTo(16), 1, false));
-    public static final RegistryObject<Item> ITEM_ASCENDED_ITEM_TOME_OF_FLIGHT = ITEMS.register("ascended_tome_of_flight", () -> new TomeOfFlight(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 2, true));
+    public static final RegistryObject<Item> ITEM_ASCENDED_TOME_OF_FLIGHT = ITEMS.register("ascended_tome_of_flight", () -> new TomeOfFlight(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 2, true));
+    public static final RegistryObject<Item> ITEM_TOME_OF_LUCK = ITEMS.register("tome_of_luck", () -> new TomeOfLuck(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 1, false));
     public static final RegistryObject<Item> ITEM_ETERNA_CRYSTALIS = ITEMS.register("eterna_crystalis", () -> new SimpleFoiledItem(new Item.Properties().stacksTo(64).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> ITEM_NETHERITE_INGOT_STACK = ITEMS.register("netherite_ingot_stack", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_CRUSHED_ANCIENT_DEBRIS = ITEMS.register("crushed_ancient_debris", () -> new Item(new Item.Properties().stacksTo(64)));
@@ -208,6 +198,8 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_INFERNAL_SCROLL_OF_GROWTH = ITEMS.register("infernal_scroll_of_growth", () -> new GrowthScrollItem(1));
     public static final RegistryObject<Item> ITEM_ENDER_SCROLL_OF_GROWTH = ITEMS.register("ender_scroll_of_growth", () -> new GrowthScrollItem(2));
     public static final RegistryObject<Item> ITEM_ANCIENT_SCROLL_OF_GROWTH = ITEMS.register("ancient_scroll_of_growth", () -> new GrowthScrollItem(3));
+    public static final RegistryObject<Item> ITEM_ESSENCE_OF_KNOWLEDGE = ITEMS.register("essence_of_knowledge", () -> new Item(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_TENACITY = ITEMS.register("scroll_of_tenacity", TenacityScrollItem::new);
     public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_COMBAT = ITEMS.register("scroll_of_skill_xp_combat", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.COMBAT));
     public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_MINING = ITEMS.register("scroll_of_skill_xp_mining", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.MINING));
     public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_FISHING = ITEMS.register("scroll_of_skill_xp_fishing", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.FISHING));
@@ -245,9 +237,15 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_MACGUFFIN_12 = ITEMS.register("macguffin_12", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_13 = ITEMS.register("macguffin_13", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_14 = ITEMS.register("macguffin_14", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_15_UNFINISHED_1 = ITEMS.register("macguffin_15_unfinished_1", () -> new UnfinishedMacguffinItem(1));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_15_UNFINISHED_2 = ITEMS.register("macguffin_15_unfinished_2", () -> new UnfinishedMacguffinItem(2));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_15_UNFINISHED_3 = ITEMS.register("macguffin_15_unfinished_3", () -> new UnfinishedMacguffinItem(3));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_15_UNFINISHED_4 = ITEMS.register("macguffin_15_unfinished_4", () -> new UnfinishedMacguffinItem(4));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_15 = ITEMS.register("macguffin_15", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_16 = ITEMS.register("macguffin_16", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<BlockItem> ITEM_TELEPORTER_PLATE_BLOCK = ITEMS.register("teleporter_plate", () -> new BlockItem(BLOCK_TELEPORTER_PLATE.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> ITEM_ENCHANTED_DEEPSLATE_BLOCK = ITEMS.register("enchanted_deepslate", () -> new BlockItem(BLOCK_ENCHANTED_DEEPSLATE.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> ITEM_BLANK_OUTLINE_BLOCK = ITEMS.register("blank_block", () -> new BlockItem(BLOCK_BLANK_OUTLIINE.get(), new Item.Properties()));
 
 
     public static final DeferredRegister<CreativeModeTab> CREATIVE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, ExoAdventureAdditions.MODID);
@@ -265,6 +263,7 @@ public class Registry {
             .title(Component.translatable("tab.exoadvadditions.maps"))
             .icon(() -> new ItemStack(ITEM_UNLOCATED_MAP.get()))
             .build());
+
 
     public static final DeferredRegister<MobEffect> MOB_EFFECTS = DeferredRegister.create(ForgeRegistries.MOB_EFFECTS,
             ExoAdventureAdditions.MODID);
@@ -295,6 +294,10 @@ public class Registry {
                     1.0,
                     0.0,
                     127.0));
+
+    public static final DeferredRegister<ResourceLocation> STATS = DeferredRegister.create(Registries.CUSTOM_STAT, ExoAdventureAdditions.MODID);
+    public static final RegistryObject<ResourceLocation> STAT_TOME_CRAFTS = STATS.register("tome_crafts", () -> ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "tome_crafts"));
+    public static final RegistryObject<ResourceLocation> STAT_ADVANCED_TOME_CRAFTS = STATS.register("advanced_tome_crafts", () -> ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "advanced_tome_crafts"));
 
     public static Item[] xpScrolls;
 
@@ -335,6 +338,8 @@ public class Registry {
         MOB_EFFECTS.register(modBus);
         SOUND_EVENTS.register(modBus);
         ATTRIBUTES.register(modBus);
+        LOOT_ITEM_CONDITIONS.register(modBus);
+        STATS.register(modBus);
     }
 
     public static void setupOres() {
@@ -427,7 +432,7 @@ public class Registry {
         }
     }
 
-    public static void registerTomeRecipes() {
+    public static void fillInAfterRegistry() {
         ENTITY_COLELYTRA = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "colelytra"));
         ENTITY_DRAGON = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "dragon"));
         ENTITY_FIREBIRD = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "firebird"));
@@ -446,119 +451,11 @@ public class Registry {
         ITEM_ETHERIUM_CHESTPLATE = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_chestplate"));
         ITEM_ETHERIUM_LEGGINGS = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_leggings"));
 
+        ITEM_ETHERIUM_LEGGINGS = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_leggings"));
+
         xpScrolls = new Item[]{ ITEM_SCROLL_OF_SKILL_XP_COMBAT.get(), ITEM_SCROLL_OF_SKILL_XP_MINING.get(), ITEM_SCROLL_OF_SKILL_XP_HUSBANDRY.get(),
                 ITEM_SCROLL_OF_SKILL_XP_FISHING.get(), ITEM_SCROLL_OF_SKILL_XP_OCCULT.get(), ITEM_SCROLL_OF_SKILL_XP_EXPLORATION.get() };
 
-        final Item itemCrypticEye = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("endrem", "cryptic_eye"));
-        final Item itemExperienceBlock = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("create", "experience_block"));
-        final TagKey<Item> tagEndRemEyes = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadventure", "end_rem_eyes"));
-
-        TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
-                .topLayer(new String[]{"AAA", "AQA", "AAA"})
-                .midLayer(new String[]{"AQA", "Q Q", "AQA"})
-                .lowLayer(new String[]{"AAA", "AQA", "AAA"})
-                .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK), 'Q', BlockMapping.of(Blocks.QUARTZ_BLOCK)))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(Blocks.LAPIS_BLOCK.asItem()), 2)))
-                .result(new ItemStack(ITEM_MAGICAL_RUNES.get()), 1)
-                .build());
-
-        TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
-                .topLayer(new String[]{"AQA", "QGQ", "AQA"})
-                .midLayer(new String[]{"QGQ", "G G", "QGQ"})
-                .lowLayer(new String[]{"AQA", "QGQ", "AQA"})
-                .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK), 'Q', BlockMapping.of(Blocks.QUARTZ_BLOCK), 'G', BlockMapping.of(Blocks.GLOWSTONE)))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(tagEndRemEyes), 1), ItemMapping.of(Ingredient.of(tagEndRemEyes), 1),
-                        ItemMapping.of(Ingredient.of(tagEndRemEyes), 1), ItemMapping.of(Ingredient.of(itemExperienceBlock), 1)))
-                .result(new ItemStack(itemCrypticEye), 1)
-                .build());
-
-        TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
-                .topLayer(new String[]{"AIA", "III", "AIA"})
-                .midLayer(new String[]{"BBB", "B B", "BBB"})
-                .lowLayer(new String[]{"AIA", "III", "AIA"})
-                .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK),
-                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron"))),
-                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(ITEM_INFERNAL_MANUSCRIPT.get()), 1),
-                        ItemMapping.of(Ingredient.of(ITEM_SCROLL_OF_GROWTH.get()), 1)))
-                .result(new ItemStack(ITEM_INFERNAL_SCROLL_OF_GROWTH.get()), 1)
-                .build());
-
-        TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
-                .withLayer(new String[]{"AIIIA", "IAAAI", "IAAAI", "IAAAI", "AIIIA"})
-                .withLayer(new String[]{"IBBBI", "B   B", "B   B", "B   B", "IBBBI"})
-                .withLayer(new String[]{"IBBBI", "B   B", "B   B", "B   B", "IBBBI"})
-                .withLayer(new String[]{"IBBBI", "B   B", "B   B", "B   B", "IBBBI"})
-                .withLayer(new String[]{"AIIIA", "IAAAI", "IAAAI", "IAAAI", "AIIIA"})
-                .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK),
-                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold"))),
-                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(ITEM_ENDER_MANUSCRIPT.get()), 2),
-                        ItemMapping.of(Ingredient.of(ITEM_SCROLL_OF_GROWTH.get()), 1)))
-                .result(new ItemStack(ITEM_ENDER_SCROLL_OF_GROWTH.get()))
-                .build());
-
-        TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
-                .topLayer(new String[]{"AIA", "III", "AIA"})
-                .midLayer(new String[]{"BBB", "B B", "BBB"})
-                .lowLayer(new String[]{"AIA", "III", "AIA"})
-                .blockMappings(ImmutableMap.of('A', BlockMapping.of(Blocks.AMETHYST_BLOCK),
-                        'I', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/diamond"))),
-                        'B', BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(ITEM_ANCIENT_MANUSCRIPT.get()), 1),
-                        ItemMapping.of(Ingredient.of(ITEM_SCROLL_OF_GROWTH.get()), 1)))
-                .result(new ItemStack(ITEM_ANCIENT_SCROLL_OF_GROWTH.get()))
-                .build());
-
-        TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
-                .topLayer(new String[]{"OOO", "OOO", "OOO"})
-                .midLayer(new String[]{"WWW", "W W", "WWW"})
-                .lowLayer(new String[]{"WWW", "WWW", "WWW"})
-                .blockMappings(ImmutableMap.of('O', BlockMapping.of(Blocks.ORANGE_WOOL), 'W', BlockMapping.of(Blocks.WHITE_WOOL)))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(Items.CARROT), 2), ItemMapping.of(Ingredient.of(Items.DIAMOND_BLOCK), 1)))
-                .result(new ItemStack(Items.GOLDEN_CARROT, 32))
-                .execute((player, position) -> {
-                    ServerLevel level = player.serverLevel();
-                    Rabbit p = new Rabbit(EntityType.RABBIT, level);
-                    p.setPos(position.getCenter());
-                    p.setVariant(Rabbit.Variant.EVIL);
-                    p.getAttribute(Attributes.MAX_HEALTH).setBaseValue(20.0);
-                    p.setHealth(20.0F);
-                    level.addFreshEntity(p);
-                    for (ServerPlayer serverPlayers : level.getEntitiesOfClass(ServerPlayer.class, player.getBoundingBox().inflate(16.0))) {
-                        PacketHandler.sendToPlayer(new SimpleMusicPacket(Registry.SOUND_TOME_CRAFT_SOUND_P.getId()), serverPlayers);
-                    }
-                })
-                .build());
-
-        TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
-                .topLayer(new String[]{"BBB", "BBB", "BBB"})
-                .midLayer(new String[]{"QQQ", "Q Q", "QQQ"})
-                .lowLayer(new String[]{"PPP", "PPP", "PPP"})
-                .blockMappings(ImmutableMap.of('B', BlockMapping.of(Blocks.BLUE_WOOL), 'P', BlockMapping.of(Blocks.PINK_WOOL), 'Q', BlockMapping.of(Blocks.QUARTZ_BLOCK)))
-                .itemMappings(ImmutableList.of(ItemMapping.of(Ingredient.of(Items.BONE), 2), ItemMapping.of(Ingredient.of(Items.DIAMOND_BLOCK), 1)))
-                .execute((player, position) -> {
-                    ServerLevel level = player.serverLevel();
-                    Wolf f = new Wolf(EntityType.WOLF, level);
-                    f.setPos(position.getCenter());
-                    f.setTame(true);
-                    f.setOwnerUUID(player.getUUID());
-                    f.setCollarColor(DyeColor.LIGHT_BLUE);
-                    f.getAttribute(Attributes.MAX_HEALTH).setBaseValue(25.0);
-                    f.setHealth(25.0F);
-                    Wolf m = new Wolf(EntityType.WOLF, level);
-                    m.setPos(position.getCenter());
-                    m.setTame(true);
-                    m.setOwnerUUID(player.getUUID());
-                    m.setCollarColor(DyeColor.PINK);
-                    m.getAttribute(Attributes.MAX_HEALTH).setBaseValue(25.0);
-                    m.setHealth(25.0F);
-                    level.addFreshEntity(f);
-                    level.addFreshEntity(m);
-                    for (ServerPlayer serverPlayers : level.getEntitiesOfClass(ServerPlayer.class, player.getBoundingBox().inflate(16.0))) {
-                        PacketHandler.sendToPlayer(new SimpleMusicPacket(Registry.SOUND_TOME_CRAFT_SOUND_B.getId()), serverPlayers);
-                    }
-                })
-                .build());
+        RegistryTomeRecipes.registerRecipes();
     }
 }

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exoadvadditions:item/macguffin_15_unfinished"
+  }
+}

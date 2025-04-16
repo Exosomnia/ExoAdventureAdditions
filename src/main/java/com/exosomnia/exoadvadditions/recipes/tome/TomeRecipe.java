@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,12 +26,18 @@ import java.util.function.Predicate;
 
 public abstract class TomeRecipe {
 
+    public abstract boolean shouldDropResult();
     public abstract ItemStack getResult();
     public abstract Integer getScore();
     public abstract BiConsumer<ServerPlayer, BlockPos> getExecute();
 
     public abstract List<BlockMapping[][]> getRecipeShape();
     public abstract ImmutableList<ItemMapping> getRecipeItems();
+
+    public abstract boolean hasRecipeHelp();
+    public abstract List<String> getRecipeHelp();
+
+    public record CraftResult(@Nullable ItemStack itemStack, Integer score, boolean shouldDrop){}
 
     public static class ItemMapping {
 

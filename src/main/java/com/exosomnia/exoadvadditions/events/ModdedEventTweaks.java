@@ -1,25 +1,37 @@
 package com.exosomnia.exoadvadditions.events;
 
+import com.exosomnia.exoadvadditions.Config;
 import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
+import com.exosomnia.exoadvadditions.mixins.CombatTrackerMixin;
 import com.exosomnia.exoadvadditions.utils.ExoPotionUtils;
 import com.exosomnia.exoadvadditions.utils.ItemUtils;
 import com.exosomnia.exoarmory.ExoArmory;
+import com.exosomnia.exolib.capabilities.persistentplayerdata.PersistentPlayerDataProvider;
+import com.exosomnia.exoskills.ExoSkills;
 import com.exosomnia.exoskills.mixin.interfaces.IMobEffectInstanceMixin;
+import com.exosomnia.exoskills.mixin.mixins.MobEffectInstanceAccessor;
+import com.exosomnia.exoskills.skill.PlayerSkillData;
+import com.exosomnia.exoskills.skill.Skills;
+import com.exosomnia.exoskills.skill.type.EffectManipulatorSkill;
+import com.exosomnia.exostats.ExoStats;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.majruszsdifficulty.gamestage.GameStageHelper;
-import com.mojang.logging.LogUtils;
 import net.blay09.mods.waystones.api.WaystoneTeleportEvent;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.damagesource.CombatEntry;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
@@ -32,6 +44,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
@@ -51,6 +64,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityStruckByLightningEvent;
 import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.player.ItemFishedEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -60,6 +74,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @Mod.EventBusSubscriber(modid = ExoAdventureAdditions.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
@@ -79,13 +95,13 @@ public class ModdedEventTweaks {
 
     private static final ImmutableList<ImmutableList<Item>> validMeleeWeapons;
     private static ImmutableList<ItemStack> validOffhandItems;
-    private static ImmutableMap<Item, Consumer<ItemAttributeModifierEvent>> attributeMods;
+    private static ImmutableMap<Item, Consumer<ItemAttributeModifierEvent>> attributeMods = ImmutableMap.of();
     static {
         validMeleeWeapons = ImmutableList.of(
                 ImmutableList.of(Items.WOODEN_SWORD, Items.WOODEN_SHOVEL, Items.WOODEN_AXE,
                         Items.STONE_SWORD, Items.STONE_SHOVEL, Items.STONE_AXE),
                 ImmutableList.of(Items.WOODEN_SWORD, Items.WOODEN_AXE,
-                        Items.STONE_SWORD, Items.STONE_SHOVEL, Items.STONE_AXE,
+                        Items.STONE_SWORD, Items.STONE_AXE,
                         Items.IRON_SWORD, Items.IRON_SHOVEL, Items.IRON_AXE)
         );
     }
@@ -106,7 +122,7 @@ public class ModdedEventTweaks {
 
         ENTITY_WEX = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("bygonenether", "wex"));
 
-        if (ModList.get().isLoaded("mythicmounts")) {
+        if (!Config.cowboyModeFixes) {
             invalidEntities = ImmutableSet.of(
                     Registry.ENTITY_COLELYTRA, Registry.ENTITY_MOTH, Registry.ENTITY_DRAGON,
                     Registry.ENTITY_FIREBIRD, Registry.ENTITY_GRIFFON, Registry.ENTITY_NETHER_BAT,
@@ -120,44 +136,46 @@ public class ModdedEventTweaks {
                 new ItemStack(Items.FISHING_ROD)
         );
 
-        attributeMods = ImmutableMap.of(
-                Registry.ITEM_KEEPER_FLAMBERGE, ((event) -> {
-                    if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
-                    event.removeAttribute(Attributes.ATTACK_SPEED);
-                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.8, AttributeModifier.Operation.ADDITION));
-                }),
-                Registry.ITEM_SPELLBREAKER, ((event) -> {
-                    if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
-                    event.removeAttribute(Attributes.ATTACK_SPEED);
-                    event.removeAttribute(Attributes.ATTACK_DAMAGE);
-                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.4, AttributeModifier.Operation.ADDITION));
-                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(ItemUtils.UUID_ATTACK_DAMAGE, "Buff", 10.0, AttributeModifier.Operation.ADDITION));
-                }),
-                Registry.ITEM_AMETHYST_RAPIER, ((event) -> {
-                    if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
-                    event.removeAttribute(Attributes.ATTACK_SPEED);
-                    event.removeAttribute(Attributes.ATTACK_DAMAGE);
-                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.2, AttributeModifier.Operation.ADDITION));
-                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(ItemUtils.UUID_ATTACK_DAMAGE, "Nerf_2", 5.0, AttributeModifier.Operation.ADDITION));
-                }),
-                Registry.ITEM_THUNDERCALLER, ((event) -> {
-                    if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
-                    event.removeAttribute(Attributes.ATTACK_SPEED);
-                    event.removeAttribute(Attributes.ATTACK_DAMAGE);
-                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.2, AttributeModifier.Operation.ADDITION));
-                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(ItemUtils.UUID_ATTACK_DAMAGE, "Nerf_2", 5.0, AttributeModifier.Operation.ADDITION));
-                }),
-                Registry.ITEM_ETHERIUM_CHESTPLATE, ((event) -> {
-                    if (!event.getSlotType().equals(EquipmentSlot.CHEST)) return;
-                    event.removeAttribute(Attributes.ARMOR);
-                    event.addModifier(Attributes.ARMOR, new AttributeModifier(ItemUtils.UUID_CHEST_ARMOR, "Fix", 9.0, AttributeModifier.Operation.ADDITION));
-                }),
-                Registry.ITEM_ETHERIUM_LEGGINGS, ((event) -> {
-                    if (!event.getSlotType().equals(EquipmentSlot.LEGS)) return;
-                    event.removeAttribute(Attributes.ARMOR);
-                    event.addModifier(Attributes.ARMOR, new AttributeModifier(ItemUtils.UUID_LEGS_ARMOR, "Fix", 7.0, AttributeModifier.Operation.ADDITION));
-                })
-        );
+        if (!Config.cowboyModeFixes) {
+            attributeMods = ImmutableMap.of(
+                    Registry.ITEM_KEEPER_FLAMBERGE, ((event) -> {
+                        if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
+                        event.removeAttribute(Attributes.ATTACK_SPEED);
+                        event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.8, AttributeModifier.Operation.ADDITION));
+                    }),
+                    Registry.ITEM_SPELLBREAKER, ((event) -> {
+                        if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
+                        event.removeAttribute(Attributes.ATTACK_SPEED);
+                        event.removeAttribute(Attributes.ATTACK_DAMAGE);
+                        event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.4, AttributeModifier.Operation.ADDITION));
+                        event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(ItemUtils.UUID_ATTACK_DAMAGE, "Buff", 10.0, AttributeModifier.Operation.ADDITION));
+                    }),
+                    Registry.ITEM_AMETHYST_RAPIER, ((event) -> {
+                        if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
+                        event.removeAttribute(Attributes.ATTACK_SPEED);
+                        event.removeAttribute(Attributes.ATTACK_DAMAGE);
+                        event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.2, AttributeModifier.Operation.ADDITION));
+                        event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(ItemUtils.UUID_ATTACK_DAMAGE, "Nerf_2", 5.0, AttributeModifier.Operation.ADDITION));
+                    }),
+                    Registry.ITEM_THUNDERCALLER, ((event) -> {
+                        if (!event.getSlotType().equals(EquipmentSlot.MAINHAND)) return;
+                        event.removeAttribute(Attributes.ATTACK_SPEED);
+                        event.removeAttribute(Attributes.ATTACK_DAMAGE);
+                        event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(ItemUtils.UUID_ATTACK_SPEED, "Nerf", -2.2, AttributeModifier.Operation.ADDITION));
+                        event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(ItemUtils.UUID_ATTACK_DAMAGE, "Nerf_2", 5.0, AttributeModifier.Operation.ADDITION));
+                    }),
+                    Registry.ITEM_ETHERIUM_CHESTPLATE, ((event) -> {
+                        if (!event.getSlotType().equals(EquipmentSlot.CHEST)) return;
+                        event.removeAttribute(Attributes.ARMOR);
+                        event.addModifier(Attributes.ARMOR, new AttributeModifier(ItemUtils.UUID_CHEST_ARMOR, "Fix", 9.0, AttributeModifier.Operation.ADDITION));
+                    }),
+                    Registry.ITEM_ETHERIUM_LEGGINGS, ((event) -> {
+                        if (!event.getSlotType().equals(EquipmentSlot.LEGS)) return;
+                        event.removeAttribute(Attributes.ARMOR);
+                        event.addModifier(Attributes.ARMOR, new AttributeModifier(ItemUtils.UUID_LEGS_ARMOR, "Fix", 7.0, AttributeModifier.Operation.ADDITION));
+                    })
+            );
+        }
     }
 
     public static void setupStartedTweaks(Level level) {
@@ -183,7 +201,7 @@ public class ModdedEventTweaks {
             return;
         }
 
-        int stageOrdinal = GameStageHelper.getGlobalGameStage().getOrdinal();
+        int stageOrdinal = !Config.cowboyModeFixes ? GameStageHelper.getGlobalGameStage().getOrdinal() : 0;
 
         //Attributes for all mobs
         AttributeInstance maxHealthAttr = living.getAttribute(Attributes.MAX_HEALTH);
@@ -193,7 +211,7 @@ public class ModdedEventTweaks {
 
         //Attributes for ranged mobs
         AttributeInstance arrowAttr = living.getAttribute(ExoArmory.REGISTRY.ATTRIBUTE_RANGED_STRENGTH.get());
-        arrowAttr.addPermanentModifier(new AttributeModifier("spawn_stage_bonus", stageOrdinal * 0.0625, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        arrowAttr.addPermanentModifier(new AttributeModifier("spawn_stage_bonus", stageOrdinal * 0.08325, AttributeModifier.Operation.MULTIPLY_TOTAL));
 
         //Attributes for melee mobs
         AttributeInstance damageAttr = living.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -202,7 +220,7 @@ public class ModdedEventTweaks {
         //Attributes for creepers
         if (living instanceof Creeper) {
             AttributeInstance explosionAttr = living.getAttribute(ExoArmory.REGISTRY.ATTRIBUTE_EXPLOSION_STRENGTH.get());
-            explosionAttr.addPermanentModifier(new AttributeModifier("spawn_stage_bonus", stageOrdinal * 0.03125, AttributeModifier.Operation.MULTIPLY_TOTAL));
+            explosionAttr.addPermanentModifier(new AttributeModifier("spawn_stage_bonus", stageOrdinal * 0.03125, AttributeModifier.Operation.MULTIPLY_BASE));
         }
 
         //Equip mobs with gear
@@ -241,9 +259,10 @@ public class ModdedEventTweaks {
                 if (random.nextDouble() < effectiveRandom) {
                     ItemStack offhand = skeleton.getOffhandItem();
                     if (offhand.isEmpty()) {
-                        MobEffectInstance newEffect = switch (event.getLevel().getRandom().nextInt(5)) {
+                        MobEffectInstance newEffect = switch (event.getLevel().getRandom().nextInt(6)) {
                             case 0, 1 -> new MobEffectInstance(ExoArmory.REGISTRY.EFFECT_FROSTED.get(), 160, 0);
                             case 2, 3 -> new MobEffectInstance(MobEffects.WEAKNESS, 160, 0);
+                            case 4 -> new MobEffectInstance(MobEffects.HARM, 0, 1);
                             default -> new MobEffectInstance(MobEffects.WITHER, 160, 2);
                         };
                         skeleton.setItemInHand(InteractionHand.OFF_HAND, ExoPotionUtils.setColor(PotionUtils.setCustomEffects(new ItemStack(Items.TIPPED_ARROW), List.of(newEffect)), 0x2b0500));
@@ -251,19 +270,19 @@ public class ModdedEventTweaks {
                     }
                 }
             }
-            if (random.nextDouble() < (effectiveRandom * 0.5)) {
-                if (!(living instanceof Creeper)) {
+            if (!(living instanceof Creeper)) {
+                if (random.nextDouble() < (effectiveRandom * 0.5)) {
                     living.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, -1, Math.max(0, random.nextInt(3) - 1)));
                 }
-                else {
-                    AttributeInstance armorAttr = living.getAttribute(Attributes.ARMOR);
-                    armorAttr.addPermanentModifier(new AttributeModifier("spawn_stage_bonus", random.nextInt(8, 11), AttributeModifier.Operation.ADDITION));
+                if (random.nextDouble() < (effectiveRandom * 0.5)) {
+                    MobEffectInstance regenEffect = new MobEffectInstance(MobEffects.REGENERATION, -1, Math.max(1, random.nextInt(3)));
+                    ((IMobEffectInstanceMixin)regenEffect).setForced(true);
+                    living.addEffect(regenEffect);
                 }
             }
-            if (random.nextDouble() < (effectiveRandom * 0.5)) {
-                MobEffectInstance regenEffect = new MobEffectInstance(MobEffects.REGENERATION, -1, Math.max(1, random.nextInt(3)));
-                ((IMobEffectInstanceMixin)regenEffect).setForced(true);
-                living.addEffect(regenEffect);
+            else if (random.nextDouble() < (effectiveRandom * 0.5)) {
+                AttributeInstance armorAttr = living.getAttribute(Attributes.ARMOR);
+                armorAttr.addPermanentModifier(new AttributeModifier("spawn_stage_bonus", random.nextInt(8, 11), AttributeModifier.Operation.ADDITION));
             }
         }
 
@@ -274,6 +293,8 @@ public class ModdedEventTweaks {
             if (entity instanceof Creeper creeper) {
                 if (random.nextInt(3) == 2) {
                     creeper.getPersistentData().putBoolean("enhancedai:breach", true);
+                    AttributeInstance explosionAttr = living.getAttribute(ExoArmory.REGISTRY.ATTRIBUTE_EXPLOSION_STRENGTH.get());
+                    explosionAttr.addPermanentModifier(new AttributeModifier("depths_bonus", 0.10, AttributeModifier.Operation.MULTIPLY_BASE));
                 }
             } else if (entity instanceof Zombie zombie) {
                 if (random.nextInt(3) == 2) {
@@ -283,11 +304,14 @@ public class ModdedEventTweaks {
                 if (random.nextInt(3) == 2) {
                     ItemStack weapon = skeleton.getMainHandItem();
                     if (weapon.getItem() instanceof BowItem) {
-                        weapon.enchant(Enchantments.PUNCH_ARROWS, random.nextInt(1, 4));
+                        Map<Enchantment, Integer> currentEnchants = weapon.getAllEnchantments();
+                        currentEnchants.put(Enchantments.PUNCH_ARROWS, random.nextInt(1, 4));
+                        EnchantmentHelper.setEnchantments(currentEnchants, weapon);
+
                         MobEffectInstance newEffect = switch (random.nextInt(3)) {
                             case 0 -> new MobEffectInstance(MobEffects.BLINDNESS, 300, 0);
-                            case 1 -> new MobEffectInstance(ExoArmory.REGISTRY.EFFECT_VULNERABLE.get(), 300, 0);
-                            default -> new MobEffectInstance(MobEffects.WITHER, 300, 0);
+                            case 1 -> new MobEffectInstance(ExoArmory.REGISTRY.EFFECT_VULNERABLE.get(), 300, 1);
+                            default -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 300, 1);
                         };
                         skeleton.setItemInHand(InteractionHand.OFF_HAND, ExoPotionUtils.setColor(PotionUtils.setCustomEffects(new ItemStack(Items.TIPPED_ARROW), List.of(newEffect)), 0x2b0500));
                         skeleton.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
@@ -308,13 +332,42 @@ public class ModdedEventTweaks {
     /*Needed to prevent MajruszsProgressiveDifficulty from allowing op item drops from spawners.*/
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void eventEntityHandDropFix(LivingDeathEvent event) {
-        Entity entity = event.getEntity();
-        if (entity.level().isClientSide || !(entity instanceof PathfinderMob pathfinder)) { return; }
+        LivingEntity defender = event.getEntity();
+        DamageSource source = event.getSource();
+        if (defender.level().isClientSide) { return; }
 
-        MobSpawnType spawnType = pathfinder.getSpawnType();
-        if (spawnType != null && spawnType.equals(MobSpawnType.SPAWNER)) {
-            pathfinder.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
-            pathfinder.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
+        if (defender instanceof Mob mob) {
+            MobSpawnType spawnType = mob.getSpawnType();
+            if (spawnType != null && spawnType.equals(MobSpawnType.SPAWNER)) {
+                mob.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
+                mob.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
+            }
+
+            if (source.getEntity() instanceof ServerPlayer attacker) {
+                float maxHealth = defender.getMaxHealth();
+                int experience = defender.getExperienceReward();
+                float stageOrdinal = !Config.cowboyModeFixes ? GameStageHelper.getGlobalGameStage().getOrdinal() * 0.05F : 0.0F;
+                float monsterMod = mob.getType().getCategory().equals(MobCategory.MONSTER) ? 1.0F : 0.333F;
+                float spawnerMod = !spawnType.equals(MobSpawnType.SPAWNER) ? 1.0F : 0.667F;
+
+                int reward = (int)((((experience * 20.0) + (maxHealth * 62.5)) * (1.0 + stageOrdinal) * monsterMod) * spawnerMod);
+
+                //Award partial XP to assists
+                List<CombatEntry> combatEntries = ((CombatTrackerMixin)defender.getCombatTracker()).getEntries();
+                Set<Player> playerAssists = new HashSet<>();
+                playerAssists.add(attacker);
+                int historyAmount = Math.min(20, combatEntries.size());
+                for (int i = 0; i < historyAmount; i++) {
+                    CombatEntry entry = combatEntries.get(i);
+                    Entity assistEntity = entry.source().getEntity();
+                    if (assistEntity instanceof Player assistPlayer && !playerAssists.contains(assistPlayer)) {
+                        playerAssists.add(assistPlayer);
+                        assistPlayer.awardStat(ExoStats.COMBAT_SCORE.get(), (int)(reward * 0.333));
+                    }
+                }
+
+                attacker.awardStat(ExoStats.COMBAT_SCORE.get(), reward);
+            }
         }
     }
 
@@ -397,18 +450,45 @@ public class ModdedEventTweaks {
     public static void flightTakeDamage(LivingHurtEvent event) {
         LivingEntity defender = event.getEntity();
         DamageSource source = event.getSource();
-        if (source.getDirectEntity() != null && defender.hasEffect(Registry.EFFECT_FLIGHT_READY.get())) {
+        Entity attacker = source.getEntity();
+        if (attacker != null && defender.hasEffect(Registry.EFFECT_FLIGHT_READY.get())) {
             defender.removeEffect(Registry.EFFECT_FLIGHT_READY.get());
         }
 
-        if (GameStageHelper.getGlobalGameStage().getOrdinal() >= 4 && defender instanceof ServerPlayer) {
-            if (event.getAmount() > 0) {
-                defender.addEffect(new MobEffectInstance(Registry.EFFECT_GROUNDED.get(), 400, 0));
-            }
-            if (source.getEntity() instanceof EnderMan) {
+        int stageOrdinal = !Config.cowboyModeFixes ? GameStageHelper.getGlobalGameStage().getOrdinal() : 0;
+
+        if (stageOrdinal >= 4 && defender instanceof ServerPlayer playerDefender) {
+            if (attacker instanceof EnderMan) {
                 defender.addEffect(new MobEffectInstance(ExoArmory.REGISTRY.EFFECT_VULNERABLE.get(), 160, 0));
             }
+            if (event.getAmount() > 0 && attacker != null) {
+                if (playerDefender.getAbilities().flying) {
+                    playerDefender.getAbilities().flying = false;
+                    playerDefender.onUpdateAbilities();
+                }
+                defender.addEffect(new MobEffectInstance(Registry.EFFECT_GROUNDED.get(), 400, 0));
+            }
         }
+    }
+
+    @SubscribeEvent
+    public static void tenacityEffect(MobEffectEvent.Added event) {
+        MobEffectInstance effectInstance = event.getEffectInstance();
+        LivingEntity effectEntity = event.getEntity();
+        if (!(effectEntity instanceof ServerPlayer effectPlayer)) return;
+
+        effectPlayer.getCapability(PersistentPlayerDataProvider.PLAYER_DATA).ifPresent(playerData -> {
+            CompoundTag tag = playerData.get();
+            CompoundTag modTag = tag.getCompound("exoadventure");
+
+            int tenacity = modTag.getInt("tenacity");
+            if (tenacity > 0) {
+                int duration = effectInstance.getDuration();
+                if (duration != -1 && effectInstance.getEffect().getCategory().equals(MobEffectCategory.HARMFUL)) {
+                    ((MobEffectInstanceAccessor)effectInstance).setDuration((int)Math.round(duration * (1.0 - (tenacity * 0.05))));
+                }
+            }
+        });
     }
 
     @SubscribeEvent

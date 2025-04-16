@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:fishing",
+  "pools": [
+    {
+      "conditions": [],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "exoadvadditions:scroll_of_skill_xp_fishing",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{value:200}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "exoadvadditions:scroll_of_skill_xp_fishing",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{value:400}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "exoadvadditions:scroll_of_skill_xp_fishing",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{value:600}"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "exoadvadditions:gameplay/fishing_xp_scrolls"
+}

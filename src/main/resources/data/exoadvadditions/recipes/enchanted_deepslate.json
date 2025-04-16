@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "M": {
+      "item": "exoadvadditions:magical_runes"
+    },
+    "G": {
+      "item": "minecraft:gilded_blackstone"
+    },
+    "D": {
+      "item": "minecraft:deepslate_bricks"
+    },
+    "S": {
+      "item": "minecraft:sculk"
+    }
+  },
+  "pattern": [
+    "DMD",
+    "DGD",
+    "DSD"
+  ],
+  "result": {
+    "count": 1,
+    "item": "exoadvadditions:enchanted_deepslate"
+  },
+  "show_notification": true
+}

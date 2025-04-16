@@ -1,0 +1,31 @@
+{
+  "global_injects": {
+    "cause": "minecraft:entity"
+  },
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "exoadvadditions:eterna_crystalis"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "exoadvadditions:difficulty_stage_condition",
+          "stage": 4
+        },
+        {
+          "condition": "exolib:mob_category_condition",
+          "category": "monster",
+          "entity": "this"
+        },
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.001
+        }
+      ]
+    }
+  ]
+}

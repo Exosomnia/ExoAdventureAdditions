@@ -74,8 +74,9 @@ public class AttuneFeatherRecipe extends ShapelessRecipe {
             ingredients.add(PartialNBTIngredient.of(BASE_FEATHER_TAG, validItems.toArray(new ItemLike[3])));
             ingredients.add(StrictNBTIngredient.of(toFeather));
 
-            toFeather.setTag(BASE_FEATHER_TAG);
-            return new AttuneFeatherRecipe(resourceLocation, ingredients, toFeather);
+            ItemStack toFeatherResult = toFeather.copy();
+            toFeatherResult.setTag(BASE_FEATHER_TAG);
+            return new AttuneFeatherRecipe(resourceLocation, ingredients, toFeatherResult);
         }
 
         public AttuneFeatherRecipe fromNetwork(ResourceLocation resourceLocation, FriendlyByteBuf buffer) {
@@ -87,8 +88,9 @@ public class AttuneFeatherRecipe extends ShapelessRecipe {
             ingredients.add(PartialNBTIngredient.of(BASE_FEATHER_TAG, validItems.toArray(new ItemLike[3])));
             ingredients.add(StrictNBTIngredient.of(toFeather));
 
-            toFeather.setTag(BASE_FEATHER_TAG);
-            return new AttuneFeatherRecipe(resourceLocation, ingredients, toFeather);
+            ItemStack toFeatherResult = toFeather.copy();
+            toFeatherResult.setTag(BASE_FEATHER_TAG);
+            return new AttuneFeatherRecipe(resourceLocation, ingredients, toFeatherResult);
         }
 
         public void toNetwork(FriendlyByteBuf buffer, AttuneFeatherRecipe recipe) {

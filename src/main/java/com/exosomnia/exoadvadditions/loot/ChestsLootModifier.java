@@ -51,20 +51,19 @@ public class ChestsLootModifier extends LootModifier {
 
     @Override
     protected @NotNull ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        if(!context.hasParam(LootContextParams.THIS_ENTITY)) { return generatedLoot; }
-
         ILootParamsMixin lootParams = ((ILootParamsMixin)((LootContextAccessor)context).getParams());
         if (!lootParams.shouldLootModify()) { return generatedLoot; }
 
         ResourceLocation lootCause = lootParams.getCause();
-        if (lootCause.equals(CHEST_CONTEXT) && context.getParam(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player) {
+        if (lootCause.equals(CHEST_CONTEXT) && context.getParamOrNull(LootContextParams.THIS_ENTITY) instanceof ServerPlayer player) {
             player.getCapability(PersistentPlayerDataProvider.PLAYER_DATA).ifPresent(playerData -> {
                 CompoundTag dataTag = playerData.get();
                 CompoundTag modTag = dataTag.getCompound("exoadventure");
-                if (!modTag.contains("firstLoot")) {
-                    modTag.putBoolean("firstLoot", true);
+                int previousLooted = modTag.getInt("chestsLooted");
+                if (previousLooted == 4) {
                     generatedLoot.add(new ItemStack(Registry.ITEM_MYSTERIOUS_TOME.get()));
                 }
+                modTag.putInt("chestsLooted", ++previousLooted);
                 dataTag.put("exoadventure", modTag);
                 playerData.set(dataTag);
             });

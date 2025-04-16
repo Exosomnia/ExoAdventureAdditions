@@ -40,7 +40,7 @@ public class TeleporterPlateBlock extends BasePressurePlateBlock {
     private final static Map<Block, ResourceKey<Level>> registeredTeleporters = new HashMap<>();
     static {
         registeredTeleporters.put(Blocks.GRASS_BLOCK, Level.OVERWORLD);
-        registeredTeleporters.put(Blocks.GILDED_BLACKSTONE, Registry.DEPTHS_DIMENSION);
+        registeredTeleporters.put(Registry.BLOCK_ENCHANTED_DEEPSLATE.get(), Registry.DEPTHS_DIMENSION);
     }
 
     public TeleporterPlateBlock() {

@@ -3,7 +3,11 @@ package com.exosomnia.exoadvadditions;
 import com.exosomnia.exoadvadditions.events.ModdedEventTweaks;
 import com.exosomnia.exoadvadditions.managers.DepthsMusicManager;
 import net.minecraft.ChatFormatting;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Rarity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -37,8 +41,8 @@ public class ExoAdventureAdditions
 
     public void setupCommon(FMLCommonSetupEvent event) {
         Registry.setupOres();
-        Registry.MYSTERIOUS_RARITY = Rarity.create("mysterious", (style) -> style.withObfuscated(true).withColor(ChatFormatting.RED));
-        Registry.registerTomeRecipes();
+        Registry.MYSTERIOUS_RARITY = Rarity.create("mysterious", (style) -> style.withObfuscated(true).withColor(ChatFormatting.RED).withFont(ResourceLocation.fromNamespaceAndPath("minecraft", "alt")));
+        Registry.fillInAfterRegistry();
 
         ModdedEventTweaks.initalizeTweaks();
     }
@@ -46,10 +50,19 @@ public class ExoAdventureAdditions
     @OnlyIn(Dist.CLIENT)
     public void setupClient(FMLClientSetupEvent event) {
         depthsMusicManager = new DepthsMusicManager();
+        event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(Registry.BLOCK_BLANK_OUTLIINE.get(), RenderType.cutout()); // or translucent()
+        });
     }
 
     @OnlyIn(Dist.CLIENT)
     public void clientTick(TickEvent.ClientTickEvent event) {
-        if(event.phase.equals(TickEvent.Phase.END)) { depthsMusicManager.tick(); }
+        if(event.phase.equals(TickEvent.Phase.END)) {
+            depthsMusicManager.tick();
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null || !player.hasEffect(Registry.EFFECT_GROUNDED.get()) || !player.getAbilities().flying) return;
+            player.getAbilities().flying = false;
+            player.onUpdateAbilities();
+        }
     }
 }

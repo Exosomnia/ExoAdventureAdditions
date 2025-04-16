@@ -9,17 +9,17 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public class DimensionTypesMixin {
 
     @ModifyConstant(method = "bootstrap", constant = @Constant(intValue = 0, ordinal = 1))
-    private int updateBlockLightLevelOverworld(int value) {
+    private static int updateBlockLightLevelOverworld(int value) {
         return 7;
     }
 
     @ModifyConstant(method = "bootstrap", constant = @Constant(intValue = 0, ordinal = 5))
-    private int updateBlockLightLevelEnd(int value) {
+    private static int updateBlockLightLevelEnd(int value) {
         return 7;
     }
 
     @ModifyConstant(method = "bootstrap", constant = @Constant(intValue = 0, ordinal = 7))
-    private int updateBlockLightLevelOverworldCaves(int value) {
+    private static int updateBlockLightLevelOverworldCaves(int value) {
         return 7;
     }
 }

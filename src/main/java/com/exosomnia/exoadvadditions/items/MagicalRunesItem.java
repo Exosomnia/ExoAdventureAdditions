@@ -37,7 +37,7 @@ public class MagicalRunesItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int slot, boolean selected) {
-        if (!level.isClientSide && level.random.nextInt(160) == 0 && entity instanceof ServerPlayer player) {
+        if (!level.isClientSide && level.random.nextInt(200) == 0 && entity instanceof ServerPlayer player) {
             switch(Effect.values()[level.random.nextInt(8)]) {
                 case SOUND_CREEPER -> player.playNotifySound(SoundEvents.CREEPER_PRIMED, SoundSource.HOSTILE, 1.0F, 1.0F);
                 case SOUND_ENDERMAN -> player.playNotifySound(SoundEvents.ENDERMAN_SCREAM, SoundSource.HOSTILE, 1.0F, 1.0F);

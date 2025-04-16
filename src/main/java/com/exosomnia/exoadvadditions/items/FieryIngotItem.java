@@ -19,7 +19,7 @@ public class FieryIngotItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack itemStack, Level level, Entity entity, int slot, boolean selected) {
-        if (!level.isClientSide && level.random.nextInt(160) == 0) {
+        if (!level.isClientSide && level.random.nextInt(200) == 0) {
             entity.hurt(level.damageSources().inFire(), 2);
         }
     }
