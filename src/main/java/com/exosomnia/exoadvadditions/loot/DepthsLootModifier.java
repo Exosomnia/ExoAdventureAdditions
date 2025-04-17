@@ -50,8 +50,8 @@ public class DepthsLootModifier extends LootModifier {
         BlockState mined = context.getParam(LootContextParams.BLOCK_STATE);
         if (!mined.is(blockTag)) { return generatedLoot; }
 
-        int luckMod = (int)(miner.getAttributeValue(Attributes.LUCK) * 2.5);
-        if (context.getRandom().nextInt(100) < (25 + luckMod)) {
+        int luckMod = (int)(miner.getAttributeValue(Attributes.LUCK) * 3.0);
+        if (context.getRandom().nextInt(100) < (20 + luckMod)) {
             generatedLoot.forEach(stack -> stack.grow(context.getRandom().nextInt(stack.getCount() + 1)));
         }
 

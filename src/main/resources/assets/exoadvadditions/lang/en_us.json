@@ -24,6 +24,7 @@
 
     "block.exoadvadditions.blank_block": "Undefined",
     "block.exoadvadditions.enchanted_deepslate": "Enchanted Deepslate",
+    "block.exoadvadditions.error": "░µ¿▓¿▬‰░‼|",
 
     "block.exoadvadditions.natural_coal_ore": "Coal Ore",
     "block.exoadvadditions.natural_deepslate_coal_ore": "Deepslate Coal Ore",
@@ -164,6 +165,8 @@
 
     "item.exoadvadditions.unlocated_map.not_found": "The structure is too far to be found, or not in this dimension.",
 
+    "item.exoadvadditions.you_did_it_star_1": "You Did It! (Star #1)",
+    "item.exoadvadditions.you_did_it_star_2": "You Did It! (Star #2)",
 
     "item.exoadvadditions.tome_of_sunrise": "Tome of Sunrise",
     "item.exoadvadditions.enhanced_tome_of_sunrise": "Enhanced Tome of Sunrise",
@@ -253,6 +256,7 @@
     "item.exoadvadditions.macguffin_15_unfinished_4": "Incomplete MacGuffin #15",
     "item.exoadvadditions.macguffin_15_unfinished.info.1": "Stage: 0{%d}/5",
     "item.exoadvadditions.macguffin_16": "MacGuffin #16",
+    "item.exoadvadditions.macguffin_ultimate": "The Ultimate MacGuffin",
 
     "item.exoadvadditions.macguffin_1_half_1": "MacGuffin #1 (Left Half)",
     "item.exoadvadditions.macguffin_1_half_2": "MacGuffin #1 (Right Half)",

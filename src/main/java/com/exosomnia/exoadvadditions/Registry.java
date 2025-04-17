@@ -88,6 +88,7 @@ public class Registry {
     public final static TomeRecipeManager TOME_RECIPE_MANAGER = new TomeRecipeManager();
 
     public final static ResourceKey<Level> DEPTHS_DIMENSION = ResourceKey.create(Registries.DIMENSION, ResourceLocation.bySeparator("exoadvadditions:the_depths", ':'));
+    public final static ResourceKey<Level> BEGINNING_DIMENSION = ResourceKey.create(Registries.DIMENSION, ResourceLocation.bySeparator("exoadvadditions:the_beginning", ':'));
     public final static ResourceKey<Structure> MYSTERIOUS_TOME_STRUCTURE = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.bySeparator("exoadvadditions:the_depths_shrine", ':'));
     public final static ResourceKey<Structure> MYSTERIOUS_TOME_UNLEASH_STRUCTURE = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.bySeparator("mes:manuscript_shrine", ':'));
 
@@ -116,6 +117,7 @@ public class Registry {
 
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ExoAdventureAdditions.MODID);
     public static final RegistryObject<Block> BLOCK_ENCHANTED_DEEPSLATE = BLOCKS.register("enchanted_deepslate", () -> new Block(BlockBehaviour.Properties.copy(Blocks.COBBLED_DEEPSLATE)));
+    public static final RegistryObject<Block> BLOCK_ERROR = BLOCKS.register("error", () -> new Block(BlockBehaviour.Properties.copy(Blocks.OBSIDIAN)));
     public static final RegistryObject<Block> BLOCK_BLANK_OUTLIINE = BLOCKS.register("blank_block", () -> new GlassBlock(BlockBehaviour.Properties.copy(Blocks.GLASS)));
     public static final RegistryObject<Block> BLOCK_TELEPORTER_PLATE = BLOCKS.register("teleporter_plate", TeleporterPlateBlock::new);
 
@@ -243,8 +245,12 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_MACGUFFIN_15_UNFINISHED_4 = ITEMS.register("macguffin_15_unfinished_4", () -> new UnfinishedMacguffinItem(4));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_15 = ITEMS.register("macguffin_15", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_16 = ITEMS.register("macguffin_16", () -> new Item(new Item.Properties().stacksTo(16)));
+    public static final RegistryObject<Item> ITEM_YOU_DID_IT_STAR_1 = ITEMS.register("you_did_it_star_1", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> ITEM_YOU_DID_IT_STAR_2 = ITEMS.register("you_did_it_star_2", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> ITEM_MACGUFFIN_ULTIMATE = ITEMS.register("macguffin_ultimate", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC)));
     public static final RegistryObject<BlockItem> ITEM_TELEPORTER_PLATE_BLOCK = ITEMS.register("teleporter_plate", () -> new BlockItem(BLOCK_TELEPORTER_PLATE.get(), new Item.Properties()));
     public static final RegistryObject<BlockItem> ITEM_ENCHANTED_DEEPSLATE_BLOCK = ITEMS.register("enchanted_deepslate", () -> new BlockItem(BLOCK_ENCHANTED_DEEPSLATE.get(), new Item.Properties()));
+    public static final RegistryObject<BlockItem> ITEM_ERROR_BLOCK = ITEMS.register("error", () -> new BlockItem(BLOCK_ERROR.get(), new Item.Properties()));
     public static final RegistryObject<BlockItem> ITEM_BLANK_OUTLINE_BLOCK = ITEMS.register("blank_block", () -> new BlockItem(BLOCK_BLANK_OUTLIINE.get(), new Item.Properties()));
 
 
@@ -254,7 +260,7 @@ public class Registry {
             .icon(() -> new ItemStack(ITEM_ETERNA_CRYSTALIS.get()))
             .displayItems((parameters, output) -> {
                 for (RegistryObject<Item> item : ITEMS.getEntries()) {
-                    output.accept(item.get());
+                    if(item.get() != ITEM_ERROR_BLOCK.get().asItem()) output.accept(item.get());
                 }
             })
             .build());

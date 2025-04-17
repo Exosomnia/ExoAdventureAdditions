@@ -41,6 +41,7 @@ public class TeleporterPlateBlock extends BasePressurePlateBlock {
     static {
         registeredTeleporters.put(Blocks.GRASS_BLOCK, Level.OVERWORLD);
         registeredTeleporters.put(Registry.BLOCK_ENCHANTED_DEEPSLATE.get(), Registry.DEPTHS_DIMENSION);
+        registeredTeleporters.put(Registry.BLOCK_ERROR.get(), Registry.BEGINNING_DIMENSION);
     }
 
     public TeleporterPlateBlock() {

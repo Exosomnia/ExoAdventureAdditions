@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exoadvadditions:item/you_did_it_star_1"
+  }
+}

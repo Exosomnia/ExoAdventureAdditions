@@ -38,6 +38,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.*;
 import net.minecraft.world.entity.player.Inventory;
@@ -329,6 +330,15 @@ public class ModdedEventTweaks {
         }
     }
 
+    @SubscribeEvent
+    public static void depthsBonusExperience(LivingExperienceDropEvent event) {
+        LivingEntity entity = event.getEntity();
+        Level level = entity.level();
+        if (level.isClientSide || !level.dimension().equals(Registry.DEPTHS_DIMENSION)) { return; }
+
+        event.setDroppedExperience((int)(event.getOriginalExperience() * 1.2));
+    }
+
     /*Needed to prevent MajruszsProgressiveDifficulty from allowing op item drops from spawners.*/
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void eventEntityHandDropFix(LivingDeathEvent event) {
@@ -348,7 +358,7 @@ public class ModdedEventTweaks {
                 int experience = defender.getExperienceReward();
                 float stageOrdinal = !Config.cowboyModeFixes ? GameStageHelper.getGlobalGameStage().getOrdinal() * 0.05F : 0.0F;
                 float monsterMod = mob.getType().getCategory().equals(MobCategory.MONSTER) ? 1.0F : 0.333F;
-                float spawnerMod = !spawnType.equals(MobSpawnType.SPAWNER) ? 1.0F : 0.667F;
+                float spawnerMod = (spawnType == null || !spawnType.equals(MobSpawnType.SPAWNER)) ? 1.0F : 0.667F;
 
                 int reward = (int)((((experience * 20.0) + (maxHealth * 62.5)) * (1.0 + stageOrdinal) * monsterMod) * spawnerMod);
 
@@ -443,6 +453,9 @@ public class ModdedEventTweaks {
             else if (defender.getTags().contains("in.castle") && random.nextInt(100) == 0) {
                 level.addFreshEntity(new ItemEntity(level, origin.x, origin.y, origin.z, new ItemStack(ITEM_EVIL_EYE)));
             }
+        }
+        else if (defender instanceof WitherBoss && level.dimension().equals(Registry.BEGINNING_DIMENSION)) {
+            level.addFreshEntity(new ItemEntity(level, origin.x, origin.y, origin.z, new ItemStack(Registry.ITEM_MACGUFFIN_ULTIMATE.get())));
         }
     }
 

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "exoadvadditions:you_did_it_star_1"
+    },
+    {
+      "item": "exoadvadditions:you_did_it_star_2"
+    }
+  ],
+  "result": {
+    "item": "exoadvadditions:error"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "exoadvadditions:macguffin_1"
+    },
+    {
+      "item": "exoadvadditions:macguffin_2"
+    },
+    {
+      "item": "exoadvadditions:macguffin_3"
+    },
+    {
+      "item": "exoadvadditions:macguffin_4"
+    },
+    {
+      "item": "exoadvadditions:macguffin_5"
+    },
+    {
+      "item": "exoadvadditions:macguffin_6"
+    },
+    {
+      "item": "exoadvadditions:macguffin_7"
+    },
+    {
+      "item": "exoadvadditions:macguffin_8"
+    }
+  ],
+  "result": {
+    "item": "exoadvadditions:you_did_it_star_1"
+  }
+}
