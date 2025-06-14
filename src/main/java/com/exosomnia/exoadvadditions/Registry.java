@@ -6,6 +6,7 @@ import com.exosomnia.exoadvadditions.capabilities.daytimedilation.IDaytimeDilati
 import com.exosomnia.exoadvadditions.commands.AdventureStart;
 import com.exosomnia.exoadvadditions.commands.LowerDifficulty;
 import com.exosomnia.exoadvadditions.effects.CheatedDeathEffect;
+import com.exosomnia.exoadvadditions.effects.FatiguedEffect;
 import com.exosomnia.exoadvadditions.effects.GroundedEffect;
 import com.exosomnia.exoadvadditions.effects.WakefulnessEffect;
 import com.exosomnia.exoadvadditions.items.*;
@@ -13,12 +14,12 @@ import com.exosomnia.exoadvadditions.loot.ChestsLootModifier;
 import com.exosomnia.exoadvadditions.loot.DepthsLootModifier;
 import com.exosomnia.exoadvadditions.loot.conditions.DifficultyStageCondition;
 import com.exosomnia.exoadvadditions.networking.PacketHandler;
-import com.exosomnia.exoadvadditions.recipes.AdventureMapRecipe;
-import com.exosomnia.exoadvadditions.recipes.AttuneFeatherRecipe;
-import com.exosomnia.exoadvadditions.recipes.MysteriousPackageRecipe;
-import com.exosomnia.exoadvadditions.recipes.ShapedNBTOptionalRecipe;
+import com.exosomnia.exoadvadditions.recipes.*;
 import com.exosomnia.exoadvadditions.recipes.tome.TomeRecipeManager;
+import com.exosomnia.exoarmory.ExoArmory;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.Pair;
@@ -30,12 +31,19 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.attributes.RangedAttribute;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -61,6 +69,8 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryObject;
+import vazkii.botania.api.BotaniaRegistries;
+import vazkii.botania.api.brew.Brew;
 
 import java.lang.reflect.Field;
 
@@ -71,6 +81,7 @@ public class Registry {
     public static Field FLYING_ALLOWED_FIELD;
 
     public final static ImmutableList<String> VALID_PANDORA;
+    public static ImmutableMap<String, AttributeTemplateItem> ATTRIBUTE_TEMPLATES;
 
     static {
         try {
@@ -109,6 +120,8 @@ public class Registry {
             AttuneFeatherRecipe.Serializer::new);
     public static final RegistryObject<RecipeSerializer<ShapedNBTOptionalRecipe>> RECIPE_SHAPED_NBT_OPTIONAL = RECIPE_SERIALIZERS.register("shaped_nbt_optional_crafting",
             ShapedNBTOptionalRecipe.Serializer::new);
+    public static final RegistryObject<RecipeSerializer<AttributeTemplateSmithingRecipe>> RECIPE_ATTRIBUTE_TEMPLATE_SMITHING = RECIPE_SERIALIZERS.register("attribute_template_smithing",
+            AttributeTemplateSmithingRecipe.Serializer::new);
 
 
     public static final DeferredRegister<LootItemConditionType> LOOT_ITEM_CONDITIONS = DeferredRegister.create(Registries.LOOT_CONDITION_TYPE, ExoAdventureAdditions.MODID);
@@ -160,10 +173,13 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_ASCENDED_TOME_OF_WAKEFULNESS = ITEMS.register("ascended_tome_of_wakefulness", () -> new TomeOfWakefulness(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 3, true));
     public static final RegistryObject<Item> ITEM_TOME_OF_AMNESIA = ITEMS.register("tome_of_amnesia", () -> new TomeOfAmnesia(new Item.Properties().stacksTo(16), 1, false));
     public static final RegistryObject<Item> ITEM_ASCENDED_TOME_OF_AMNESIA = ITEMS.register("ascended_tome_of_amnesia", () -> new TomeOfAmnesia(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 2, true));
-    public static final RegistryObject<Item> ITEM_TOME_OF_FLIGHT = ITEMS.register("tome_of_flight", () -> new TomeOfFlight(new Item.Properties().stacksTo(16), 1, false));
-    public static final RegistryObject<Item> ITEM_ASCENDED_TOME_OF_FLIGHT = ITEMS.register("ascended_tome_of_flight", () -> new TomeOfFlight(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 2, true));
-    public static final RegistryObject<Item> ITEM_TOME_OF_LUCK = ITEMS.register("tome_of_luck", () -> new TomeOfLuck(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 1, false));
+    public static final RegistryObject<Item> ITEM_TOME_OF_FLIGHT = ITEMS.register("tome_of_flight", () -> new TomeOfFlightItem(new Item.Properties().stacksTo(16), 1, false));
+    public static final RegistryObject<Item> ITEM_ASCENDED_TOME_OF_FLIGHT = ITEMS.register("ascended_tome_of_flight", () -> new TomeOfFlightItem(new Item.Properties().stacksTo(1).rarity(Rarity.UNCOMMON), 2, true));
+    public static final RegistryObject<Item> ITEM_TOME_OF_LUCK = ITEMS.register("tome_of_luck", () -> new TomeOfLuckItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON), 1, false));
+    public static final RegistryObject<Item> ITEM_TOME_OF_STAMINA = ITEMS.register("tome_of_stamina", () -> new TomeOfStaminaItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON), 1, false));
+    public static final RegistryObject<Item> ITEM_TOME_OF_BALLISTICS = ITEMS.register("tome_of_ballistics", () -> new TomeOfBallisticsItem(new Item.Properties().stacksTo(16).rarity(Rarity.UNCOMMON), 1, false));
     public static final RegistryObject<Item> ITEM_ETERNA_CRYSTALIS = ITEMS.register("eterna_crystalis", () -> new SimpleFoiledItem(new Item.Properties().stacksTo(64).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> ITEM_FLAWLESS_ONYX = ITEMS.register("flawless_onyx", () -> new SimpleFoiledItem(new Item.Properties().stacksTo(64).rarity(Rarity.UNCOMMON)));
     public static final RegistryObject<Item> ITEM_NETHERITE_INGOT_STACK = ITEMS.register("netherite_ingot_stack", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_CRUSHED_ANCIENT_DEBRIS = ITEMS.register("crushed_ancient_debris", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_ELDER_GUARDIAN_EYE = ITEMS.register("elder_guardian_eye", () -> new Item(new Item.Properties().stacksTo(64)));
@@ -174,8 +190,8 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_MAGICKED_FEATHER = ITEMS.register("magicked_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_INFERNAL_FEATHER = ITEMS.register("infernal_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_ENDER_FEATHER = ITEMS.register("ender_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
-    public static final RegistryObject<Item> ITEM_ANCIENT_FEATHER = ITEMS.register("ancient_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_CURIOUS_CARD = ITEMS.register("curious_card", () -> new CuriousCardItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> ITEM_ANCIENT_FEATHER = ITEMS.register("ancient_feather", () -> new MagickFeatherItem(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_GILDED_FISH = ITEMS.register("gilded_fish", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_FIERY_INGOT = ITEMS.register("fiery_ingot", () -> new FieryIngotItem(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MAGICAL_RUNES = ITEMS.register("magical_runes", () -> new MagicalRunesItem(new Item.Properties().stacksTo(16)));
@@ -193,9 +209,11 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_GILDED_ANCIENT_TOOTH = ITEMS.register("gilded_ancient_tooth", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_OMINOUS_BAR = ITEMS.register("ominous_bar", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_VOID_ORB = ITEMS.register("void_orb", () -> new Item(new Item.Properties().stacksTo(64)));
+    public static final RegistryObject<Item> ITEM_DIAMOND_CARROT = ITEMS.register("diamond_carrot", () -> new Item(new Item.Properties().stacksTo(64).food((new FoodProperties.Builder()).nutrition(8).saturationMod(1.2F).alwaysEat().effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 1200, 0), 1.0F).build())));
     public static final RegistryObject<Item> ITEM_DEAD_KINGS_GEM = ITEMS.register("dead_kings_gem", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_BURNING_SCROLL = ITEMS.register("burning_scroll", () -> new Item(new Item.Properties().stacksTo(64)));
     public static final RegistryObject<Item> ITEM_MESSAGE_IN_BOTTLE = ITEMS.register("message_in_a_bottle", BottledMessageItem::new);
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_WEATHER = ITEMS.register("scroll_of_weather", WeatherScrollItem::new);
     public static final RegistryObject<Item> ITEM_SCROLL_OF_GROWTH = ITEMS.register("scroll_of_growth", () -> new GrowthScrollItem(0));
     public static final RegistryObject<Item> ITEM_INFERNAL_SCROLL_OF_GROWTH = ITEMS.register("infernal_scroll_of_growth", () -> new GrowthScrollItem(1));
     public static final RegistryObject<Item> ITEM_ENDER_SCROLL_OF_GROWTH = ITEMS.register("ender_scroll_of_growth", () -> new GrowthScrollItem(2));
@@ -208,6 +226,14 @@ public class Registry {
     public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_HUSBANDRY = ITEMS.register("scroll_of_skill_xp_husbandry", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.HUSBANDRY));
     public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_OCCULT = ITEMS.register("scroll_of_skill_xp_occult", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.OCCULT));
     public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_EXPLORATION = ITEMS.register("scroll_of_skill_xp_exploration", () -> new SkillXPScrollItem(SkillXPScrollItem.Skill.EXPLORATION));
+    public static final RegistryObject<Item> ITEM_SCROLL_OF_SKILL_XP_RANDOM = ITEMS.register("scroll_of_skill_xp_random", SkillXPScrollRandomItem::new);
+
+    public static final RegistryObject<Item> ITEM_ETHERIUM_UPGRADE_TEMPLATE = ITEMS.register("etherium_upgrade_template", EtheriumSmithingTemplateItem::new);
+    public static final RegistryObject<AttributeTemplateItem> ITEM_MAGE_TEMPLATE = ITEMS.register("mage_template", () -> new AttributeTemplateItem("mage", AttributeTemplateItem::isEtherium, "item.exoadvadditions.attribute_template.help.alt.1"));
+    public static final RegistryObject<AttributeTemplateItem> ITEM_FIGHTER_TEMPLATE = ITEMS.register("fighter_template", () -> new AttributeTemplateItem("fighter", AttributeTemplateItem::isEtherium, "item.exoadvadditions.attribute_template.help.alt.1"));
+    public static final RegistryObject<AttributeTemplateItem> ITEM_RANGER_TEMPLATE = ITEMS.register("ranger_template", () -> new AttributeTemplateItem("ranger", AttributeTemplateItem::isEtherium, "item.exoadvadditions.attribute_template.help.alt.1"));
+    public static final RegistryObject<AttributeTemplateItem> ITEM_ARMOR_REINFORCEMENT_TEMPLATE = ITEMS.register("armor_reinforcement_template", () -> new AttributeTemplateItem("reinforcement", AttributeTemplateItem::isReinforceable, "item.exoadvadditions.attribute_template.help.alt.2"));
+    public static final RegistryObject<Item> ITEM_BLANK_SMITHING_TEMPLATE = ITEMS.register("blank_smithing_template", () -> new Item(new Item.Properties().stacksTo(64)));
 
     public static final RegistryObject<Item> ITEM_MACGUFFIN_1 = ITEMS.register("macguffin_1", () -> new Item(new Item.Properties().stacksTo(16)));
     public static final RegistryObject<Item> ITEM_MACGUFFIN_1_HALF_1 = ITEMS.register("macguffin_1_half_1", () -> new Item(new Item.Properties().stacksTo(16)));
@@ -260,7 +286,7 @@ public class Registry {
             .icon(() -> new ItemStack(ITEM_ETERNA_CRYSTALIS.get()))
             .displayItems((parameters, output) -> {
                 for (RegistryObject<Item> item : ITEMS.getEntries()) {
-                    if(item.get() != ITEM_ERROR_BLOCK.get().asItem()) output.accept(item.get());
+                    if (item.get() != ITEM_ERROR_BLOCK.get().asItem()) output.accept(item.get());
                 }
             })
             .build());
@@ -275,13 +301,15 @@ public class Registry {
             ExoAdventureAdditions.MODID);
 
     public static final RegistryObject<MobEffect> EFFECT_WAKEFULNESS = MOB_EFFECTS.register("wakefulness",
-            () -> new WakefulnessEffect(MobEffectCategory.BENEFICIAL, 0x7AF5B1) );
+            () -> new WakefulnessEffect(MobEffectCategory.BENEFICIAL, 0x7AF5B1));
     public static final RegistryObject<MobEffect> EFFECT_CHEATED_DEATH = MOB_EFFECTS.register("cheated_death",
-            () -> new CheatedDeathEffect(MobEffectCategory.NEUTRAL, 0x42191F) );
+            () -> new CheatedDeathEffect(MobEffectCategory.NEUTRAL, 0x42191F));
     public static final RegistryObject<MobEffect> EFFECT_GROUNDED = MOB_EFFECTS.register("grounded",
-            () -> new GroundedEffect(MobEffectCategory.NEUTRAL, 0x3B4530) );
+            () -> new GroundedEffect(MobEffectCategory.NEUTRAL, 0x3B4530));
     public static final RegistryObject<MobEffect> EFFECT_FLIGHT_READY = MOB_EFFECTS.register("flight_ready",
-            () -> new GroundedEffect(MobEffectCategory.NEUTRAL, 0xB2E0ED) );
+            () -> new GroundedEffect(MobEffectCategory.NEUTRAL, 0xB2E0ED));
+    public static final RegistryObject<MobEffect> EFFECT_FATIGUED = MOB_EFFECTS.register("fatigued",
+            () -> new FatiguedEffect(MobEffectCategory.HARMFUL, 0x542305));
 
 
     public static final DeferredRegister<SoundEvent> SOUND_EVENTS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS,
@@ -301,9 +329,19 @@ public class Registry {
                     0.0,
                     127.0));
 
+    public static final RegistryObject<Attribute> ATTRIBUTE_BALLISTICS_DAMAGE = ATTRIBUTES.register("ballistic_damage",
+            () -> new RangedAttribute("attribute.exoadvadditions.ballistic_damage",
+                    1.0,
+                    0.0,
+                    127.0));
+
     public static final DeferredRegister<ResourceLocation> STATS = DeferredRegister.create(Registries.CUSTOM_STAT, ExoAdventureAdditions.MODID);
     public static final RegistryObject<ResourceLocation> STAT_TOME_CRAFTS = STATS.register("tome_crafts", () -> ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "tome_crafts"));
     public static final RegistryObject<ResourceLocation> STAT_ADVANCED_TOME_CRAFTS = STATS.register("advanced_tome_crafts", () -> ResourceLocation.fromNamespaceAndPath(ExoAdventureAdditions.MODID, "advanced_tome_crafts"));
+
+    public static final DeferredRegister<Brew> BOTANIA_BREWS = DeferredRegister.create(BotaniaRegistries.BREWS, ExoAdventureAdditions.MODID);
+    public static final RegistryObject<Brew> WEAK_RESISTANCE = BOTANIA_BREWS.register("weak_resistance", () -> new Brew(0xB44E17, 4000, new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 3600, 0)));
+    public static final RegistryObject<Brew> EAGLE_EYE = BOTANIA_BREWS.register("eagle_eye", () -> new Brew(0x81AB0F, 4000, new MobEffectInstance(ExoArmory.REGISTRY.EFFECT_EAGLE_EYE.get(), 1800, 1)));
 
     public static Item[] xpScrolls;
 
@@ -319,8 +357,10 @@ public class Registry {
     public static EntityType<?> ENTITY_NETHER_BAT;
     public static EntityType<?> ENTITY_NUDIBRANCH;
 
+    public static Item ITEM_ETHERIUM_HELMET;
     public static Item ITEM_ETHERIUM_CHESTPLATE;
     public static Item ITEM_ETHERIUM_LEGGINGS;
+    public static Item ITEM_ETHERIUM_BOOTS;
 
     public static Item ITEM_SPELLBREAKER;
     public static Item ITEM_AMETHYST_RAPIER;
@@ -328,6 +368,32 @@ public class Registry {
 
     public static Item ITEM_THUNDERCALLER;
     public static Item ITEM_STARCALLER;
+
+    public static Item ITEM_ANCIENT_TOME;
+
+    public static Item ITEM_PONDIE;
+    public static Item ITEM_WILDSPLASH;
+    public static Item ITEM_SPLASHTAIL;
+    public static Item ITEM_ISLEHOPPER;
+    public static Item ITEM_ANCIENTSCALE;
+    public static Item ITEM_BATTLEGILL;
+    public static Item ITEM_WRECKER;
+    public static Item ITEM_STORMFISH;
+    public static Item ITEM_DEVILFISH;
+    public static Item ITEM_PLENTIFIN;
+
+    public static Attribute ATTRIBUTE_STAMINA;
+    public static Attribute ATTRIBUTE_MAX_MANA;
+
+    public static MobEffect RAISE_DEAD_TIMER;
+    public static MobEffect POLAR_BEAR_TIMER;
+    public static MobEffect VEX_TIMER;
+    public static MobEffect SUMMON_HORSE_TIMER;
+    public static ImmutableSet<MobEffect> SUMMON_EFFECTS;
+    public static MobEffect OAKSKIN;
+
+    public static TagKey<DamageType> GUN_DAMAGE;
+    public static TagKey<Item> AQUATIC_WEAPONS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "fisher_weapons"));
 
     public static void registerCommon() {
         PacketHandler.register();
@@ -346,6 +412,7 @@ public class Registry {
         ATTRIBUTES.register(modBus);
         LOOT_ITEM_CONDITIONS.register(modBus);
         STATS.register(modBus);
+        BOTANIA_BREWS.register(modBus);
     }
 
     public static void setupOres() {
@@ -401,6 +468,7 @@ public class Registry {
 
     public static void attributeModifyEvent(final EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, ATTRIBUTE_SKILL_EXP_BONUS.get());
+        event.add(EntityType.PLAYER, ATTRIBUTE_BALLISTICS_DAMAGE.get());
     }
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
@@ -439,6 +507,9 @@ public class Registry {
     }
 
     public static void fillInAfterRegistry() {
+
+        GUN_DAMAGE = TagKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath("tacz", "bullets"));
+
         ENTITY_COLELYTRA = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "colelytra"));
         ENTITY_DRAGON = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "dragon"));
         ENTITY_FIREBIRD = ForgeRegistries.ENTITY_TYPES.getValue(ResourceLocation.fromNamespaceAndPath("mythicmounts", "firebird"));
@@ -454,14 +525,60 @@ public class Registry {
         ITEM_THUNDERCALLER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("botania", "thunder_sword"));
         ITEM_STARCALLER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("botania", "star_sword"));
 
+        ITEM_ANCIENT_TOME = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("quark", "ancient_tome"));
+
+        ITEM_ETHERIUM_HELMET = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_helmet"));
         ITEM_ETHERIUM_CHESTPLATE = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_chestplate"));
         ITEM_ETHERIUM_LEGGINGS = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_leggings"));
+        ITEM_ETHERIUM_BOOTS = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_boots"));
 
         ITEM_ETHERIUM_LEGGINGS = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("enigmaticlegacy", "etherium_leggings"));
+
+        ITEM_PONDIE = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "pondie"));
+        ITEM_WILDSPLASH = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "wildsplash"));
+        ITEM_SPLASHTAIL = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "splashtail"));
+        ITEM_ISLEHOPPER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "islehopper"));
+        ITEM_ANCIENTSCALE = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "ancientscale"));
+        ITEM_BATTLEGILL = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "battlegill"));
+        ITEM_WRECKER = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "wrecker"));
+        ITEM_STORMFISH = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "stormfish"));
+        ITEM_DEVILFISH = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "devilfish"));
+        ITEM_PLENTIFIN = ForgeRegistries.ITEMS.getValue(ResourceLocation.fromNamespaceAndPath("fishofthieves", "plentifin"));
+
+        ATTRIBUTE_STAMINA = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.bySeparator("puffish_attributes:stamina", ':'));
+        ATTRIBUTE_MAX_MANA = ForgeRegistries.ATTRIBUTES.getValue(ResourceLocation.bySeparator("irons_spellbooks:max_mana", ':'));
+
+        RAISE_DEAD_TIMER = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "raise_dead_timer"));
+        POLAR_BEAR_TIMER = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "polar_bear_timer"));
+        VEX_TIMER = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "vex_timer"));
+        SUMMON_HORSE_TIMER = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "summon_horse_timer"));
+
+        SUMMON_EFFECTS = ImmutableSet.of(RAISE_DEAD_TIMER, POLAR_BEAR_TIMER, VEX_TIMER, SUMMON_HORSE_TIMER);
+
+        OAKSKIN = ForgeRegistries.MOB_EFFECTS.getValue(ResourceLocation.fromNamespaceAndPath("irons_spellbooks", "oakskin"));
 
         xpScrolls = new Item[]{ ITEM_SCROLL_OF_SKILL_XP_COMBAT.get(), ITEM_SCROLL_OF_SKILL_XP_MINING.get(), ITEM_SCROLL_OF_SKILL_XP_HUSBANDRY.get(),
                 ITEM_SCROLL_OF_SKILL_XP_FISHING.get(), ITEM_SCROLL_OF_SKILL_XP_OCCULT.get(), ITEM_SCROLL_OF_SKILL_XP_EXPLORATION.get() };
 
+        ITEM_MAGE_TEMPLATE.get().setAttributes(Pair.of(ATTRIBUTE_MAX_MANA, new AttributeModifier("Template", 125.0, AttributeModifier.Operation.ADDITION)),
+                Pair.of(com.exosomnia.exoskills.Registry.ATTRIBUTE_MAGIC_DAMAGE, new AttributeModifier("Template", 0.05, AttributeModifier.Operation.MULTIPLY_BASE)));
+
+        ITEM_RANGER_TEMPLATE.get().setAttributes(Pair.of(ExoArmory.REGISTRY.ATTRIBUTE_ARROW_PIERCE.get(), new AttributeModifier("Template", 0.25, AttributeModifier.Operation.MULTIPLY_BASE)),
+                Pair.of(ExoArmory.REGISTRY.ATTRIBUTE_RANGED_STRENGTH.get(), new AttributeModifier("Template", 0.05, AttributeModifier.Operation.MULTIPLY_BASE)));
+
+        ITEM_FIGHTER_TEMPLATE.get().setAttributes(Pair.of(Attributes.MAX_HEALTH, new AttributeModifier("Template", 2.5, AttributeModifier.Operation.ADDITION)),
+                Pair.of(Attributes.ATTACK_DAMAGE, new AttributeModifier("Template", 0.25, AttributeModifier.Operation.ADDITION)));
+
+        ITEM_ARMOR_REINFORCEMENT_TEMPLATE.get().setAttributes(Pair.of(Attributes.ARMOR, new AttributeModifier("Template", 0.5, AttributeModifier.Operation.ADDITION)),
+                Pair.of(Attributes.ARMOR_TOUGHNESS, new AttributeModifier("Template", 2.0, AttributeModifier.Operation.ADDITION)));
+
+        ATTRIBUTE_TEMPLATES = ImmutableMap.of(ITEM_MAGE_TEMPLATE.get().getId(), ITEM_MAGE_TEMPLATE.get(),
+                ITEM_RANGER_TEMPLATE.get().getId(), ITEM_RANGER_TEMPLATE.get(),
+                ITEM_FIGHTER_TEMPLATE.get().getId(), ITEM_FIGHTER_TEMPLATE.get(),
+                ITEM_ARMOR_REINFORCEMENT_TEMPLATE.get().getId(), ITEM_ARMOR_REINFORCEMENT_TEMPLATE.get());
+
         RegistryTomeRecipes.registerRecipes();
+
+        FatiguedEffect.handleIntegrations(EFFECT_FATIGUED.get());
     }
 }

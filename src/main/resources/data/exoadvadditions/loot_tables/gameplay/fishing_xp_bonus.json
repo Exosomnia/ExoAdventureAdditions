@@ -7,13 +7,13 @@
         {
           "type": "minecraft:empty",
           "weight": 190,
-          "quality": -1
+          "quality": -2
         },
         {
           "type": "minecraft:loot_table",
           "name": "exoadvadditions:gameplay/fishing_xp_scrolls",
           "weight": 10,
-          "quality": 1
+          "quality": 2
         }
       ],
       "rolls": 1.0

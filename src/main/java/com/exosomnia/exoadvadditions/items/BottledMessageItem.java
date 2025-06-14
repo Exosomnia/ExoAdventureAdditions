@@ -40,7 +40,7 @@ public class BottledMessageItem extends Item {
                 break;
             case 3, 4:
                 message = new ItemStack(Registry.xpScrolls[random.nextInt(Registry.xpScrolls.length)]);
-                message.getOrCreateTag().putInt("value", message.is(Registry.ITEM_SCROLL_OF_SKILL_XP_FISHING.get()) ? 4800 : 2400);
+                message.getOrCreateTag().putInt("value", message.is(Registry.ITEM_SCROLL_OF_SKILL_XP_FISHING.get()) ? 9600 : 6400);
                 break;
             default:
                 message = new ItemStack(Registry.ITEM_UNLOCATED_MAP.get());

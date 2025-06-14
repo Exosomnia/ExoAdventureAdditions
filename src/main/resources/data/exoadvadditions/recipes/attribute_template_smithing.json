@@ -1,0 +1,9 @@
+{
+  "type": "exoadvadditions:attribute_template_smithing",
+  "addition": {
+    "item": "minecraft:diamond_block"
+  },
+  "template": {
+    "tag": "exoadvadditions:attribute_templates"
+  }
+}

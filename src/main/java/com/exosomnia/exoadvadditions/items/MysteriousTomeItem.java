@@ -75,7 +75,7 @@ public class MysteriousTomeItem extends Item {
         Direction useDir = context.getClickedFace();
 
         if (!unleashed && tryUnleash(level, clickedPos, player, context.getHand())) { return InteractionResult.sidedSuccess(false); }
-        boolean advanced = unleashed ? !Screen.hasShiftDown() : false;
+        boolean advanced = unleashed ? !player.isShiftKeyDown() : false;
 
         Vec3i offsets = switch(useDir) {
             case UP -> new Vec3i(-1, -2, -1);

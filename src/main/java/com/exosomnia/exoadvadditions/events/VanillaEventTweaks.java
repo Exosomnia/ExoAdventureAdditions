@@ -3,7 +3,9 @@ package com.exosomnia.exoadvadditions.events;
 import com.exosomnia.exoadvadditions.ExoAdventureAdditions;
 import com.exosomnia.exoadvadditions.Registry;
 import com.exosomnia.exoadvadditions.items.GrowthScrollItem;
-import com.exosomnia.exoadvadditions.items.TomeOfLuck;
+import com.exosomnia.exoadvadditions.items.TomeOfBallisticsItem;
+import com.exosomnia.exoadvadditions.items.TomeOfStaminaItem;
+import com.exosomnia.exoadvadditions.items.TomeOfLuckItem;
 import com.exosomnia.exoarmory.ExoArmory;
 import com.exosomnia.exolib.capabilities.persistentplayerdata.PersistentPlayerDataProvider;
 import com.exosomnia.exolib.mixin.interfaces.ILivingEntityMixin;
@@ -79,9 +81,34 @@ public class VanillaEventTweaks {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void anvilUpdateEvent(AnvilUpdateEvent event) {
         ItemStack left = event.getLeft();
+        Item leftItem = left.getItem();
         ItemStack right = event.getRight();
 
-        if (left.getItem().isValidRepairItem(left, right) && left.getDamageValue() != 0) {
+        if (left.hasTag() && left.getTag().getBoolean("Reinforcement") && left.getEnchantmentLevel(Enchantments.UNBREAKING) > 3 && left.getEnchantmentLevel(Enchantments.MENDING) > 0 && right.getItem().equals(Registry.ITEM_FLAWLESS_ONYX.get())) {
+            ItemStack output = left.copy();
+            output.getTag().putBoolean("Unbreakable", true);
+
+            event.setCost(50);
+            event.setMaterialCost(1);
+            event.setOutput(output);
+        }
+        else if (leftItem.isValidRepairItem(left, right) && left.getDamageValue() != 0) {
+            ItemStack output = left.copy();
+            output.setDamageValue(0);
+
+            event.setCost(2);
+            event.setMaterialCost(1);
+            event.setOutput(output);
+        }
+        else if (leftItem instanceof TieredItem tieredItem && tieredItem.getTier().equals(Tiers.NETHERITE) && right.getItem().equals(Items.DIAMOND)) {
+            ItemStack output = left.copy();
+            output.setDamageValue(0);
+
+            event.setCost(2);
+            event.setMaterialCost(1);
+            event.setOutput(output);
+        }
+        else if (leftItem instanceof ArmorItem armorItem && armorItem.getMaterial().getRepairIngredient().test(new ItemStack(Items.NETHERITE_INGOT)) && right.getItem().equals(Items.DIAMOND)) {
             ItemStack output = left.copy();
             output.setDamageValue(0);
 
@@ -116,9 +143,20 @@ public class VanillaEventTweaks {
             trades.get(4).remove(2);
             trades.get(4).remove(2);
             trades.get(4).add(ENCHANTED_BOOKS_TRADE.get(15));
+
+            ItemStack randomAncientPackage = new ItemStack(Registry.ITEM_MYSTERIOUS_PACKAGE.get());
+            CompoundTag compoundTag = new CompoundTag();
+            ListTag listTag = new ListTag();
+            CompoundTag contentsTag = new CompoundTag();
+            contentsTag.putString("table", "exoadvadditions:gameplay/ancient_tome_package");
+            listTag.add(contentsTag);
+            compoundTag.put("contents", listTag);
+            randomAncientPackage.setTag(compoundTag);
+            randomAncientPackage.setHoverName(Component.translatable("craft.exoadvadditions.ancient_tome_package"));
+            trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 48), new ItemStack(Registry.ITEM_ANCIENT_TOME), randomAncientPackage.copy(), 2, 30, 0.20F));
         }
         else if (event.getType() == VillagerProfession.LEATHERWORKER) {
-            VillagerTrades.ItemListing rank1Leather = trades.get(1).set(0, (entity, random) -> new MerchantOffer(new ItemStack(Items.LEATHER, 5), new ItemStack(Items.EMERALD), 16, 2, 0.05F));
+            trades.get(1).set(0, (entity, random) -> new MerchantOffer(new ItemStack(Items.LEATHER, 5), new ItemStack(Items.EMERALD), 16, 2, 0.05F));
 
             trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.STRING, 24), new ItemStack(Items.EMERALD), 12, 5, 0.05F));
 
@@ -129,7 +167,8 @@ public class VanillaEventTweaks {
             trades.get(4).add(0, (entity, random) -> new MerchantOffer(new ItemStack(Items.SCUTE, 2), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
             trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 1), new ItemStack(Items.LEATHER, 2), 6, 15, 0.20F));
 
-            trades.get(5).remove(1);
+            trades.get(5).remove(0);
+            trades.get(5).remove(0);
             trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD), new ItemStack(Items.GLOW_ITEM_FRAME, 2), 12, 30, 0.05F));
 
             ItemStack scholarSet = new ItemStack(Registry.ITEM_MYSTERIOUS_PACKAGE.get());
@@ -151,7 +190,55 @@ public class VanillaEventTweaks {
             unlocatedMapTrade.setTag(compoundTag);
             trades.get(1).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 4), unlocatedMapTrade.copy(), 12, 1, 0.05F));
 
-            trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_UNLOCATED_MAP.get()), new ItemStack(Items.EMERALD), 12, 5, 0.05F));
+            trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_UNLOCATED_MAP.get()), new ItemStack(Items.EMERALD, 2), 12, 5, 0.05F));
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void villagerTradesEventFix(VillagerTradesEvent event) {
+        Int2ObjectMap<List<VillagerTrades.ItemListing>> trades = event.getTrades();
+        if (event.getType() == VillagerProfession.FISHERMAN) {
+            trades.get(1).clear();
+            trades.get(2).clear();
+            trades.get(3).clear();
+            trades.get(4).clear();
+            trades.get(5).clear();
+
+            trades.get(1).add((entity, random) -> new MerchantOffer(new ItemStack(Items.STRING, 20), new ItemStack(Items.EMERALD), 16, 2, 0.05F));
+            trades.get(1).add((entity, random) -> new MerchantOffer(new ItemStack(Items.COAL, 10), new ItemStack(Items.EMERALD), 16, 2, 0.05F));
+            trades.get(1).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 3), new ItemStack(Items.COD_BUCKET), 16, 1, 0.05F));
+            trades.get(1).add((entity, random) -> new MerchantOffer(new ItemStack(Items.COD, 6), new ItemStack(Items.EMERALD), new ItemStack(Items.COOKED_COD, 6), 16, 1, 0.05F));
+
+            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.COD, 15), new ItemStack(Items.EMERALD), 16, 10, 0.05F));
+            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_PONDIE, 15), new ItemStack(Items.EMERALD), 16, 10, 0.05F));
+            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_SPLASHTAIL, 15), new ItemStack(Items.EMERALD), 16, 10, 0.05F));
+            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 2), new ItemStack(Items.CAMPFIRE), 12, 5, 0.05F));
+            trades.get(2).add((entity, random) -> new MerchantOffer(new ItemStack(Items.SALMON, 6), new ItemStack(Items.EMERALD), new ItemStack(Items.COOKED_SALMON, 6), 16, 5, 0.05F));
+
+            trades.get(3).add((entity, random) -> new MerchantOffer(new ItemStack(Items.SALMON, 13), new ItemStack(Items.EMERALD), 16, 20, 0.05F));
+            trades.get(3).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_STORMFISH, 6), new ItemStack(Items.EMERALD), 16, 20, 0.05F));
+            trades.get(3).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_PLENTIFIN, 6), new ItemStack(Items.EMERALD), 16, 20, 0.05F));
+            trades.get(3).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_WILDSPLASH, 6), new ItemStack(Items.EMERALD), 16, 20, 0.05F));
+            trades.get(3).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_ISLEHOPPER, 6), new ItemStack(Items.EMERALD), 16, 20, 0.05F));
+            trades.get(3).add((entity, random) -> new MerchantOffer(new ItemStack(Items.FISHING_ROD), new ItemStack(Items.EMERALD), 4, 10, 0.20F));
+
+            trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Items.TROPICAL_FISH, 6), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+            trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Items.PUFFERFISH, 4), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+            trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_WRECKER, 5), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+            trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_BATTLEGILL, 5), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+            trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_DEVILFISH, 5), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+            trades.get(4).add((entity, random) -> new MerchantOffer(new ItemStack(Registry.ITEM_ANCIENTSCALE, 5), new ItemStack(Items.EMERALD), 12, 30, 0.05F));
+
+            ItemStack scholarSet = new ItemStack(Registry.ITEM_MYSTERIOUS_PACKAGE.get());
+            CompoundTag compoundTag = new CompoundTag();
+            ListTag listTag = new ListTag();
+            CompoundTag contentsTag = new CompoundTag();
+            contentsTag.putString("table", "minecraft:gameplay/fishing/treasure");
+            listTag.add(contentsTag);
+            compoundTag.put("contents", listTag);
+            scholarSet.setTag(compoundTag);
+            scholarSet.setHoverName(Component.translatable("trade.exoadvadditions.fishing_treasure"));
+            trades.get(5).add((entity, random) -> new MerchantOffer(new ItemStack(Items.EMERALD, 32), scholarSet.copy(), 4, 30, 0.20F));
         }
     }
 
@@ -201,12 +288,24 @@ public class VanillaEventTweaks {
             CompoundTag tag = playerData.get();
             if (tag.contains("exoadventure")) {
                 CompoundTag modTag = tag.getCompound("exoadventure");
+
                 AttributeInstance expAttribute = player.getAttribute(Registry.ATTRIBUTE_SKILL_EXP_BONUS.get());
                 for (var i = 0; i < modTag.getInt("growthScrolls"); i++) {
                     GrowthScrollItem.applyAttributes(expAttribute, i);
                 }
+
+                AttributeInstance staminaAttribute = player.getAttribute(Registry.ATTRIBUTE_STAMINA);
+                for (var i = 0; i < modTag.getInt("stamina"); i++) {
+                    TomeOfStaminaItem.applyAttributes(staminaAttribute, i);
+                }
+
+                AttributeInstance ballisticAttribute = player.getAttribute(Registry.ATTRIBUTE_BALLISTICS_DAMAGE.get());
+                for (var i = 0; i < modTag.getInt("ballistics"); i++) {
+                    TomeOfBallisticsItem.applyAttributes(ballisticAttribute, i);
+                }
+
                 if (modTag.getBoolean("luckTome")) {
-                    TomeOfLuck.applyAttributes(player.getAttribute(Attributes.LUCK));
+                    TomeOfLuckItem.applyAttributes(player.getAttribute(Attributes.LUCK));
                 }
             }
         });

@@ -38,6 +38,11 @@ public class AdventureMapRecipe extends ShapedRecipe {
     }
 
     @Override
+    public RecipeSerializer<?> getSerializer() {
+        return Registry.RECIPE_ADVENTURE_MAP.get();
+    }
+
+    @Override
     public ItemStack getResultItem(RegistryAccess access) { return this.result.copy(); }
 
     public static class Serializer implements RecipeSerializer<AdventureMapRecipe> {

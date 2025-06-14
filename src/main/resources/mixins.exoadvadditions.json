@@ -18,7 +18,8 @@
     "MerchantOfferMixin",
     "MobEffectsMixin",
     "FoodDataMixin",
-    "DimensionTypesMixin"
+    "DimensionTypesMixin",
+    "DamageEnchantmentMixin"
   ],
   "client": [
     "AnvilScreenMixin"

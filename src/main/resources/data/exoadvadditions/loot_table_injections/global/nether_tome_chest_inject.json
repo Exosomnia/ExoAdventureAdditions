@@ -1,0 +1,30 @@
+{
+  "global_injects": {
+    "cause": "minecraft:chest"
+  },
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "exoadvadditions:tome_of_sunrise"
+        },
+        {
+          "type": "minecraft:item",
+          "name": "exoadvadditions:tome_of_wakefulness"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "exolib:dimension_condition",
+          "dimension": "minecraft:the_nether"
+        },
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.005
+        }
+      ]
+    }
+  ]
+}

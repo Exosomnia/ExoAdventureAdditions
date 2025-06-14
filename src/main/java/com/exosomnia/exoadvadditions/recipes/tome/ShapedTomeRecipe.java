@@ -92,15 +92,16 @@ public class ShapedTomeRecipe extends TomeRecipe {
     }
     private boolean itemsMatch(ArrayList<ItemStack> itemMappings) {
         if (itemMappings == null) return false;
+        ArrayList<ItemStack> itemMapCopy = new ArrayList<>(itemMappings);
 
         int mappingSize = this.itemMappings.size();
-        if (mappingSize != itemMappings.size()) { return false; }
+        if (mappingSize != itemMapCopy.size()) { return false; }
         for (var i = 0; i < mappingSize; i++) {
             ItemMapping check = this.itemMappings.get(i);
             boolean isValid = false;
-            for (var ii = 0; ii < itemMappings.size(); ii++) {
-                if (check.matches(itemMappings.get(ii))) {
-                    itemMappings.remove(ii);
+            for (var ii = 0; ii < itemMapCopy.size(); ii++) {
+                if (check.matches(itemMapCopy.get(ii))) {
+                    itemMapCopy.remove(ii);
                     isValid = true;
                     break;
                 }

@@ -50,6 +50,9 @@ public class AdventureManager {
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.maxHealingPerHit 1");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.absorptionRatio 10");
             server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.vampiricGlove.absorptionChance 100");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.villagerHat.reputationBonus 0");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.eternalSteak.cooldown 120");
+            server.getCommands().performPrefixedCommand(stack, "gamerule artifacts.everlastingBeef.cooldown 60");
             rules.getRule(RULE_CAN_BREAK).set(false, event.getServer());
             rules.getRule(RULE_CAN_HURT).set(false, event.getServer());
             rules.getRule(RULE_CAN_HUNGER_DRAIN).set(false, event.getServer());
@@ -77,13 +80,6 @@ public class AdventureManager {
     public static void livingHurtEvent(LivingHurtEvent event) {
         if (event.getEntity().level() instanceof ServerLevel level && !level.getGameRules().getRule(RULE_CAN_HURT).get()) {
             event.setCanceled(true);
-        }
-    }
-
-    @SubscribeEvent
-    public static void playerTickEvent(TickEvent.PlayerTickEvent event) {
-        if (event.side.isServer() && !event.player.level().getGameRules().getRule(RULE_CAN_HUNGER_DRAIN).get()) {
-            event.player.getFoodData().setExhaustion(0);
         }
     }
 }

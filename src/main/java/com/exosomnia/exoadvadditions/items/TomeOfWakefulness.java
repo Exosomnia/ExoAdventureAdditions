@@ -26,7 +26,7 @@ public class TomeOfWakefulness extends TomeItem {
 
     public TomeOfWakefulness(Properties properties, int rank, boolean eternal) {
         super(properties, rank, eternal);
-        duration = (int)Math.pow(rank, 2) * 6000;
+        duration = Math.min((int)Math.pow(3, rank - 1) * 12000, 72000);
     }
 
     @Override

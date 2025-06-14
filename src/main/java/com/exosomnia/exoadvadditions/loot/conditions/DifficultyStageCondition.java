@@ -1,5 +1,6 @@
 package com.exosomnia.exoadvadditions.loot.conditions;
 
+import com.exosomnia.exoadvadditions.Config;
 import com.exosomnia.exoadvadditions.Registry;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
@@ -32,7 +33,7 @@ public class DifficultyStageCondition implements LootItemCondition {
 
     @Override
     public boolean test(LootContext lootContext) {
-        return GameStageHelper.getGlobalGameStage().getOrdinal() >= stage;
+        return !Config.cowboyModeFixes && GameStageHelper.getGlobalGameStage().getOrdinal() >= stage;
     }
 
     public static class Builder implements LootItemCondition.Builder {

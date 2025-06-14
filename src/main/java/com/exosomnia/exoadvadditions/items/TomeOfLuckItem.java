@@ -23,9 +23,9 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
-public class TomeOfLuck extends TomeItem {
+public class TomeOfLuckItem extends TomeItem {
 
-    public TomeOfLuck(Properties properties, int rank, boolean eternal) {
+    public TomeOfLuckItem(Properties properties, int rank, boolean eternal) {
         super(properties, rank, eternal);
     }
 

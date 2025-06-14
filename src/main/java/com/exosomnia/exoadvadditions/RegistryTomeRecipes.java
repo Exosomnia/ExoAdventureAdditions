@@ -5,11 +5,15 @@ import com.exosomnia.exoadvadditions.networking.packets.SimpleMusicPacket;
 import com.exosomnia.exoadvadditions.recipes.tome.AdvancedShapedTomeRecipe;
 import com.exosomnia.exoadvadditions.recipes.tome.ShapedTomeRecipe;
 import com.exosomnia.exoadvadditions.recipes.tome.TomeRecipe;
+import com.exosomnia.exoskills.ExoSkills;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,7 +57,6 @@ public class RegistryTomeRecipes {
         final Item itemAnimalGuidebook = findItem("enigmaticlegacy", "animal_guidebook");
         final Item itemHunterGuidebook = findItem("enigmaticlegacy", "hunter_guidebook");
         final Item itemEnchantmentTransposer = findItem("enigmaticlegacy", "enchantment_transposer");
-        final Item itemEnderiumShard = findItem("majruszsdifficulty", "enderium_shard");
         final Item itemWaterRune = findItem("botania", "rune_water");
         final Item itemEarthRune = findItem("botania", "rune_earth");
         final Item itemManaRune = findItem("botania", "rune_mana");
@@ -73,6 +76,23 @@ public class RegistryTomeRecipes {
         final Item itemFlawlessBuddingQuartz = findItem("ae2", "flawless_budding_quartz");
         final Item itemFlawedBuddingQuartz = findItem("ae2", "flawed_budding_quartz");
         final Item itemCertusQuartz = findItem("ae2", "certus_quartz_crystal");
+        final Item itemDiamondHeart = findItem("quark", "diamond_heart");
+
+        final Item itemEnderiumShard = findItem("majruszsdifficulty", "enderium_shard");
+        final Item itemEnderiumIngot = findItem("majruszsdifficulty", "enderium_ingot");
+        final Item itemEnderiumUpgradeTemplate = findItem("majruszsdifficulty", "enderium_upgrade_smithing_template");
+
+        final Item itemEtheriumIngot = findItem("enigmaticlegacy", "etherium_ingot");
+        final Item itemEnderRod = findItem("enigmaticlegacy", "ender_rod");
+        final Item itemEtheriumNugget = findItem("enigmaticlegacy", "etherium_nugget");
+
+        final Item itemFirebirdEgg = findItem("mythicmounts", "firebird_spawn_egg");
+        final Item itemGriffonEgg = findItem("mythicmounts", "griffon_spawn_egg");
+        final Item itemColelytraEgg = findItem("mythicmounts", "colelytra_spawn_egg");
+        final Item itemNetherBatEgg = findItem("mythicmounts", "netherbat_spawn_egg");
+
+        final Item itemArcaneEssence = findItem("irons_spellbooks", "arcane_essence");
+        final Item itemBlankRunestone = findItem("irons_spellbooks", "blank_rune");
 
         final Block blockLivingrock = findBlock("botania", "livingrock");
         final Block blockSkyStone = findBlock("ae2", "sky_stone_block");
@@ -83,8 +103,8 @@ public class RegistryTomeRecipes {
                 .midLayer(new String[]{"WWW", "W W", "WWW"})
                 .lowLayer(new String[]{"WWW", "WWW", "WWW"})
                 .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(Blocks.ORANGE_WOOL), 'W', TomeRecipe.BlockMapping.of(Blocks.WHITE_WOOL)))
-                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.CARROT), 2), TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND_BLOCK), 1)))
-                .result(new ItemStack(Items.GOLDEN_CARROT, 32), 640)
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.CARROT), 1), TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND_BLOCK), 1)))
+                .result(new ItemStack(Registry.ITEM_DIAMOND_CARROT.get(), 1), 5120)
                 .execute((player, position) -> {
                     ServerLevel level = player.serverLevel();
                     Rabbit p = new Rabbit(EntityType.RABBIT, level);
@@ -105,7 +125,7 @@ public class RegistryTomeRecipes {
                 .lowLayer(new String[]{"PPP", "PPP", "PPP"})
                 .blockMappings(ImmutableMap.of('B', TomeRecipe.BlockMapping.of(Blocks.BLUE_WOOL), 'P', TomeRecipe.BlockMapping.of(Blocks.PINK_WOOL), 'Q', TomeRecipe.BlockMapping.of(Blocks.QUARTZ_BLOCK)))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.BONE), 2), TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND_BLOCK), 1)))
-                .result(new ItemStack(Items.WOLF_SPAWN_EGG), 640, false)
+                .result(new ItemStack(Items.WOLF_SPAWN_EGG), 5120, false)
                 .execute((player, position) -> {
                     ServerLevel level = player.serverLevel();
                     Wolf f = new Wolf(EntityType.WOLF, level);
@@ -128,6 +148,38 @@ public class RegistryTomeRecipes {
                         PacketHandler.sendToPlayer(new SimpleMusicPacket(Registry.SOUND_TOME_CRAFT_SOUND_B.getId()), serverPlayers);
                     }
                 })
+                .build());
+        //endregion
+
+        //region Permanent Buff Tomes
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{"RRRRR", "RIIIR", "RIRIR", "RIIIR", "RRRRR"})
+                .withLayer(new String[]{"RIIIR", "I   I", "I   I", "I   I", "RIIIR"})
+                .withLayer(new String[]{"RIRIR", "I   I", "R   R", "I   I", "RIRIR"})
+                .withLayer(new String[]{"RIIIR", "I   I", "I   I", "I   I", "RIIIR"})
+                .withLayer(new String[]{"RRRRR", "RIIIR", "RIRIR", "RIIIR", "RRRRR"})
+                .blockMappings(ImmutableMap.of('I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron"))),
+                        'R', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/redstone")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MYSTERIOUS_BLUEPRINT_SHAPES.get()), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderiumIngot), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("forge", "ingots/copper"))), 256),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.GUNPOWDER), 256),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_TOME_OF_BALLISTICS.get()), 10240)
+                .build());
+
+        Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
+                .topLayer(new String[]{"HHH", "HHH", "HHH"})
+                .midLayer(new String[]{"HEH", "E E", "HEH"})
+                .lowLayer(new String[]{"HHH", "HHH", "HHH"})
+                .blockMappings(ImmutableMap.of('H', TomeRecipe.BlockMapping.of(Blocks.HAY_BLOCK),
+                        'E', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/emerald")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "veggie_blocks"))), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "veggie_blocks"))), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "veggie_blocks"))), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_DIAMOND_CARROT.get()), 2)))
+                .result(new ItemStack(Registry.ITEM_TOME_OF_STAMINA.get(), 1), 5120)
+                .withHelp(List.of("recipe.help.stamina_tome.1", "recipe.help.stamina_tome.2"))
                 .build());
         //endregion
 
@@ -159,8 +211,21 @@ public class RegistryTomeRecipes {
                         }
                     }
                 })
-                .result(new ItemStack(Registry.ITEM_TOME_OF_LUCK.get()), 1280, false)
+                .result(new ItemStack(Registry.ITEM_TOME_OF_LUCK.get()), 5120, false)
                 .withHelp(List.of("recipe.help.luck_tome.1", "recipe.help.luck_tome.2"))
+                .build());
+
+        Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
+                .topLayer(new String[]{"GAG", "AEA", "GAG"})
+                .midLayer(new String[]{" B ", "B B", " B "})
+                .lowLayer(new String[]{"GAG", "AEA", "GAG"})
+                .blockMappings(ImmutableMap.of('A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold"))),
+                        'E', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/emerald"))),
+                        'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1)))
+                .result(new ItemStack(Registry.ITEM_SCROLL_OF_SKILL_XP_RANDOM.get()), 5120)
                 .build());
 
         //region AE2 Crafts
@@ -171,7 +236,7 @@ public class RegistryTomeRecipes {
                 .blockMappings(ImmutableMap.of('S', TomeRecipe.BlockMapping.of(blockSkyStone),
                         'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("forge", "gems/certus_quartz"))), 1)))
-                .result(new ItemStack(itemSiliconPress), 1)
+                .result(new ItemStack(itemSiliconPress), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -181,7 +246,7 @@ public class RegistryTomeRecipes {
                 .blockMappings(ImmutableMap.of('S', TomeRecipe.BlockMapping.of(blockSkyStone),
                         'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.IRON_INGOT), 1)))
-                .result(new ItemStack(itemLogicProcessorPress), 1)
+                .result(new ItemStack(itemLogicProcessorPress), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -191,7 +256,7 @@ public class RegistryTomeRecipes {
                 .blockMappings(ImmutableMap.of('S', TomeRecipe.BlockMapping.of(blockSkyStone),
                         'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.GOLD_INGOT), 1)))
-                .result(new ItemStack(itemEngineeringProcessorPress), 1)
+                .result(new ItemStack(itemEngineeringProcessorPress), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -201,7 +266,7 @@ public class RegistryTomeRecipes {
                 .blockMappings(ImmutableMap.of('S', TomeRecipe.BlockMapping.of(blockSkyStone),
                         'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND), 1)))
-                .result(new ItemStack(itemCalculationProcessorPress), 1)
+                .result(new ItemStack(itemCalculationProcessorPress), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -212,7 +277,7 @@ public class RegistryTomeRecipes {
                         'L', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/lapis")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.QUARTZ), 16),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 16)))
-                .result(new ItemStack(itemCertusQuartz, 16), 1)
+                .result(new ItemStack(itemCertusQuartz, 32), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -223,7 +288,7 @@ public class RegistryTomeRecipes {
                         'E', TomeRecipe.BlockMapping.of(Blocks.END_STONE),
                         'B', TomeRecipe.BlockMapping.of(Blocks.BLACKSTONE)))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.REDSTONE_BLOCK), 1)))
-                .result(new ItemStack(itemSkyStoneBlock, 27), 1)
+                .result(new ItemStack(itemSkyStoneBlock, 27), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -236,9 +301,9 @@ public class RegistryTomeRecipes {
                         'C', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/certus_quartz"))),
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(itemFlawedBuddingQuartz), 3),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("forge", "gems/diamond"))), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/diamond"))), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 2)))
-                .result(new ItemStack(itemFlawlessBuddingQuartz),1)
+                .result(new ItemStack(itemFlawlessBuddingQuartz),5120)
                 .build());
         //endregion
 
@@ -252,7 +317,7 @@ public class RegistryTomeRecipes {
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.EMERALD_BLOCK), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_1.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_1.get()), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -264,7 +329,7 @@ public class RegistryTomeRecipes {
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MACGUFFIN_15_UNFINISHED_1.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_2.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_2.get()), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -276,7 +341,7 @@ public class RegistryTomeRecipes {
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MACGUFFIN_15_UNFINISHED_2.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_3.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_3.get()), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -288,7 +353,7 @@ public class RegistryTomeRecipes {
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MACGUFFIN_15_UNFINISHED_3.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_4.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15_UNFINISHED_4.get()), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -303,11 +368,25 @@ public class RegistryTomeRecipes {
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MACGUFFIN_15_UNFINISHED_4.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15.get()), 5120)
+                .result(new ItemStack(Registry.ITEM_MACGUFFIN_15.get()), 10240)
                 .build());
         //endregion
 
         //region Resource Crafts
+        Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
+                .topLayer(new String[]{"HHH", "HHH", "HHH"})
+                .midLayer(new String[]{"HEH", "E E", "HEH"})
+                .lowLayer(new String[]{"HHH", "HHH", "HHH"})
+                .blockMappings(ImmutableMap.of('H', TomeRecipe.BlockMapping.of(Blocks.HAY_BLOCK),
+                        'E', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/emerald")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "veggie_blocks"))), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "veggie_blocks"))), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "veggie_blocks"))), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_DIAMOND_CARROT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_TOME_OF_STAMINA.get(), 1), 5120)
+                .withHelp(List.of("recipe.help.stamina_tome.1", "recipe.help.stamina_tome.2"))
+                .build());
+
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
                 .topLayer(new String[]{"AQA", "QGQ", "AQA"})
                 .midLayer(new String[]{"QGQ", "G G", "QGQ"})
@@ -317,7 +396,7 @@ public class RegistryTomeRecipes {
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.LAPIS_BLOCK), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND), 2)))
-                .result(new ItemStack(Registry.ITEM_MAGICAL_RUNES.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_MAGICAL_RUNES.get()), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -330,7 +409,7 @@ public class RegistryTomeRecipes {
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.OBSIDIAN), 6)))
-                .result(new ItemStack(Items.CRYING_OBSIDIAN, 12), 1280)
+                .result(new ItemStack(Items.CRYING_OBSIDIAN, 12), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -344,7 +423,7 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.NETHERITE_SCRAP), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.BLAZE_POWDER), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -357,10 +436,10 @@ public class RegistryTomeRecipes {
                         'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
                         'C', TomeRecipe.BlockMapping.of(Blocks.CRYING_OBSIDIAN),
                         'S', TomeRecipe.BlockMapping.of(Blocks.SCULK)))
-                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderiumShard), 1),
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(itemEtheriumNugget), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderAir), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_ENDER_MANUSCRIPT.get()), 5120)
+                .result(new ItemStack(Registry.ITEM_ENDER_MANUSCRIPT.get()), 10240)
                 .build());
         //endregion
 
@@ -370,9 +449,10 @@ public class RegistryTomeRecipes {
                 .midLayer(new String[]{"QGQ", "G G", "QGQ"})
                 .lowLayer(new String[]{"AQA", "QGQ", "AQA"})
                 .blockMappings(ImmutableMap.of('A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK), 'Q', TomeRecipe.BlockMapping.of(Blocks.QUARTZ_BLOCK), 'G', TomeRecipe.BlockMapping.of(Blocks.GLOWSTONE)))
-                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(tagEndRemEyes), 1), TomeRecipe.ItemMapping.of(Ingredient.of(tagEndRemEyes), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(tagEndRemEyes), 1), TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1)))
-                .result(new ItemStack(itemCrypticEye), 1280)
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(tagEndRemEyes), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(tagEndRemEyes), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 1)))
+                .result(new ItemStack(itemCrypticEye), 5120)
                 .withHelp(List.of("recipe.help.cryptic_eye.1", "recipe.help.cryptic_eye.2"))
                 .build());
 
@@ -387,7 +467,7 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.LODESTONE), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND), 2)))
-                .result(new ItemStack(itemNaturesCompass), 1280)
+                .result(new ItemStack(itemNaturesCompass), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -403,7 +483,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.CACTUS), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.NETHER_WART), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.BONE_MEAL), 1)))
-                .result(new ItemStack(itemInfinimeal), 1280)
+                .result(new ItemStack(itemInfinimeal), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -429,9 +509,9 @@ public class RegistryTomeRecipes {
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
                 .withLayer(new String[]{"O   O", "     ", "     ", "     ", "O   O"})
-                .withLayer(new String[]{"E P E", " OPO ", "PPPPP", " OPO ", "E P E"})
+                .withLayer(new String[]{"E P E", " OPO ", "PPDPP", " OPO ", "E P E"})
                 .withLayer(new String[]{"EODOE", "OO OO", "D   D", "OO OO", "EODOE"})
-                .withLayer(new String[]{"E P E", " OPO ", "PPPPP", " OPO ", "E P E"})
+                .withLayer(new String[]{"E P E", " OPO ", "PPDPP", " OPO ", "E P E"})
                 .withLayer(new String[]{"N   N", "     ", "     ", "     ", "N   N"})
                 .blockMappings(ImmutableMap.of('E', TomeRecipe.BlockMapping.of(Blocks.END_STONE_BRICKS),
                         'P', TomeRecipe.BlockMapping.of(Blocks.PURPUR_BLOCK),
@@ -441,7 +521,70 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_UNFINISHED_ELYTRA.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_VOID_RUNES.get()), 2),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ETERNA_CRYSTALIS.get()), 1)))
-                .result(new ItemStack(Items.ELYTRA), 5120)
+                .result(new ItemStack(Items.ELYTRA), 10240)
+                .build());
+
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{" OLO ", "O O O", "LOGOL", "O O O", " OLO "})
+                .withLayer(new String[]{"O O O", " AAA ", "OAAAO", " AAA ", "O O O"})
+                .withLayer(new String[]{"LOGOL", "OAAAO", "GA AG", "OAAAO", "LOGOL"})
+                .withLayer(new String[]{"O O O", " AAA ", "OAAAO", " AAA ", "O O O"})
+                .withLayer(new String[]{" OLO ", "O O O", "LOGOL", "O O O", " OLO "})
+                .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian"))),
+                        'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'L', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/lapis")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(com.exosomnia.exoskills.Registry.ITEM_ONYX.get()), 8),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 8),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.NETHERITE_INGOT), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND_BLOCK), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_FLAWLESS_ONYX.get()), 10240)
+                .build());
+
+        ItemStack ancientTomePackage = new ItemStack(Registry.ITEM_MYSTERIOUS_PACKAGE.get());
+        CompoundTag compoundTag = new CompoundTag();
+        ListTag listTag = new ListTag();
+        CompoundTag contentsTag = new CompoundTag();
+        contentsTag.putString("table", "exoadvadditions:gameplay/ancient_tome_package");
+        listTag.add(contentsTag);
+        compoundTag.put("contents", listTag);
+        ancientTomePackage.setTag(compoundTag);
+        ancientTomePackage.setHoverName(Component.translatable("craft.exoadvadditions.ancient_tome_package"));
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{" OLO ", "O O O", "LOGOL", "O O O", " OLO "})
+                .withLayer(new String[]{"O O O", " AAA ", "OAAAO", " AAA ", "O O O"})
+                .withLayer(new String[]{"LOGOL", "OAAAO", "GA AG", "OAAAO", "LOGOL"})
+                .withLayer(new String[]{"O O O", " AAA ", "OAAAO", " AAA ", "O O O"})
+                .withLayer(new String[]{" OLO ", "O O O", "LOGOL", "O O O", " OLO "})
+                .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian"))),
+                        'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'L', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/lapis")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(com.exosomnia.exoskills.Registry.ITEM_HORIZON_OF_FATE.get()), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 256),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 8),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.SCULK), 8),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND_BLOCK), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1)))
+                .result(ancientTomePackage, 10240)
+                .build());
+
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{" OLO ", "O O O", "LOGOL", "O O O", " OLO "})
+                .withLayer(new String[]{"O O O", " AAA ", "OAAAO", " AAA ", "O O O"})
+                .withLayer(new String[]{"LOGOL", "OAAAO", "GA AG", "OAAAO", "LOGOL"})
+                .withLayer(new String[]{"O O O", " AAA ", "OAAAO", " AAA ", "O O O"})
+                .withLayer(new String[]{" OLO ", "O O O", "LOGOL", "O O O", " OLO "})
+                .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian"))),
+                        'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'L', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/lapis")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_BLANK_SMITHING_TEMPLATE.get()), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEtheriumIngot), 3),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderRod), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_ETHERIUM_UPGRADE_TEMPLATE.get()), 10240)
                 .build());
         //endregion
 
@@ -458,7 +601,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemManaRune), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemAirRune), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemFireRune), 1)))
-                .result(new ItemStack(itemTerraPlate), 1280)
+                .result(new ItemStack(itemTerraPlate), 5120)
                 .build());
         //endregion
 
@@ -473,7 +616,7 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICKED_FEATHER.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 2)))
-                .result(new ItemStack(Registry.ITEM_SCROLL_OF_GROWTH.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_SCROLL_OF_GROWTH.get()), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -487,7 +630,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_FEATHER.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 2)))
-                .result(new ItemStack(Registry.ITEM_INFERNAL_SCROLL_OF_GROWTH.get()), 1280)
+                .result(new ItemStack(Registry.ITEM_INFERNAL_SCROLL_OF_GROWTH.get()), 5120)
                 .build());
         //endregion
 
@@ -503,7 +646,7 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 4),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 1)))
-                .result(new ItemStack(itemWarpStone), 1280)
+                .result(new ItemStack(itemWarpStone), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -518,26 +661,24 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemWarpDust), 4),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.OBSIDIAN), 2),
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderAir), 2)))
-                .result(new ItemStack(itemWaystone), 1280)
+                .result(new ItemStack(itemWaystone), 5120)
                 .build());
         //endregion
 
         //region Summon Recipes
-        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{"WGFGW", "GHHHG", "FH HF", "GHHHG", "WGFGW"})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
+        Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
+                .topLayer(new String[]{"WGW", "GHG", "WGW"})
+                .midLayer(new String[]{"GHG", "H H", "GHG"})
+                .lowLayer(new String[]{"WGW", "GHG", "WGW"})
                 .blockMappings(ImmutableMap.of('H', TomeRecipe.BlockMapping.of(Blocks.HAY_BLOCK),
                         'W', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "full_wood"))),
-                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold"))),
-                        'F', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "froglights")))))
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_FIERY_INGOT.get()), 16),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_FEATHER.get()), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(itemInfinimeal), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1)))
-                .result(null, 5120)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICKED_FEATHER.get()), 16),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemDiamondHeart), 1)))
+                .result(new ItemStack(itemFirebirdEgg), 5120, false)
                 .execute((player, position) -> {
                     ServerLevel level = player.serverLevel();
                     Entity summon = Registry.ENTITY_FIREBIRD.create(level);
@@ -547,22 +688,20 @@ public class RegistryTomeRecipes {
                 })
                 .build());
 
-        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{"WGFGW", "GHHHG", "FH HF", "GHHHG", "WGFGW"})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
+        Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
+                .topLayer(new String[]{"WGW", "GHG", "WGW"})
+                .midLayer(new String[]{"GHG", "H H", "GHG"})
+                .lowLayer(new String[]{"WGW", "GHG", "WGW"})
                 .blockMappings(ImmutableMap.of('H', TomeRecipe.BlockMapping.of(Blocks.HAY_BLOCK),
                         'W', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "full_wood"))),
-                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold"))),
-                        'F', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "froglights")))))
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(tagWool), 24),
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemBottledCloud), 8),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_FEATHER.get()), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(itemInfinimeal), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1)))
-                .result(null, 5120)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICKED_FEATHER.get()), 16),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemDiamondHeart), 1)))
+                .result(new ItemStack(itemGriffonEgg), 5120, false)
                 .execute((player, position) -> {
                     ServerLevel level = player.serverLevel();
                     Entity summon = Registry.ENTITY_GRIFFON.create(level);
@@ -572,21 +711,19 @@ public class RegistryTomeRecipes {
                 })
                 .build());
 
-        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{"WGFGW", "GHHHG", "FH HF", "GHHHG", "WGFGW"})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
+        Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
+                .topLayer(new String[]{"WGW", "GHG", "WGW"})
+                .midLayer(new String[]{"GHG", "H H", "GHG"})
+                .lowLayer(new String[]{"WGW", "GHG", "WGW"})
                 .blockMappings(ImmutableMap.of('H', TomeRecipe.BlockMapping.of(Blocks.HAY_BLOCK),
                         'W', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "full_wood"))),
-                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold"))),
-                        'F', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "froglights")))))
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.RED_MUSHROOM_BLOCK), 32),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_FEATHER.get()), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(itemInfinimeal), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1)))
-                .result(null, 5120)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICKED_FEATHER.get()), 16),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemDiamondHeart), 1)))
+                .result(new ItemStack(itemColelytraEgg), 5120, false)
                 .execute((player, position) -> {
                     ServerLevel level = player.serverLevel();
                     Entity summon = Registry.ENTITY_COLELYTRA.create(level);
@@ -596,21 +733,19 @@ public class RegistryTomeRecipes {
                 })
                 .build());
 
-        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{"WGFGW", "GHHHG", "FH HF", "GHHHG", "WGFGW"})
-                .withLayer(new String[]{"WWGWW", "WHHHW", "GHHHG", "WHHHW", "WWGWW"})
-                .withLayer(new String[]{" WWW ", "WWGWW", "WGFGW", "WWGWW", " WWW "})
+        Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
+                .topLayer(new String[]{"WGW", "GHG", "WGW"})
+                .midLayer(new String[]{"GHG", "H H", "GHG"})
+                .lowLayer(new String[]{"WGW", "GHG", "WGW"})
                 .blockMappings(ImmutableMap.of('H', TomeRecipe.BlockMapping.of(Blocks.HAY_BLOCK),
                         'W', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "full_wood"))),
-                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold"))),
-                        'F', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("exoadvadditions", "froglights")))))
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/gold")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.SOUL_SAND), 32),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_FEATHER.get()), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(itemInfinimeal), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1)))
-                .result(null, 5120)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICKED_FEATHER.get()), 16),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EGG), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemDiamondHeart), 1)))
+                .result(new ItemStack(itemNetherBatEgg), 5120, false)
                 .execute((player, position) -> {
                     ServerLevel level = player.serverLevel();
                     Entity summon = Registry.ENTITY_NETHER_BAT.create(level);
@@ -633,7 +768,7 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.HAY_BLOCK), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.LEAD), 2),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 1)))
-                .result(new ItemStack(itemAnimalGuidebook), 1280)
+                .result(new ItemStack(itemAnimalGuidebook), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -647,7 +782,7 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.EMERALD), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.GOLDEN_APPLE), 2),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 1)))
-                .result(new ItemStack(itemHunterGuidebook), 1280)
+                .result(new ItemStack(itemHunterGuidebook), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -661,8 +796,8 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.BLAZE_POWDER), 2),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.DIAMOND), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 1)))
-                .result(new ItemStack(itemEnchantmentTransposer), 1280)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(itemEnchantmentTransposer), 5120)
                 .build());
         //endregion
 
@@ -676,9 +811,9 @@ public class RegistryTomeRecipes {
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.SUNFLOWER), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 1)))
-                .result(new ItemStack(Registry.ITEM_TOME_OF_SUNRISE.get()), 1280)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 3),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_TOME_OF_SUNRISE.get(), 3), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -690,9 +825,9 @@ public class RegistryTomeRecipes {
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("minecraft", "beds"))), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 1)))
-                .result(new ItemStack(Registry.ITEM_TOME_OF_WAKEFULNESS.get()), 1280)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 3),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_TOME_OF_WAKEFULNESS.get(), 3), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -704,9 +839,9 @@ public class RegistryTomeRecipes {
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.ENDER_EYE), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 1)))
-                .result(new ItemStack(Registry.ITEM_TOME_OF_AMNESIA.get()), 1280)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 3),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_TOME_OF_AMNESIA.get(), 3), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -718,9 +853,9 @@ public class RegistryTomeRecipes {
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.PHANTOM_MEMBRANE), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 1)))
-                .result(new ItemStack(Registry.ITEM_TOME_OF_FLIGHT.get()), 1280)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 3),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_TOME_OF_FLIGHT.get(), 3), 5120)
                 .build());
         //endregion
 
@@ -732,11 +867,12 @@ public class RegistryTomeRecipes {
                 .blockMappings(ImmutableMap.of('P', TomeRecipe.BlockMapping.of(Blocks.PURPUR_BLOCK),
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
-                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_TOME_OF_SUNRISE.get()), 1),
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.SUNFLOWER), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderAir), 2)))
-                .result(new ItemStack(Registry.ITEM_ENHANCED_TOME_OF_SUNRISE.get()), 1280)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 3),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderAir), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_ENHANCED_TOME_OF_SUNRISE.get(), 3), 5120)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerRecipe(new ShapedTomeRecipe.Builder()
@@ -746,11 +882,12 @@ public class RegistryTomeRecipes {
                 .blockMappings(ImmutableMap.of('P', TomeRecipe.BlockMapping.of(Blocks.PURPUR_BLOCK),
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves")))))
-                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_TOME_OF_WAKEFULNESS.get()), 1),
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("minecraft", "beds"))), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.AMETHYST_SHARD), 2),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1),
-                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderAir), 2)))
-                .result(new ItemStack(Registry.ITEM_ENHANCED_TOME_OF_WAKEFULNESS.get()), 1280)
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BOOK), 3),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderAir), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1)))
+                .result(new ItemStack(Registry.ITEM_ENHANCED_TOME_OF_WAKEFULNESS.get(), 3), 5120)
                 .build());
         //endregion
 
@@ -764,7 +901,7 @@ public class RegistryTomeRecipes {
                 .blockMappings(ImmutableMap.of('A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
                         'E', TomeRecipe.BlockMapping.of(Blocks.ENCHANTING_TABLE),
                         'Q', TomeRecipe.BlockMapping.of(Blocks.QUARTZ_BLOCK),
-                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'G', TomeRecipe.BlockMapping.of(Blocks.GLOWSTONE)/*TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))*/,
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves"))),
                         'O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian")))))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENHANCED_TOME_OF_SUNRISE.get()), 1),
@@ -772,7 +909,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_NETHERITE_INGOT_STACK.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ETERNA_CRYSTALIS.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_SUNRISE.get(), 5120))
+                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_SUNRISE.get()), 10240)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -792,7 +929,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_NETHERITE_INGOT_STACK.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ETERNA_CRYSTALIS.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_WAKEFULNESS.get(), 5120))
+                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_WAKEFULNESS.get()), 10240)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -812,7 +949,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_NETHERITE_INGOT_STACK.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ETERNA_CRYSTALIS.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_FLIGHT.get(), 5120))
+                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_FLIGHT.get()), 10240)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -832,7 +969,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_NETHERITE_INGOT_STACK.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ETERNA_CRYSTALIS.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_AMNESIA.get(), 5120))
+                .result(new ItemStack(Registry.ITEM_ASCENDED_TOME_OF_AMNESIA.get()), 10240)
                 .build());
         //endregion
 
@@ -851,7 +988,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_FEATHER.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 2)))
-                .result(new ItemStack(Registry.ITEM_ENDER_SCROLL_OF_GROWTH.get(), 5120))
+                .result(new ItemStack(Registry.ITEM_ENDER_SCROLL_OF_GROWTH.get()), 10240)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -869,7 +1006,7 @@ public class RegistryTomeRecipes {
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ANCIENT_FEATHER.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 2)))
-                .result(new ItemStack(Registry.ITEM_ANCIENT_SCROLL_OF_GROWTH.get(), 5120))
+                .result(new ItemStack(Registry.ITEM_ANCIENT_SCROLL_OF_GROWTH.get()), 10240)
                 .build());
         //endregion
 
@@ -885,7 +1022,7 @@ public class RegistryTomeRecipes {
                         'S', TomeRecipe.BlockMapping.of(Blocks.SCULK)))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_OLD_MANUSCRIPT.get()), 1), TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_MANUSCRIPT.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_MANUSCRIPT.get()), 1), TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_VOID_RUNES.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 5120)
+                .result(new ItemStack(Registry.ITEM_ANCIENT_MANUSCRIPT.get()), 10240)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -899,7 +1036,7 @@ public class RegistryTomeRecipes {
                         'S', TomeRecipe.BlockMapping.of(Blocks.SCULK)))
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICKED_FEATHER.get()), 1), TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_INFERNAL_FEATHER.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ENDER_FEATHER.get()), 1), TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_VOID_RUNES.get()), 1)))
-                .result(new ItemStack(Registry.ITEM_ANCIENT_FEATHER.get()), 5120)
+                .result(new ItemStack(Registry.ITEM_ANCIENT_FEATHER.get()), 10240)
                 .build());
 
         Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
@@ -915,7 +1052,84 @@ public class RegistryTomeRecipes {
                 .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_MAGICAL_RUNES.get()), 1),
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderAir), 3),
                         TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderiumShard), 1)))
-                .result(new ItemStack(Registry.ITEM_MAGICAL_VOID_RUNES.get()), 5120)
+                .result(new ItemStack(Registry.ITEM_MAGICAL_VOID_RUNES.get()), 10240)
+                .build());
+        //endregion
+
+        //region Reinforcement Templates
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{"  G  ", " DID ", "GI IG", " DID ", "  G  "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian"))),
+                        'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron"))),
+                        'D', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/diamond")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(itemArcaneEssence), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemBlankRunestone), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.EXPERIENCE_BOTTLE), 32),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_BLANK_SMITHING_TEMPLATE.get()), 2)))
+                .result(new ItemStack(Registry.ITEM_MAGE_TEMPLATE.get()), 10240)
+                .build());
+
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{"  G  ", " DID ", "GI IG", " DID ", "  G  "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian"))),
+                        'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron"))),
+                        'D', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/diamond")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.ROTTEN_FLESH), 128),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.WITHER_SKELETON_SKULL), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.BLAZE_POWDER), 32),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_BLANK_SMITHING_TEMPLATE.get()), 2)))
+                .result(new ItemStack(Registry.ITEM_FIGHTER_TEMPLATE.get()), 10240)
+                .build());
+
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{"  G  ", " DID ", "GI IG", " DID ", "  G  "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian"))),
+                        'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron"))),
+                        'D', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/diamond")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(TagKey.create(ForgeRegistries.ITEMS.getRegistryKey(), ResourceLocation.fromNamespaceAndPath("forge", "bones"))), 128),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.SKELETON_SKULL), 4),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.ARROW), 64),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_BLANK_SMITHING_TEMPLATE.get()), 2)))
+                .result(new ItemStack(Registry.ITEM_RANGER_TEMPLATE.get()), 10240)
+                .build());
+
+        Registry.TOME_RECIPE_MANAGER.registerAdvancedRecipe(new AdvancedShapedTomeRecipe.Builder()
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{"  G  ", " DID ", "GI IG", " DID ", "  G  "})
+                .withLayer(new String[]{"OA AO", "ADDDA", " DID ", "ADDDA", "OA AO"})
+                .withLayer(new String[]{" O O ", "OO OO", "  A  ", "OO OO", " O O "})
+                .blockMappings(ImmutableMap.of('O', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "obsidian"))),
+                        'A', TomeRecipe.BlockMapping.of(Blocks.AMETHYST_BLOCK),
+                        'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone"))),
+                        'I', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/iron"))),
+                        'D', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "storage_blocks/diamond")))))
+                .itemMappings(ImmutableList.of(TomeRecipe.ItemMapping.of(Ingredient.of(Items.NETHERITE_UPGRADE_SMITHING_TEMPLATE), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Items.NETHERITE_INGOT), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderiumUpgradeTemplate), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEnderiumIngot), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_ETHERIUM_UPGRADE_TEMPLATE.get()), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(itemEtheriumIngot), 1),
+                        TomeRecipe.ItemMapping.of(Ingredient.of(Registry.ITEM_BLANK_SMITHING_TEMPLATE.get()), 2)))
+                .result(new ItemStack(Registry.ITEM_ARMOR_REINFORCEMENT_TEMPLATE.get()), 10240)
                 .build());
         //endregion
 
@@ -929,13 +1143,13 @@ public class RegistryTomeRecipes {
                         'C', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "chests/wooden"))),
                         'B', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", "bookshelves"))),
                         'G', TomeRecipe.BlockMapping.of(TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("minecraft", "glowstone")))))
-                .result(new ItemStack(Registry.ITEM_ESSENCE_OF_KNOWLEDGE.get()), 1280, false)
+                .result(new ItemStack(Registry.ITEM_ESSENCE_OF_KNOWLEDGE.get()), 5120, false)
                 .execute((player, position) -> {
                     ServerLevel level = player.serverLevel();
                     BlockEntity blockEntity = level.getBlockEntity(position);
                     float playerLuck = player.getLuck();
                     if (blockEntity instanceof ChestBlockEntity chestEntity) {
-                        int essenceCount = 0;
+                        double essenceTally = 0.0;
                         ObjectArrayList<ItemStack> passedItems = new ObjectArrayList<>();
 
                         int size = chestEntity.getContainerSize();
@@ -943,13 +1157,14 @@ public class RegistryTomeRecipes {
                             ItemStack slotItem = chestEntity.getItem(i);
                             if (slotItem.isEmpty()) {}
                             else if (slotItem.is(tagOccultItems)) {
-                                essenceCount += slotItem.getCount();
-                                if (slotItem.is(tagMacguffinItems)) essenceCount += slotItem.getCount();
+                                if (slotItem.is(Items.AMETHYST_BLOCK)) { essenceTally += slotItem.getCount() * 0.334; }
+                                else if (slotItem.is(tagMacguffinItems)) essenceTally += slotItem.getCount() * 8;
+                                else { essenceTally += slotItem.getCount(); }
                                 slotItem.setCount(0);
                             }
                             else { passedItems.add(slotItem); }
                         }
-                        essenceCount = (int)(essenceCount * (1.0F + (level.random.nextFloat() * playerLuck * 0.04F)));
+                        int essenceCount = (int)(essenceTally * (1.0F + (level.random.nextFloat() * playerLuck * 0.04F)));
 
                         //Handle passedItems
                         Vec3 center = position.getCenter();

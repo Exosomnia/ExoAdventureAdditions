@@ -1,0 +1,25 @@
+{
+  "values": [
+    "quark:apple_crate",
+    "quark:potato_crate",
+    "quark:carrot_crate",
+    "quark:beetroot_crate",
+    "thermal:apple_block",
+    "thermal:potato_block",
+    "thermal:carrot_block",
+    "thermal:beetroot_block",
+    "ubesdelight:ube_crate",
+    "ubesdelight:garlic_crate",
+    "ubesdelight:ginger_crate",
+    "ubesdelight:lemongrass_crate",
+    "farmersdelight:carrot_crate",
+    "farmersdelight:potato_crate",
+    "farmersdelight:beetroot_crate",
+    "farmersdelight:cabbage_crate",
+    "farmersdelight:tomato_crate",
+    "farmersdelight:onion_crate",
+    "corn_delight:corn_crate",
+    "miners_delight:cave_carrot_crate",
+    "minecraft:hay_block"
+  ]
+}

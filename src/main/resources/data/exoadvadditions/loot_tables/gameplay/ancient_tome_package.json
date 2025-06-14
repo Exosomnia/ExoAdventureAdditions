@@ -1,0 +1,272 @@
+{
+  "type": "minecraft:fishing",
+  "pools": [
+    {
+      "conditions": [],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:protection\",lvl:4s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:fire_protection\",lvl:4s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:feather_falling\",lvl:4s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:blast_protection\",lvl:4s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:projectile_protection\",lvl:4s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:thorns\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:sharpness\",lvl:5s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:smite\",lvl:5s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:bane_of_arthropods\",lvl:5s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:knockback\",lvl:2s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:fire_aspect\",lvl:2s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:looting\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:sweeping\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:efficiency\",lvl:5s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:unbreaking\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:fortune\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:power\",lvl:5s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:punch\",lvl:2s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:luck_of_the_sea\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:lure\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:loyalty\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:impaling\",lvl:5s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:riptide\",lvl:3s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"minecraft:piercing\",lvl:4s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"exoarmory:rallying\",lvl:1s}]}"
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "quark:ancient_tome",
+          "functions": [
+            {
+              "function": "minecraft:set_nbt",
+              "tag": "{StoredEnchantments:[{id:\"exoarmory:fortifying\",lvl:1s}]}"
+            }
+          ]
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "exoadvadditions:gameplay/ancient_tome_package"
+}

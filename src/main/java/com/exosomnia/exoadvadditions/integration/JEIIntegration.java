@@ -7,11 +7,14 @@ import com.exosomnia.exoarmory.ExoArmory;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
+import mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter;
+import mezz.jei.api.ingredients.subtypes.UidContext;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.vanilla.IJeiBrewingRecipe;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import mezz.jei.api.registration.ISubtypeRegistration;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
@@ -32,7 +35,19 @@ public class JEIIntegration implements IModPlugin {
 
     @Override
     public void registerItemSubtypes(ISubtypeRegistration registration) {
+        IIngredientSubtypeInterpreter<ItemStack> featherInterp = (ingredient, context) -> {
+            CompoundTag featherTag = ingredient.getTag();
+            if (featherTag != null && featherTag.contains("LocateData") && featherTag.get("LocateData") instanceof CompoundTag locateTag) {
+                return locateTag.getString("name");
+            }
+            return "";
+        };
+
         registration.useNbtForSubtypes(Registry.ITEM_UNLOCATED_MAP.get());
+        registration.registerSubtypeInterpreter(Registry.ITEM_MAGICKED_FEATHER.get(), featherInterp);
+        registration.registerSubtypeInterpreter(Registry.ITEM_INFERNAL_FEATHER.get(), featherInterp);
+        registration.registerSubtypeInterpreter(Registry.ITEM_ENDER_FEATHER.get(), featherInterp);
+        registration.registerSubtypeInterpreter(Registry.ITEM_ANCIENT_FEATHER.get(), featherInterp);
     }
 
     @Override
@@ -59,6 +74,8 @@ public class JEIIntegration implements IModPlugin {
         registration.addIngredientInfo(Registry.ITEM_ANCIENT_FEATHER.get(), Component.translatable("item.exoadvadditions.magicked_feather.jei.info"));
 
         registration.addIngredientInfo(Registry.ITEM_OLD_MANUSCRIPT.get(), Component.translatable("item.exoadvadditions.old_manuscript.jei.info"));
+
+        registration.addIngredientInfo(Registry.ITEM_FLAWLESS_ONYX.get(), Component.translatable("item.exoadvadditions.flawless_onyx.jei.info"));
 
         registration.addIngredientInfo(Registry.ITEM_STARCALLER, Component.translatable("item.exoadvadditions.star_sword.jei.info"));
     }

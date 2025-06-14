@@ -10,16 +10,16 @@ public class DimensionTypesMixin {
 
     @ModifyConstant(method = "bootstrap", constant = @Constant(intValue = 0, ordinal = 1))
     private static int updateBlockLightLevelOverworld(int value) {
-        return 7;
+        return 4;
     }
 
     @ModifyConstant(method = "bootstrap", constant = @Constant(intValue = 0, ordinal = 5))
     private static int updateBlockLightLevelEnd(int value) {
-        return 7;
+        return 4;
     }
 
     @ModifyConstant(method = "bootstrap", constant = @Constant(intValue = 0, ordinal = 7))
     private static int updateBlockLightLevelOverworldCaves(int value) {
-        return 7;
+        return 4;
     }
 }

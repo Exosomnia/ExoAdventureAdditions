@@ -20,9 +20,9 @@ import net.minecraft.world.level.Level;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class TomeOfFlight extends TomeItem {
+public class TomeOfFlightItem extends TomeItem {
 
-    public TomeOfFlight(Properties properties, int rank, boolean eternal) {
+    public TomeOfFlightItem(Properties properties, int rank, boolean eternal) {
         super(properties, rank, eternal);
     }
 
@@ -56,11 +56,11 @@ public class TomeOfFlight extends TomeItem {
             return InteractionResult.FAIL;
         }
 
-        livingEntity.addEffect(new MobEffectInstance(Registry.EFFECT_FLIGHT_READY.get(), eternal ? 4200 : 3600, 0));
+        livingEntity.addEffect(new MobEffectInstance(Registry.EFFECT_FLIGHT_READY.get(), eternal ? 7200 : 3600, 0));
         player.displayClientMessage(Component.translatable("item.exoadvadditions.tome_of_flight.activated").withStyle(ChatFormatting.GOLD), false);
         player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 0.75F, 0.75F);
-        cooldowns.addCooldown(Registry.ITEM_TOME_OF_FLIGHT.get(), 7200);
-        cooldowns.addCooldown(Registry.ITEM_ASCENDED_TOME_OF_FLIGHT.get(), 7200);
+        cooldowns.addCooldown(Registry.ITEM_TOME_OF_FLIGHT.get(), 1200);
+        cooldowns.addCooldown(Registry.ITEM_ASCENDED_TOME_OF_FLIGHT.get(), 1200);
 
         if (!eternal) { itemStack.shrink(1); }
 

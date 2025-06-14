@@ -45,14 +45,14 @@ public class DepthsLootModifier extends LootModifier {
         if (!context.hasParam(LootContextParams.THIS_ENTITY) || !context.hasParam(LootContextParams.BLOCK_STATE) || generatedLoot.isEmpty()) { return generatedLoot; }
 
         Entity entity = context.getParam(LootContextParams.THIS_ENTITY);
-        if (!entity.level().dimension().equals(Registry.DEPTHS_DIMENSION) || !(entity instanceof LivingEntity miner)) { return generatedLoot; }
+        if (!entity.level().dimension().equals(Registry.DEPTHS_DIMENSION) || !(entity instanceof ServerPlayer miner)) { return generatedLoot; }
 
         BlockState mined = context.getParam(LootContextParams.BLOCK_STATE);
         if (!mined.is(blockTag)) { return generatedLoot; }
 
         int luckMod = (int)(miner.getAttributeValue(Attributes.LUCK) * 3.0);
         if (context.getRandom().nextInt(100) < (20 + luckMod)) {
-            generatedLoot.forEach(stack -> stack.grow(context.getRandom().nextInt(stack.getCount() + 1)));
+            generatedLoot.forEach(stack -> stack.grow(context.getRandom().nextInt(1, stack.getCount() + 1)));
         }
 
         return generatedLoot;

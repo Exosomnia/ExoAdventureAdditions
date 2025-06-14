@@ -10,7 +10,7 @@
           "functions": [
             {
               "function": "minecraft:set_nbt",
-              "tag": "{value:200}"
+              "tag": "{value:1200}"
             }
           ]
         },
@@ -20,7 +20,7 @@
           "functions": [
             {
               "function": "minecraft:set_nbt",
-              "tag": "{value:400}"
+              "tag": "{value:1600}"
             }
           ]
         },
@@ -30,7 +30,7 @@
           "functions": [
             {
               "function": "minecraft:set_nbt",
-              "tag": "{value:600}"
+              "tag": "{value:2000}"
             }
           ]
         }

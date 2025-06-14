@@ -1,19 +1,17 @@
 package com.exosomnia.exoadvadditions.networking.packets;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.function.Supplier;
 
 public class SimpleMusicPacket {
 
-    private ResourceLocation music;
+    protected ResourceLocation music;
 
     public SimpleMusicPacket(ResourceLocation music) {
         this.music = music;
@@ -31,11 +29,9 @@ public class SimpleMusicPacket {
         context.get().enqueueWork(() -> {
             NetworkDirection packetDirection = context.get().getDirection();
             if (packetDirection.equals(NetworkDirection.PLAY_TO_CLIENT)) {
-                Minecraft.getInstance().getMusicManager().stopPlaying();
-                Minecraft.getInstance().getSoundManager().stop(null, SoundSource.MUSIC);
-                if (packet.music != null) {
-                    Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forMusic(ForgeRegistries.SOUND_EVENTS.getValue(packet.music)));
-                }
+                DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+                    ClientSimpleMusicHandler.handle(packet, context);
+                });
             }
         });
         context.get().setPacketHandled(true);

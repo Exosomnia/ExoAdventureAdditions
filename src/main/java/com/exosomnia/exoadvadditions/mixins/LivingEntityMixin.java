@@ -27,7 +27,7 @@ public class LivingEntityMixin {
             case NORMAL -> 5400;
             case HARD -> 7200;
         };
-        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 40, 9));
+        entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 60, 9));
         entity.addEffect(new MobEffectInstance(Registry.EFFECT_CHEATED_DEATH.get(), duration, 0, true, false, true));
     }
 

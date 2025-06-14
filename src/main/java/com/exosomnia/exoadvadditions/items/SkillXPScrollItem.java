@@ -80,8 +80,7 @@ public class SkillXPScrollItem extends Item {
 
         itemStack.shrink(1);
         player.playNotifySound(SoundEvents.PLAYER_LEVELUP, SoundSource.PLAYERS, 1.0F, 1.75F);
-        player.sendSystemMessage(ComponentUtils.formatLine(I18n.get("item.exoadvadditions.scroll_of_skill_xp.used", skill.toString().toLowerCase()),
-                Style.EMPTY.withColor(ChatFormatting.GOLD)));
+        player.sendSystemMessage(Component.translatable("item.exoadvadditions.scroll_of_skill_xp.used", skill.toString().toLowerCase()).withStyle(ChatFormatting.GOLD));
 
         return InteractionResultHolder.consume(itemStack);
     }

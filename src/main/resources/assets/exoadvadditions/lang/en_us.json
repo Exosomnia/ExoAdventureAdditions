@@ -1,6 +1,18 @@
 {
     "item.exoadvadditions.star_sword.jei.info": "This item is disabled because it's effect is currently not working.",
 
+    "craft.exoadvadditions.ancient_tome_package": "Random Ancient Tome",
+
+    "item.exoadvadditions.etherium_upgrade_template": "Smithing Template",
+    "exoadvadditions.smithing.etherium.applies_to": "Enderium Equipment",
+    "exoadvadditions.smithing.etherium.ingredients": "Etherium Ingot",
+    "exoadvadditions.smithing.etherium.upgrade": "Etherium Upgrade",
+    "exoadvadditions.smithing.etherium.base": "Add enderium equipment",
+    "exoadvadditions.smithing.etherium.addition": "Add Etherium Ingot",
+
+    "exoadvadditions.brew.eagle_eye": "Eagle Eye",
+    "exoadvadditions.brew.weak_resistance": "Resistance",
+
     "recipe_category.exoadvadditions.tome_crafting": "Tome Crafting",
     "recipe_category.exoadvadditions.tome_crafting.alt": "Advanced Tome Crafting",
     "recipe_category.exoadvadditions.tome_crafting.help.1": "Build the 3x3x3 structure displayed",
@@ -62,7 +74,10 @@
     "stat.exoadvadditions.advanced_tome_crafts": "Advanced Tome Crafts Performed",
 
     "trade.exoadvadditions.scholar_gear": "Random Piece of Scholar Gear",
+    "trade.exoadvadditions.fishing_treasure": "Random Fishing Treasure",
 
+    "effect.exoadvadditions.fatigued": "Fatigued",
+    "effect.exoadvadditions.fatigued.description": "Reduces offensive combat stats by 20%. (Attack damage, attack speed, ranged strength, and spell power)",
     "effect.exoadvadditions.cheated_death": "Cheated Death",
     "effect.exoadvadditions.cheated_death.description": "You have recently cheated death, trying to do so again so soon may not end so well for you...",
     "effect.exoadvadditions.grounded": "Grounded",
@@ -71,11 +86,22 @@
     "effect.exoadvadditions.flight_ready.description": "Allows for flight on flying mounts. This effect is removed if the mount takes damage from another entity.",
 
     "item.exoadvadditions.eterna_crystalis": "Eterna Crystalis",
+    "item.exoadvadditions.flawless_onyx": "Flawless Onyx",
+    "item.exoadvadditions.flawless_onyx.jei.info": "Combine with a piece of gear in an anvil that already has a regular onyx applied, unbreaking 4, and the mending enchantment to make the item unbreakable.",
     "item.exoadvadditions.netherite_ingot_stack": "Stack of Netherite",
     "item.exoadvadditions.crushed_ancient_debris": "Crushed Ancient Debris",
     "item.exoadvadditions.unfinished_elytra": "Unfinished Elytra",
     "item.exoadvadditions.mysterious_blueprint_shapes": "Mysterious Blueprint (Shapes)",
     "item.exoadvadditions.mysterious_blueprint_diagrams": "Mysterious Blueprint (Diagrams)",
+
+    "item.exoadvadditions.mage_template": "Mage Template",
+    "item.exoadvadditions.fighter_template": "Fighter Template",
+    "item.exoadvadditions.ranger_template": "Ranger Template",
+    "item.exoadvadditions.armor_reinforcement_template": "Armor Reinforcement Template",
+    "item.exoadvadditions.blank_smithing_template": "Blank Template",
+    "item.exoadvadditions.attribute_template.help": "0{Can be applied to:} 1{%s} ",
+    "item.exoadvadditions.attribute_template.help.alt.1": "Etherium armor",
+    "item.exoadvadditions.attribute_template.help.alt.2": "Armor without armor toughness",
 
     "item.exoadvadditions.elder_guardian_eye": "Elder Guardian Eye",
     "item.exoadvadditions.old_manuscript": "Old Manuscript",
@@ -102,9 +128,17 @@
     "item.exoadvadditions.message_in_a_bottle": "Message in a Bottle",
     "item.exoadvadditions.message_in_a_bottle.info.1": "A peculiar message resides within the bottle...",
 
+    "item.exoadvadditions.diamond_carrot": "Diamond Carrot",
+
     "item.exoadvadditions.scroll_of_skill_xp": "Scroll of Knowledge",
     "item.exoadvadditions.scroll_of_skill_xp.info.1": "Grants 0{%1$d} XP to your 0{%2$s} skill.",
     "item.exoadvadditions.scroll_of_skill_xp.used": "You suddenly feel more proficient in %s.",
+    "item.exoadvadditions.scroll_of_skill_xp_random": "Scroll of Knowledge Conversion",
+    "item.exoadvadditions.scroll_of_skill_xp_random.info.1": "Consumes all your XP, up to 0{25,000}, and",
+    "item.exoadvadditions.scroll_of_skill_xp_random.info.2": "turns into a random skill XP scroll equal",
+    "item.exoadvadditions.scroll_of_skill_xp_random.info.3": "to 0{4x} the amount of xp consumed.",
+    "item.exoadvadditions.scroll_of_skill_xp_random.info.4": "0{Your current XP:} 1{%d}",
+    "item.exoadvadditions.scroll_of_skill_xp_random.used": "The scroll becomes something new...",
 
     "item.exoadvadditions.scroll_of_growth": "Scroll of Growth",
     "item.exoadvadditions.infernal_scroll_of_growth": "Infernal Scroll of Growth",
@@ -116,13 +150,32 @@
     "item.exoadvadditions.scroll_of_growth.skipped_tier": "You must use the previous tier scroll before using this one.",
     "item.exoadvadditions.scroll_of_growth.already_used": "You have already used this tier of scroll, or higher.",
 
+    "item.exoadvadditions.scroll.max_used": "You cannot gain anymore benefit from this item.",
+
     "item.exoadvadditions.scroll_of_tenacity": "Scroll of Tenacity",
     "item.exoadvadditions.scroll_of_tenacity.info.1": "Provides a permanent 0{5%%} decrease in duration",
     "item.exoadvadditions.scroll_of_tenacity.info.2": "of negative effects. You can increase this amount",
-    "item.exoadvadditions.scroll_of_tenacity.info.3": "up to a max of 0{10%%}.",
+    "item.exoadvadditions.scroll_of_tenacity.info.3": "to a max of 0{10%%}.",
     "item.exoadvadditions.scroll_of_tenacity.used": "You feel more resilient against negative afflictions.",
-    "item.exoadvadditions.scroll_of_tenacity.max_used": "You cannot gain anymore benefit from this scroll.",
 
+    "item.exoadvadditions.tome_of_ballistics": "Tome of Ballistics",
+    "item.exoadvadditions.tome_of_ballistics.info.1": "Provides a permanent 0{5%%} increase to",
+    "item.exoadvadditions.tome_of_ballistics.info.2": "damage dealt with firearm-like weapons.",
+    "item.exoadvadditions.tome_of_ballistics.info.3": "Your ranged strength now provides 0{20%}",
+    "item.exoadvadditions.tome_of_ballistics.info.4": "of it's value as a damage increase as well.",
+    "item.exoadvadditions.tome_of_ballistics.used": "You feel more proficient with firearms.",
+
+    "item.exoadvadditions.tome_of_stamina": "Tome of Stamina",
+    "item.exoadvadditions.tome_of_stamina.info.1": "Provides a permanent 0{6.25%%} increase to",
+    "item.exoadvadditions.tome_of_stamina.info.2": "0{Stamina}. You can increase this bonus to",
+    "item.exoadvadditions.tome_of_stamina.info.3": "a max of 0{12.5%%}. 1{Stamina} reduces the",
+    "item.exoadvadditions.tome_of_stamina.info.4": "speed that your food drains.",
+    "item.exoadvadditions.tome_of_stamina.used": "You feel your stamina strengthen.",
+
+    "item.exoadvadditions.scroll_of_weather": "Scroll of Weather",
+    "item.exoadvadditions.scroll_of_weather.info.1": "When used, stops all rain and thunder.",
+    "item.exoadvadditions.scroll_of_weather.used": "The skies begin to clear.",
+    "item.exoadvadditions.scroll_of_weather.no_weather": "There is no weather to clear.",
 
     "item.exoadvadditions.curious_card": "Curious Card",
     "item.exoadvadditions.curious_card.info": "This could solve a lot of problems!",
@@ -141,7 +194,7 @@
     "item.exoadvadditions.mysterious_tome_dormant": "Dormant Mysterious Tome",
     "item.exoadvadditions.mysterious_tome_dormant.info.1": "It feels like there's magic in",
     "item.exoadvadditions.mysterious_tome_dormant.info.2": "here waiting to be unleashed.",
-    "item.exoadvadditions.mysterious_tome_dormant.jei.info": "You're not sure why, but you get the feeling this time might be pretty important...'",
+    "item.exoadvadditions.mysterious_tome_dormant.jei.info": "You're not sure why, but you get the feeling this tome might be pretty important...",
     "item.exoadvadditions.mysterious_tome_active": "Mysterious Tome",
     "item.exoadvadditions.mysterious_tome_active.jei.info": "A tome awakened with power, maybe it can go further?",
     "item.exoadvadditions.mysterious_tome_unleashed": "Unleashed Mysterious Tome",
@@ -276,14 +329,18 @@
     "item.exoadvadditions.macguffin_8_half_2": "MacGuffin #8 (Right Half)",
 
     "attribute.exoadvadditions.skills_xp_bonus": "Skills XP Bonus",
+    "attribute.exoadvadditions.ballistic_damage": "Ballistics Damage",
 
-    "recipe.help.cryptic_eye.1": "0{3 separate} eyes must be used",
-    "recipe.help.cryptic_eye.2": "when performing this craft.",
+    "recipe.help.cryptic_eye.1": "0{2 separate} types of eyes must",
+    "recipe.help.cryptic_eye.2": "be used when performing this craft.",
     "recipe.help.explore_compass.1": "0{4 separate} macguffins must be",
     "recipe.help.explore_compass.2": "used when performing this craft.",
 
     "recipe.help.luck_tome.1": "This craft has a 0{16.67%%} chance",
     "recipe.help.luck_tome.2": "to produce a 1{Tome of Luck}.",
+
+    "recipe.help.stamina_tome.1": "0{3 separate} types of crates must",
+    "recipe.help.stamina_tome.2": "be used when performing this craft.",
 
     "recipe.help.knowledge_essence.1": "Add items with the tag: 0{occult_items} into",
     "recipe.help.knowledge_essence.2": "the chest in the middle of the structure.",

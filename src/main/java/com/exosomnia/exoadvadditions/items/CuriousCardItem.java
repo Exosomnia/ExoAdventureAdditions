@@ -1,11 +1,15 @@
 package com.exosomnia.exoadvadditions.items;
 
+import com.exosomnia.exoadvadditions.actions.CuriousCardAction;
 import com.exosomnia.exoadvadditions.mixins.VillagerAccessor;
+import com.exosomnia.exolib.ExoLib;
 import com.exosomnia.exolib.utils.ComponentUtils;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -18,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
 import net.minecraft.world.level.Level;
 
@@ -68,18 +73,34 @@ public class CuriousCardItem extends Item {
         if (player.level().isClientSide || !(livingEntity instanceof Villager villager)) { return InteractionResult.PASS; }
 
         VillagerData data = villager.getVillagerData();
-        if (data.getProfession().equals(VillagerProfession.NONE) && data.getLevel() < 4) { return InteractionResult.PASS; }
+        if (data.getProfession().equals(VillagerProfession.NONE)) { return InteractionResult.PASS; }
 
-        VillagerAccessor access = ((VillagerAccessor)villager);
-        int currentLvl = Math.max(data.getLevel(), 1);
-        for (var i = currentLvl; i < 5; i++) {
-            access.callIncreaseMerchantCareer();
+        if (data.getLevel() <= 4) {
+            VillagerAccessor access = ((VillagerAccessor)villager);
+            int currentLvl = Math.max(data.getLevel(), 1);
+            for (var i = currentLvl; i < 5; i++) {
+                access.callIncreaseMerchantCareer();
+            }
+            access.setIncreaseProfessionLevelOnUpdate(false);
+            villager.heal(villager.getMaxHealth());
+            if (villager.isTrading()) { villager.getTradingPlayer().sendMerchantOffers(villager.getTradingPlayer().containerMenu.containerId, villager.getOffers(), 5, villager.getVillagerXp(), villager.showProgressBar(), villager.canRestock()); }
+
+            itemStack.shrink(1);
+            return InteractionResult.SUCCESS;
         }
-        access.setIncreaseProfessionLevelOnUpdate(false);
-        villager.heal(villager.getMaxHealth());
-        if (villager.isTrading()) { villager.getTradingPlayer().sendMerchantOffers(villager.getTradingPlayer().containerMenu.containerId, villager.getOffers(), 5, villager.getVillagerXp(), villager.showProgressBar(), villager.canRestock()); }
+        else {
+            VillagerAccessor access = ((VillagerAccessor) villager);
+            access.callUpdateDemand();
 
-        itemStack.shrink(1);
-        return InteractionResult.SUCCESS;
+            for(MerchantOffer merchantoffer : villager.getOffers()) {
+                merchantoffer.resetUses();
+            }
+
+            access.callResendOffersToTradingPlayer();
+            itemStack.shrink(1);
+
+            villager.level().playSound(null, villager.blockPosition(), SoundEvents.VILLAGER_CELEBRATE, SoundSource.NEUTRAL, 1.0F, 1.0F);
+            return InteractionResult.SUCCESS;
+        }
     }
 }

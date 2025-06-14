@@ -87,7 +87,7 @@ public class TomeOfSunriseItem extends TomeItem {
 
     @SubscribeEvent
     public static void serverLevelTick(TickEvent.LevelTickEvent event) {
-        if (event.phase == TickEvent.Phase.START || event.level.isClientSide || event.level.dimensionType().hasFixedTime()) { return; }
+        if (event.phase == TickEvent.Phase.END || event.level.dimensionType().hasFixedTime() || event.level.isClientSide) { return; }
 
         ServerLevel level = ((ServerLevel)event.level);
         IDaytimeDilationStorage dilation = level.getCapability(DaytimeDilationProvider.DAYTIME_DILATION).resolve().orElse(new DaytimeDilationStorage(0));

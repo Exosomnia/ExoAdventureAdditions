@@ -22,13 +22,14 @@ public class DepthsMusicManager {
     public DepthsMusicManager() {
         mc = Minecraft.getInstance();
         soundManager = mc.getSoundManager();
-        MinecraftForge.EVENT_BUS.addListener(this::playerJoinDepths);
     }
 
     public void tick() {
         if (inDimension) {
             if (mc.player == null || mc.level == null || !mc.level.dimension().equals(Registry.DEPTHS_DIMENSION)) {
                 musicDelay = 0;
+                inDimension = false;
+                if (currentTrack != null) { soundManager.stop(currentTrack); }
                 return;
             }
             //If the manager says we're playing, but the sound is not active, it's over, reset the delay to start again
@@ -45,18 +46,11 @@ public class DepthsMusicManager {
             }
             mc.getMusicManager().stopPlaying();
         }
-    }
-
-    public void playerJoinDepths(PlayerEvent.PlayerChangedDimensionEvent event) {
-        if (event.getTo().equals(Registry.DEPTHS_DIMENSION) && mc.player != null) {
+        else if (mc.player != null && mc.level!= null && mc.level.dimension().equals(Registry.DEPTHS_DIMENSION)) {
             inDimension = true;
             this.currentTrack = SimpleSoundInstance.forMusic(Registry.MUSIC_THE_DEPTHS.get());
             isPlaying = true;
             soundManager.play(currentTrack);
-        }
-        else if (event.getFrom().equals(Registry.DEPTHS_DIMENSION)) {
-            inDimension = false;
-            if (currentTrack != null) { soundManager.stop(currentTrack); }
         }
     }
 }

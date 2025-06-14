@@ -11,6 +11,15 @@ public interface VillagerAccessor {
     @Accessor("increaseProfessionLevelOnUpdate")
     void setIncreaseProfessionLevelOnUpdate(boolean bool);
 
+    @Accessor("updateMerchantTimer")
+    void setUpdateMerchantTimer(int time);
+
     @Invoker("increaseMerchantCareer")
     void callIncreaseMerchantCareer();
+
+    @Invoker("updateDemand")
+    void callUpdateDemand();
+
+    @Invoker("resendOffersToTradingPlayer")
+    void callResendOffersToTradingPlayer();
 }

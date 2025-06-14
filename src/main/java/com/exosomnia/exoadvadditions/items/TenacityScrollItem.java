@@ -56,7 +56,7 @@ public class TenacityScrollItem extends Item {
 
             int currentUse = modTag.getInt("tenacity");
             if (currentUse >= 2) {
-                player.sendSystemMessage(Component.translatable("item.exoadvadditions.scroll_of_tenacity.max_used").withStyle(ChatFormatting.RED));
+                player.sendSystemMessage(Component.translatable("item.exoadvadditions.scroll.max_used").withStyle(ChatFormatting.RED));
             }
             else {
                 modTag.putInt("tenacity", ++currentUse);

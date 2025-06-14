@@ -9,6 +9,6 @@ public class VillagerTrades$EnchantBookForEmeraldsMixin {
 
     @ModifyConstant(method = "getOffer", constant = @Constant(intValue = 12))
     private int updateMaxUses(int value) {
-        return 2;
+        return 3;
     }
 }

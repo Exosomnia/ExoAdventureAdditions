@@ -1,6 +1,5 @@
 package com.exosomnia.exoadvadditions.items;
 
-import com.exosomnia.exoadvadditions.Registry;
 import com.exosomnia.exolib.utils.ComponentUtils;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
@@ -32,8 +31,7 @@ public class MagickFeatherItem extends Item {
     public Component getName(ItemStack itemStack) {
         String name = getAttunedName(itemStack);
         if (name == null) { return Component.translatable(this.getDescriptionId()); }
-
-        return Component.translatable(this.getDescriptionId()).append(String.format(" (%s)", I18n.get(name)));
+        return Component.translatable(this.getDescriptionId()).append(" (").append(Component.translatable(name)).append(")");
     }
 
     @Override

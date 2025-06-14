@@ -166,6 +166,8 @@ dependencies {
 
     implementation fg.deobf("curse.maven:waystones-245755:6270584")
 
+    implementation fg.deobf("vazkii.botania:Botania-1.20.1-448-FORGE:1.20.1-448-FORGE")
+
     implementation fg.deobf("blay09.mods.balm:balm-forge-1.20.1-7.3.20-all:7.3.20-all")
 
     implementation fg.deobf("com.exosomnia.exolib:exolib:1.0.0")
