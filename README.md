@@ -1,0 +1,1 @@
+A Frankenstein mod that just ties many other various mods together, some mine, some not. Not very pretty, I know. Not intended to be used for any purpose other than it's specific modpack, was thrown together as ideas came to me without any real vision or planning, so no support will be provided other than for the original modpack it was developed for.
